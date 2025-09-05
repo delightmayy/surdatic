@@ -5,14 +5,37 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: #0f172a;     /* track color (Tailwind slate-900) */
+  background: #191a1a;     /* track color (Tailwind slate-900) */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #04317b; /* thumb color (Tailwind blue-500) */
+  background-color: #011428; /* thumb color (Tailwind blue-500) */
   border-radius: 9999px;     /* fully rounded */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: #2563eb; /* thumb hover color (blue-600) */
+  background-color: #021f3e; /* thumb hover color (blue-600) */
+}
+
+
+
+/* slick dots override */
+.slick-dots li button:before {
+  font-size: 10px !important; /* smaller dots */
+  color: #8f8f91 !important;  /* Tailwind blue-500 */
+  opacity: 0.8;
+}
+
+.slick-dots li.slick-active button:before {
+  color: #2563eb !important; /* Tailwind blue-600 for active */
+  opacity: 1;
+}
+
+
+.ps-sidebar-container {
+  background: rgba(0, 0, 0, 0.786)  !important; /* remove white overlay */
+}
+
+.ps-sidebar-container::before {
+  background: rgba(0, 0, 0, 0.945) !important;
 }

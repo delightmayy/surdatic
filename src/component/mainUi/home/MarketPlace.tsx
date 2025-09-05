@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import logo from "../../../img/minilogo.png";
-import cardimg1 from "../../../img/card1img.png"; /* 
-import cardimg2 from "../../../img/card2img.png"; */
+import cardimg1 from "../../../img/card1img.png";
+/* import cardimg2 from "../../../img/card2img.png";  */
 import surdacoin from "../../../img/tokenicon.png";
 import { FaClock } from "react-icons/fa6";
+import Slider from "react-slick";
+import { motion } from "framer-motion";
 
 interface CardProps {
   frontImg: string;
@@ -13,46 +15,9 @@ interface CardProps {
   reward: number;
 }
 
-const FlipCard: React.FC<CardProps> = ({
-  frontImg,
-  /* backImg, */
-  title,
-  date,
-  reward,
-}) => {
-  const [flipped, setFlipped] = useState(false);
-
-  return (
-    <div
-      onClick={() => setFlipped(!flipped)}
-      className="cursor-pointer bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none
-      flex flex-col flex-shrink-0 mx-auto w-4/5 sm:w-[240px] min-h-96"
-    >
-      <img
-        src={frontImg}
-        alt="card"
-        className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
-      />
-
-      <div className="p-4 flex flex-col justify-between  text-white/50 flex-grow">
-        <h3 className="  text-xs mb-1 flex gap-2 items-center">
-          <FaClock size={14} /> {date}{" "}
-        </h3>
-        <p className=" font-semibold text-sm md:text-sm mb-4">{title}</p>
-        <div className="flex justify-between items-center">
-          <div className="flex items-center gap-1  font-semibold">
-            <p className="font-light">Rewards:</p>
-            <img src={surdacoin} alt="reward" className="w-5" />{" "}
-            <span className="text-white/90"></span>
-            {reward}
-          </div>
-          <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
-            Buy Survey
-          </button>
-        </div>
-      </div>
-    </div>
-  );
+const containerFade = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
 const Marketplace: React.FC = () => {
@@ -81,10 +46,32 @@ const Marketplace: React.FC = () => {
       date: "58D 17H 03M",
       reward: 75,
     },
+    {
+      frontImg: cardimg1,
+      /* backImg: cardimg2, */
+      title:
+        "ExaminingSafety Compliance rate among senior managers in corporate organisations in Nigeria ",
+      date: "58D 17H 03M",
+      reward: 50,
+    },
+    {
+      frontImg: cardimg1,
+      /* backImg: cardimg2, */
+      title:
+        "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
+      date: "58D 17H 03M",
+      reward: 75,
+    },
+    {
+      frontImg: cardimg1,
+      /* backImg: cardimg2, */
+      title:
+        "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
+      date: "58D 17H 03M",
+      reward: 75,
+    },
     // add more cards...
   ];
-
-  const [activeIndex, setActiveIndex] = useState(0);
 
   return (
     <section className="bg-black px-6 py-8 md:py-16">
@@ -124,37 +111,162 @@ const Marketplace: React.FC = () => {
           </div>
         </div>
 
-        {/* Right Section */}
-        <div className="flex flex-1 flex-col justify-center lg:w-7/12">
-          <div className="overflow-x-scroll flex gap-4 md:gap-0 md:py-5">
-            {cardsData.map((card, idx) => (
-              <div
-                key={idx}
-                className={`transition-opacity duration-500 min-w-80 ${
-                  idx === activeIndex
-                    ? "opacity-100"
-                    : "opacity-40 pointer-events-none"
-                }`}
-              >
-                <FlipCard {...card} />
-              </div>
-            ))}
+        {/* Available surveys + Carousel for mobile */}
+        <motion.section
+          variants={containerFade}
+          initial="hidden"
+          animate="visible"
+          className="flex  md:hidden flex-1 flex-col justify-center lg:w-7/12"
+        >
+          <div className="mt-4 overflow-hidden">
+            <Slider
+              dots
+              arrows={false}
+              infinite
+              autoplay
+              speed={500}
+              slidesToShow={1}
+              slidesToScroll={1}
+              responsive={[
+                { breakpoint: 1440, settings: { slidesToShow: 3 } },
+                { breakpoint: 1280, settings: { slidesToShow: 2 } },
+                { breakpoint: 768, settings: { slidesToShow: 1 } },
+              ]}
+            >
+              {cardsData.map((s, idx) => (
+                <div key={idx} className="px-2">
+                  <div className="cursor-pointer bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col mx-auto  sm:w-[240px] min-h-96">
+                    <img
+                      src={s.frontImg}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                      <h3 className="text-xs mb-1 flex gap-2 items-center">
+                        <FaClock size={14} /> {s.date}
+                      </h3>
+                      <p className="font-semibold text-sm mb-4">{s.title}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center flex-wrap gap-1 font-semibold">
+                          <p className="font-light">Rewards:</p>
+                          <img src={surdacoin} alt="reward" className="w-5" />
+                          {s.reward}
+                        </div>
+                        <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 ">
+                          Buy Survey
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
           </div>
+        </motion.section>
 
-          {/* Indicator */}
-          <div className="flex justify-center items-center w-full mt-6 gap-3">
-            {cardsData.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => setActiveIndex(idx)}
-                className={`w-3 h-3 rounded-full ${
-                  idx === activeIndex ? "bg-blue-500" : "bg-gray-700"
-                }`}
-                aria-label={`Select card ${idx + 1}`}
-              />
-            ))}
+        {/* Available surveys + Carousel for medium */}
+        <motion.section
+          variants={containerFade}
+          initial="hidden"
+          animate="visible"
+          className="md:flex xl:hidden hidden flex-1 flex-col justify-center lg:w-7/12"
+        >
+          <div className="mt-4 overflow-hidden">
+            <Slider
+              dots
+              arrows={false}
+              infinite
+              autoplay
+              speed={500}
+              slidesToShow={2}
+              slidesToScroll={1}
+              responsive={[
+                { breakpoint: 1440, settings: { slidesToShow: 3 } },
+                { breakpoint: 1280, settings: { slidesToShow: 2 } },
+                { breakpoint: 768, settings: { slidesToShow: 1 } },
+              ]}
+            >
+              {cardsData.map((s, idx) => (
+                <div key={idx} className="px-2 ">
+                  <div className="cursor-pointer bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col mx-auto  sm:w-[240px] min-h-96">
+                    <img
+                      src={s.frontImg}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                      <h3 className="text-xs mb-1 flex gap-2 items-center">
+                        <FaClock size={14} /> {s.date}
+                      </h3>
+                      <p className="font-semibold text-sm mb-4">{s.title}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center flex-wrap gap-1 font-semibold">
+                          <p className="font-light">Rewards:</p>
+                          <img src={surdacoin} alt="reward" className="w-5" />
+                          {s.reward}
+                        </div>
+                        <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 ">
+                          Buy Survey
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
           </div>
-        </div>
+        </motion.section>
+        <motion.section
+          variants={containerFade}
+          initial="hidden"
+          animate="visible"
+          className="xl:flex hidden flex-1 flex-col justify-center lg:w-7/12"
+        >
+          <div className="mt-4 overflow-hidden">
+            <Slider
+              dots
+              arrows={false}
+              infinite
+              autoplay
+              speed={500}
+              slidesToShow={3}
+              slidesToScroll={1}
+              responsive={[
+                { breakpoint: 1440, settings: { slidesToShow: 3 } },
+                { breakpoint: 1280, settings: { slidesToShow: 2 } },
+                { breakpoint: 768, settings: { slidesToShow: 1 } },
+              ]}
+            >
+              {cardsData.map((s, idx) => (
+                <div key={idx} className="px-2 mx-3">
+                  <div className="cursor-pointer bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col mx-auto  sm:w-[240px] min-h-96">
+                    <img
+                      src={s.frontImg}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                      <h3 className="text-xs mb-1 flex gap-2 items-center">
+                        <FaClock size={14} /> {s.date}
+                      </h3>
+                      <p className="font-semibold text-sm mb-4">{s.title}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center flex-wrap gap-1 font-semibold">
+                          <p className="font-light">Rewards:</p>
+                          <img src={surdacoin} alt="reward" className="w-5" />
+                          {s.reward}
+                        </div>
+                        <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 ">
+                          Buy Survey
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          </div>
+        </motion.section>
       </div>
     </section>
   );

@@ -1,87 +1,130 @@
+"use client";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import img from "../../img/onboardingimg.png";
 
 const Register = () => {
   const navigate = useNavigate();
-  return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-black text-white">
-      {/* Left Side */}
-      <div className="md:w-1/2 flex flex-col justify-center items-center text-center p-10">
-        <motion.img
-          src="/dummy-logo.png"
-          alt="Surdatics Logo"
-          className="w-16 mb-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-        />
-        <h1 className="text-2xl font-semibold">SURDATICS</h1>
-        <p className="text-sm text-blue-400 mt-1">Surdatics Onboarding</p>
-        <h2 className="text-xl mt-8 font-medium">Get Started In Minutes</h2>
-        <p className="text-gray-400 mt-2">
-          Join, verify, and start earning through surveys.
-        </p>
-      </div>
 
-      {/* Right Side */}
-      <div className="md:w-1/2 flex items-center justify-center p-6">
-        <motion.form
-          className="bg-[#111111] p-8 rounded-lg w-full max-w-md shadow-lg"
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.5 }}
-        >
-          <h2 className="text-xl font-semibold mb-4">Create your account!</h2>
-          <div className="flex gap-2 mb-4">
-            <input
-              type="text"
-              placeholder="First Name"
-              className="w-1/2 p-2 bg-[#1a1a1a] rounded text-sm"
-            />
-            <input
-              type="text"
-              placeholder="Last Name"
-              className="w-1/2 p-2 bg-[#1a1a1a] rounded text-sm"
-            />
-          </div>
-          <input
-            type="email"
-            placeholder="Email Address"
-            className="w-full p-2 mb-4 bg-[#1a1a1a] rounded text-sm"
+  return (
+    <section className="bg-black min-h-screen flex flex-col md:flex-row text-white relative">
+      {/* Background Blurs */}
+      <div className="absolute top-10 left-10 bg-cyan-300/70 p-20 blur-[100px]"></div>
+      <div className="absolute bottom-10 right-10 bg-cyan-300/50 p-20 blur-[100px]"></div>
+
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:justify-between lg:gap-10 w-full px-6">
+        {/* Left Side */}
+        <div className="lg:w-2/5 flex flex-col justify-center items-center text-center py-16 relative z-10">
+          <motion.img
+            src={img}
+            alt="Surdatics Onboarding"
+            className="w-40 lg:w-48 mb-4 mt-12 lg:mt-2"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
           />
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full p-2 mb-4 bg-[#1a1a1a] rounded text-sm"
-          />
-          <select className="w-full p-2 mb-4 bg-[#1a1a1a] rounded text-sm">
-            <option>Choose your country</option>
-          </select>
-          <div className="flex items-center mb-4 text-sm">
-            <input type="checkbox" className="mr-2" />
-            <label>
-              I have read and agree to the{" "}
-              <span className="text-blue-500 underline">Terms</span> and{" "}
-              <span className="text-blue-500 underline">Privacy Policy</span>
-            </label>
-          </div>
-          <button
-            type="submit"
-            onClick={() => navigate("/login")}
-            className="w-full bg-blue-600 hover:bg-blue-700 transition py-2 rounded font-semibold"
-          >
-            Done
-          </button>
-          <p className="mt-4 text-sm text-center text-gray-400">
-            Already have an account?{" "}
-            <span 
-             onClick={() => navigate("/login")}
-            className="text-blue-500 underline cursor-pointer">
-              Sign In
-            </span>
+          <h2 className="text-xl lg:mt-14 mt-8 font-medium">Get Started In Minutes</h2>
+          <p className="text-gray-400 mt-2">
+            Join, verify, and start earning through surveys.
           </p>
-        </motion.form>
+        </div>
+
+        {/* Right Side */}
+        <div className="lg:w-3/5 flex items-center justify-center py-10 relative z-10">
+          <motion.form
+            className="w-full max-w-xl bg-white/5 border border-white/20 shadow-lg rounded-2xl px-6 py-8 flex flex-col gap-5"
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-2xl font-semibold text-center">Create your account!</h2>
+
+            {/* Name Fields */}
+            <div className="flex flex-col md:flex-row gap-5">
+              <div className="flex-1 flex flex-col">
+                <label className="text-sm mb-1">First Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your first name"
+                  className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
+                  required
+                />
+              </div>
+              <div className="flex-1 flex flex-col">
+                <label className="text-sm mb-1">Last Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your last name"
+                  className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Email */}
+            <div className="flex flex-col">
+              <label className="text-sm mb-1">Email</label>
+              <input
+                type="email"
+                placeholder="Enter your email"
+                className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
+                /* required */
+              />
+            </div>
+
+            {/* Password */}
+            <div className="flex flex-col">
+              <label className="text-sm mb-1">Password</label>
+              <input
+                type="password"
+                placeholder="Enter your password"
+                className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
+                /* required */
+              />
+            </div>
+
+            {/* Country */}
+            <div className="flex flex-col">
+              <label className="text-sm mb-1">Country</label>
+              <select className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30">
+                <option>Choose your country</option>
+              </select>
+            </div>
+
+            {/* Terms */}
+            <div className="flex items-start gap-2 text-sm">
+              <input type="checkbox" className="mt-1 accent-sky-500" required />
+              <label>
+                I have read and agree to the{" "}
+                <span className="text-sky-400 underline cursor-pointer">Terms</span>{" "}
+                and{" "}
+                <span className="text-sky-400 underline cursor-pointer">Privacy Policy</span>
+              </label>
+            </div>
+
+            {/* Submit */}
+            <button
+              type="submit"
+              onClick={() => navigate("/login")}
+              className="bg-sky-500/60 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
+            >
+              Done
+            </button>
+
+            {/* Footer Link */}
+            <p className="mt-4 text-sm text-center text-gray-400">
+              Already have an account?{" "}
+              <span
+                onClick={() => navigate("/login")}
+                className="text-sky-400 underline cursor-pointer"
+              >
+                Sign In
+              </span>
+            </p>
+          </motion.form>
+        </div>
       </div>
-    </div>
+    </section>
   );
 };
+
 export default Register;

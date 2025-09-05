@@ -1,32 +1,40 @@
+"use client";
 import { motion } from "framer-motion";
-import { FaCheckCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import success from "../../img/succesimg.png";
 
 const ResetSuccess = () => {
   const navigate = useNavigate();
+
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center p-6">
+    <section className="bg-black min-h-screen flex items-center justify-center text-white relative px-6">
+      {/* Background Blurs */}
+      <div className="absolute top-10 left-10 bg-cyan-300/70 p-20 blur-[100px]"></div>
+      <div className="absolute bottom-10 right-10 bg-cyan-300/50 p-20 blur-[100px]"></div>
+
       <motion.div
-        className="bg-[#111111] p-10 rounded-lg text-center w-full max-w-md"
-        initial={{ opacity: 0, scale: 0.8 }}
+        className="w-full max-w-xl flex flex-col gap-4 px-6 py-10 text-center relative z-10"
+        initial={{ opacity: 0, scale: 0.85 }}
         animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4 }}
       >
-        <FaCheckCircle className="text-blue-500 text-5xl mb-4 mx-auto" />
-        <h2 className="text-xl font-semibold mb-2 text-green-400">
-          Congratulations.
+        <img src={success} alt="..." className="w-20 mb-4 mx-auto" />
+        <h2 className="text-2xl font-semibold mb-2 text-sky-600">
+          Congratulations
         </h2>
         <p className="text-sm text-gray-400 mb-6">
-          Your password has been reset. Please proceed to login.
+          Your password has been reset successfully. Please proceed to login.
         </p>
         <button
           type="button"
           onClick={() => navigate("/login")}
-          className="bg-blue-600 hover:bg-blue-700 transition py-2 px-6 rounded font-semibold"
+          className="bg-sky-500/60 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 px-8 rounded-md"
         >
           Proceed
         </button>
       </motion.div>
-    </div>
+    </section>
   );
 };
+
 export default ResetSuccess;

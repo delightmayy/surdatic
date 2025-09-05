@@ -1,0 +1,320 @@
+// DashboardPage.tsx
+
+import { motion } from "framer-motion";
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import cardimg1 from "../../img/card1img.png";
+import { FaClock, FaEye, FaEyeSlash, FaUsers } from "react-icons/fa";
+import surdacoin from "../../img/tokenicon.png";
+import earnbg from "../../img/daskearnbg.png";
+import { FiLogOut, FiPlusSquare, FiRepeat } from "react-icons/fi";
+import { useState } from "react";
+import { FaCheck } from "react-icons/fa6";
+
+const containerFade = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
+
+// Dummy datasets
+const totalEarnings = 20546;
+const surveyOverview = [
+  { label: "Ongoing Survey", value: 18, color: "bg-indigo-500", icon:<FiLogOut/> },
+  { label: "Pending Survey", value: 18, color: "bg-amber-400", icon:<FiRepeat/> },
+  { label: "Completed Survey", value: 18, color: "bg-emerald-500", icon:<FaCheck/> },
+];
+
+const surveys = [
+  {
+    frontImg: cardimg1,
+    /* backImg: cardimg2, */
+    title:
+      "ExaminingSafety Compliance rate among senior managers in corporate organisations in Nigeria ",
+    date: "58D 17H 03M",
+    reward: 50,
+  },
+  {
+    frontImg: cardimg1,
+    /* backImg: cardimg2, */
+    title:
+      "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
+    date: "58D 17H 03M",
+    reward: 75,
+  },
+  {
+    frontImg: cardimg1,
+    /* backImg: cardimg2, */
+    title:
+      "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
+    date: "58D 17H 03M",
+    reward: 75,
+  },
+  {
+    frontImg: cardimg1,
+    /* backImg: cardimg2, */
+    title:
+      "ExaminingSafety Compliance rate among senior managers in corporate organisations in Nigeria ",
+    date: "58D 17H 03M",
+    reward: 50,
+  },
+  {
+    frontImg: cardimg1,
+    /* backImg: cardimg2, */
+    title:
+      "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
+    date: "58D 17H 03M",
+    reward: 75,
+  },
+  {
+    frontImg: cardimg1,
+    /* backImg: cardimg2, */
+    title:
+      "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
+    date: "58D 17H 03M",
+    reward: 75,
+  },
+];
+
+export default function DashboardHome() {
+  const [togleshow, SetTogleShow] = useState(false);
+  return (
+    <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-24 ">
+        <div className="text-center sm:text-start px-2 py-6">
+          <p className="text-xl font-semibold">Dashboard Overview</p>
+          <p className="text-sm text-white/55 mt-2">
+            Track key metrics - A real-time snapshot of your survey’s activities
+            and earnings.
+          </p>
+        </div>
+
+        {/* Dashboard Overview Banner */}
+        <motion.section
+          variants={containerFade}
+          initial="hidden"
+          animate="visible"
+          className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-violet-700/40 via-indigo-600/30 to-sky-600/30 py-6 md:py-7"
+          style={{
+            backgroundImage: `url(${earnbg})`,
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundSize: "cover",
+          }}
+        >
+          <div className="flex flex-col gap-4 py-6 lg:py-0">
+            <div className="flex flex-col lg:flex-row justify-between items-center  px-6 gap-2 sm:gap-0">
+              <h3 className=" flex items-center gap-2 text-white/80 text-sm mb-3 lg:mb-0 font-semibold">
+                Total Earnings
+                <span
+                  onClick={() => SetTogleShow((prev) => !prev)}
+                  className=" cursor-pointer"
+                >
+                  {togleshow ? (
+                    <FaEye size={20} className="text-blue-500" />
+                  ) : (
+                    <FaEyeSlash size={20} className="text-blue-500" />
+                  )}
+                </span>
+              </h3>
+              <div className="flex w-full sm:w-auto flex-col sm:flex-row items-center gap-3 bg-black/90 rounded-3xl p-6 sm:p-1 sm:rounded-sm">
+                <button className="px-4 py-2 rounded-sm bg-white/10 hover:bg-white/15 text-sm cursor-pointer min-w-34 sm:min-w-0 ">
+                  Become a Verifier
+                </button>
+                <button className="px-4 py-2 rounded-sm flex gap-1 items-center bg-white/90 hover:bg-white/70 text-sm cursor-pointer text-black min-w-34 sm:min-w-0">
+                  <FaUsers size={20} />
+                  Take Survey
+                </button>
+                <button className="flex gap-1 px-4 py-2 items-center rounded-sm bg-sky-500/70 hover:bg-sky-600 text-sm cursor-pointer text-black min-w-34 sm:min-w-0">
+                  <FiPlusSquare size={20} />
+                  Create Survey
+                </button>
+              </div>
+            </div>
+            <div className="bg-black/50 text-center sm:text-start  px-6">
+              <p className="mt-1 pt-1 text-3xl md:text-4xl font-extrabold tracking-tight">
+                {togleshow ? totalEarnings.toLocaleString() : "*****"}
+              </p>
+              <p className=" pb-6 text-white/60 text-xs mt-2 max-w-lg">
+                Keep up the great work! Your earnings represent your survey
+                participation and task completions.
+              </p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* Survey Overview (metrics) */}
+        <div className="mt-6">
+          <div className="text-center sm:text-start px-2 py-1">
+            <p className="text-base font-semibold">Survey Overview</p>
+          
+          </div>
+
+          <motion.section
+            variants={containerFade}
+            initial="hidden"
+            animate="visible"
+            className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          >
+            {surveyOverview.map((m) => (
+              <div
+                key={m.label}
+                className="rounded-2xl border border-white/10 bg-white/5 p-4"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="text-white/70 text-sm">{m.label}</div>
+                  <span className={`p-1 rounded ${m.color}`} >{m.icon}</span>
+                </div>
+                <div className="mt-4 text-3xl font-semibold">{m.value}</div>
+              </div>
+            ))}
+          </motion.section>
+        </div>
+
+        {/* Available surveys + Carousel */}
+        <motion.section
+          variants={containerFade}
+          initial="hidden"
+          animate="visible"
+          className="mt-8 md:hidden"
+        >
+          <div className="p-2 text-center sm:text-start">
+            <h3 className="text-lg font-semibold">Available surveys</h3>
+            <p className="text-sm text-white/55 mt-2">
+             Discover available surveys, share your insights, and earn SURDA tokens for every validated response
+            </p> 
+          </div>
+
+          <div className="mt-4">
+            <Slider
+              dots
+              arrows={false}
+              infinite
+              autoplay
+              speed={500}
+              slidesToShow={1}
+              slidesToScroll={1}
+              responsive={[
+                { breakpoint: 1280, settings: { slidesToShow: 2 } },
+                { breakpoint: 768, settings: { slidesToShow: 1 } },
+              ]}
+            >
+              {surveys.map((s, idx) => (
+                <div key={idx} className="px-2">
+                  <div
+                    key={idx}
+                    /* onClick={() => setFlipped(!flipped)} */
+                    className="cursor-pointer bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none
+                         flex flex-col flex-shrink-0 mx-auto  sm:w-auto min-h-96 max-w-sm"
+                  >
+                    <img
+                      src={s.frontImg}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+
+                    <div className="p-4 flex flex-col justify-between  text-white/50 flex-grow">
+                      <h3 className="  text-xs mb-1 flex gap-2 items-center">
+                        <FaClock size={14} /> {s.date}{" "}
+                      </h3>
+                      <p className=" font-semibold text-sm md:text-sm mb-4">
+                        {s.title}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-1  font-semibold">
+                          <p className="font-light">Rewards:</p>
+                          <img
+                            src={surdacoin}
+                            alt="reward"
+                            className="w-5"
+                          />{" "}
+                          <span className="text-white/90"></span>
+                          {s.reward}
+                        </div>
+                        <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
+                          Buy Survey
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          </div>
+        </motion.section>
+
+        {/* Available surveys + Carousel */}
+        <motion.section
+          variants={containerFade}
+          initial="hidden"
+          animate="visible"
+          className="mt-8 hidden md:block"
+        >
+          <div className="p-2 text-center sm:text-start">
+            <h3 className="text-lg font-semibold">Available surveys</h3>
+            <p className="text-sm text-white/55 mt-2">
+             Discover available surveys, share your insights, and earn SURDA tokens for every validated response
+            </p> 
+          </div>
+
+          <div className="mt-4">
+            <Slider
+              dots={true}
+              arrows={false}
+              infinite
+              autoplay
+              speed={500}
+              slidesToShow={3}
+              slidesToScroll={1}
+              responsive={[
+                { breakpoint: 1280, settings: { slidesToShow: 2 } },
+                { breakpoint: 768, settings: { slidesToShow: 1 } },
+              ]}
+            >
+              {surveys.map((s, idx) => (
+                <div key={idx} className="px-2">
+                  <div
+                    key={idx}
+                    /* onClick={() => setFlipped(!flipped)} */
+                    className="cursor-pointer bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none
+                         flex flex-col flex-shrink-0 mx-auto  sm:w-auto min-h-96 lg max-w-sm"
+                  >
+                    <img
+                      src={s.frontImg}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+
+                    <div className="p-4 flex flex-col justify-between  text-white/50 flex-grow">
+                      <h3 className="  text-xs mb-1 flex gap-2 items-center">
+                        <FaClock size={14} /> {s.date}{" "}
+                      </h3>
+                      <p className=" font-semibold text-sm md:text-sm mb-4">
+                        {s.title}
+                      </p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-center gap-1  font-semibold">
+                          <p className="font-light">Rewards:</p>
+                          <img
+                            src={surdacoin}
+                            alt="reward"
+                            className="w-5"
+                          />{" "}
+                          <span className="text-white/90"></span>
+                          {s.reward}
+                        </div>
+                        <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
+                          Buy Survey
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </Slider>
+          </div>
+        </motion.section>
+      </div>
+    </motion.main>
+  );
+}
