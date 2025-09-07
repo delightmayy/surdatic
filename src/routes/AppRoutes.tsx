@@ -9,8 +9,18 @@ import Login from "../component/onboading/Login";
 import ForgotPassword from "../component/onboading/ForgetPassword";
 import ResetPassword from "../component/onboading/ResetPassword";
 import ResetSuccess from "../component/onboading/ResetSuccess";
- import DashboardHome from "../pages/dashboard/DashHome";
+import DashboardHome from "../pages/dashboard/DashHome";
 import Layout from "../pages/dashboard/Layout";
+import Wallet from "../pages/dashboard/Wallet";
+import PTPMarket from "../pages/dashboard/PTPMarket";
+import DashSurvey from "../pages/dashboard/DashSurvey";
+import DashMarket from "../pages/dashboard/DashMarket";
+import DashData from "../pages/dashboard/DashData";
+import DashStake from "../pages/dashboard/DashStake";
+import DashEarn from "../pages/dashboard/DashEarn";
+import Dashtokenomics from "../pages/dashboard/Dashtokenomics";
+import DashApi from "../pages/dashboard/DashApi";
+import DashSettings from "../pages/dashboard/DashSettings";
 
 export const AppRoutes = () => {
   return (
@@ -21,19 +31,25 @@ export const AppRoutes = () => {
       <Route path="/surda" element={<MainSurda />} />
       <Route path="/survey" element={<MainSurvey />} />
       {/* <Route path="/dashboard" element={<Layout />} /> */}
-       <Route path="/register" element={<Register />} />
+      <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/reset-success" element={<ResetSuccess />} />
-       <Route path="/dashboard" element={<Layout />}>
-          <Route index element={<DashboardHome />} />
-          {/* <Route path="profile" element={<Profile />} /> */}
-          {/* add more pages here */}
-        </Route>
+      <Route path="/dashboard" element={<Layout />}>
+        <Route index element={<DashboardHome />} />
+        <Route path="wallet" element={<Wallet />} />
+        <Route path="marketplace" element={<PTPMarket />} />
+        <Route path="surveys" element={<DashSurvey />} />
+        <Route path="market" element={<DashMarket />} />
+        <Route path="airtime" element={<DashData />} />
+        <Route path="stake" element={<DashStake />} />
+        <Route path="earn" element={<DashEarn />} />
+        <Route path="tokenomics" element={<Dashtokenomics />} />
+        <Route path="api" element={<DashApi />} />
+        <Route path="settings" element={<DashSettings />} />
+      </Route>
     </Routes>
   );
 };
-export default AppRoutes
-
-
+export default AppRoutes;

@@ -81,7 +81,7 @@ export default function DashboardHome() {
   return (
     <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-24 ">
-        <div className="text-center sm:text-start px-2 py-6">
+        <div className="text-center sm:text-start px-2 pb-4">
           <p className="text-xl font-semibold">Dashboard Overview</p>
           <p className="text-sm text-white/55 mt-2">
             Track key metrics - A real-time snapshot of your survey’s activities

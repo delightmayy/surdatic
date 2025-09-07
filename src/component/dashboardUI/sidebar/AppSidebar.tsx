@@ -28,7 +28,7 @@ interface SidebarProps {
 const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
   return (
     <Sidebar
-    image={sidebarimg}
+      image={sidebarimg}
       breakPoint="md"
       toggled={toggled}
       onBackdropClick={() => setToggled(false)}
@@ -40,7 +40,6 @@ const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
           display: "flex",
           flexDirection: "column",
           height: "100vh",
-          
         },
       }}
     >
@@ -57,96 +56,80 @@ const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
       {/* Menu Items */}
       <div className="flex-1 overflow-y-auto px-2 py-3">
         <Menu
-         menuItemStyles={{
-    button: {
-      padding: "6px 10px",
-      fontSize: "13px",
-      borderRadius: "6px",
-      margin: "4px 6px",
-      color: "#fff",
-      backgroundColor: "rgba(0,0,0,0.4)",
-      border: "1px solid rgba(255,255,255,0.2)",
-      transition: "all 0.2s ease-in-out",
+          menuItemStyles={{
+            button: {
+              padding: "6px 10px",
+              fontSize: "13px",
+              borderRadius: "6px",
+              margin: "4px 6px",
+              color: "#fff",
+              backgroundColor: "rgba(0,0,0,0.4)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              transition: "all 0.2s ease-in-out",
 
-      "&:hover": {
-        backgroundColor: "rgba(59,130,246,0.9)", // same as Tailwind's blue-500/90
-        color: "#000",
-        borderRadius: "6px", // makes the hover rounded effect work
-      },
-    },
-    icon: {
-      fontSize: "14px",
-    },
-  }}
+              "&:hover": {
+                backgroundColor: "rgba(59,130,246,0.9)", // same as Tailwind's blue-500/90
+                color: "#000",
+                borderRadius: "6px", // makes the hover rounded effect work
+              },
+            },
+            icon: {
+              fontSize: "14px",
+            },
+          }}
         >
-          <MenuItem
-            icon={<FiHome />}
-            component={<Link to="/" />}
-           
-          >
+          <MenuItem icon={<FiHome />} component={<Link to="/dashboard" />}>
             Home
           </MenuItem>
           <MenuItem
             icon={<FiCreditCard />}
-            component={<Link to="/wallet" />}
-           
+            component={<Link to="/dashboard/wallet" />}
           >
             Wallet
           </MenuItem>
           <MenuItem
             icon={<FiRepeat />}
-            component={<Link to="/p2p-marketplace" />}
-           
+            component={<Link to="/dashboard/marketplace" />}
           >
             P2P Marketplace
           </MenuItem>
           <MenuItem
             icon={<FiFileText />}
-            component={<Link to="/surveys" />}
-           
+            component={<Link to="/dashboard/surveys" />}
           >
             Surveys
           </MenuItem>
           <MenuItem
             icon={<FiShoppingCart />}
-            component={<Link to="/marketplace" />}
-           
+            component={<Link to="/dashboard/market" />}
           >
             Marketplace
           </MenuItem>
           <MenuItem
             icon={<FiSmartphone />}
-            component={<Link to="/airtime-data" />}
-           
+            component={<Link to="/dashboard/airtime" />}
           >
             Airtime & Data
           </MenuItem>
           <MenuItem
             icon={<FiBarChart2 />}
-            component={<Link to="/stake" />}
-           
+            component={<Link to="/dashboard/stake" />}
           >
             Stake
           </MenuItem>
           <MenuItem
             icon={<FiUsers />}
-            component={<Link to="/refer-earn" />}
-           
+            component={<Link to="/dashboard/earn" />}
           >
             Refer and Earn
           </MenuItem>
           <MenuItem
             icon={<FiPieChart />}
-            component={<Link to="/tokenomics" />}
-           
+            component={<Link to="/dashboard/tokenomics" />}
           >
             Tokenomics
           </MenuItem>
-          <MenuItem
-            icon={<FiCode />}
-            component={<Link to="/api-integrations" />}
-           
-          >
+          <MenuItem icon={<FiCode />} component={<Link to="/dashboard/api" />}>
             API & Integrations
           </MenuItem>
         </Menu>
@@ -154,38 +137,40 @@ const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
 
       {/* Footer */}
       <div className="border-t border-white/10 px-2 py-3">
-       <Menu
-  menuItemStyles={{
-    button: {
-      padding: "6px 10px",
-      fontSize: "13px",
-      borderRadius: "6px",
-      margin: "4px 6px",
-      color: "#fff",
-      backgroundColor: "rgba(0,0,0,0.4)",
-      border: "1px solid rgba(255,255,255,0.2)",
-      transition: "all 0.2s ease-in-out",
+        <Menu
+          menuItemStyles={{
+            button: {
+              padding: "6px 10px",
+              fontSize: "13px",
+              borderRadius: "6px",
+              margin: "4px 6px",
+              color: "#fff",
+              backgroundColor: "rgba(0,0,0,0.4)",
+              border: "1px solid rgba(255,255,255,0.2)",
+              transition: "all 0.2s ease-in-out",
 
-      "&:hover": {
-        backgroundColor: "rgba(59,130,246,0.9)", // same as Tailwind's blue-500/90
-        color: "#000",
-        borderRadius: "6px", // makes the hover rounded effect work
-      },
-    },
-    icon: {
-      fontSize: "14px",
-    },
-  }}
->
-  <MenuItem icon={<FiSettings />} component={<Link to="/settings" />}>
-    Settings
-  </MenuItem>
+              "&:hover": {
+                backgroundColor: "rgba(59,130,246,0.9)", // same as Tailwind's blue-500/90
+                color: "#000",
+                borderRadius: "6px", // makes the hover rounded effect work
+              },
+            },
+            icon: {
+              fontSize: "14px",
+            },
+          }}
+        >
+          <MenuItem
+            icon={<FiSettings />}
+            component={<Link to="/dashboard/settings" />}
+          >
+            Settings
+          </MenuItem>
 
-  <MenuItem icon={<FiLogOut />} component={<Link to="/logout" />}>
-    Log Out
-  </MenuItem>
-</Menu>
-
+          <MenuItem icon={<FiLogOut />} /* component={<Link to="/logout" />} */>
+            Log Out
+          </MenuItem>
+        </Menu>
       </div>
     </Sidebar>
   );
