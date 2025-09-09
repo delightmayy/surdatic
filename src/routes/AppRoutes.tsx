@@ -21,6 +21,7 @@ import DashEarn from "../pages/dashboard/DashEarn";
 import Dashtokenomics from "../pages/dashboard/Dashtokenomics";
 import DashApi from "../pages/dashboard/DashApi";
 import DashSettings from "../pages/dashboard/DashSettings";
+import FormSurveyDetail from "../component/dashboardUI/survey/FormSurvey";
 
 export const AppRoutes = () => {
   return (
@@ -40,7 +41,10 @@ export const AppRoutes = () => {
         <Route index element={<DashboardHome />} />
         <Route path="wallet" element={<Wallet />} />
         <Route path="marketplace" element={<PTPMarket />} />
+
         <Route path="surveys" element={<DashSurvey />} />
+        <Route path="surveys/:id" element={<FormSurveyDetail/>}/>
+
         <Route path="market" element={<DashMarket />} />
         <Route path="airtime" element={<DashData />} />
         <Route path="stake" element={<DashStake />} />
@@ -48,6 +52,9 @@ export const AppRoutes = () => {
         <Route path="tokenomics" element={<Dashtokenomics />} />
         <Route path="api" element={<DashApi />} />
         <Route path="settings" element={<DashSettings />} />
+      </Route>
+      <Route path="survey/:id" element={<Layout />}>
+        <Route index element={<FormSurveyDetail />} />
       </Route>
     </Routes>
   );

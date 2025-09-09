@@ -8,6 +8,7 @@ import mastercard from "../../img/mastercard.png";
 import paypal from "../../img/paypal.png";
 import google from "../../img/googlepay.png";
 import surdatoken from "../../img/SurdaToken.png";
+import success from "../../img/succesimg.png"
 
 const BuyWithCardModal = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState(1);
@@ -155,21 +156,7 @@ const BuyWithCardModal = ({ onClose }: { onClose: () => void }) => {
             />
           </div>
 
-          <div className="w-16 h-16 flex items-center justify-center rounded-full bg-blue-500/80">
-            <svg
-              className="w-10 h-10 text-green-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
+           <img src={success} alt="..." className="w-20 mb-4 mx-auto" />
 
           <h2 className="text-xl font-semibold text-white">
             {amount.toLocaleString()} Surda

@@ -96,6 +96,7 @@ const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
           <MenuItem
             icon={<FiFileText />}
             component={<Link to="/dashboard/surveys" />}
+            /*  active={location.pathname.startsWith("/dashboard/survey")} */
           >
             Surveys
           </MenuItem>

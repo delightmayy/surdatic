@@ -8,22 +8,18 @@ import cardimg1 from "../../img/card1img.png";
 import { FaClock, FaEye, FaEyeSlash, FaUsers } from "react-icons/fa";
 import surdacoin from "../../img/tokenicon.png";
 import earnbg from "../../img/daskearnbg.png";
-import { FiLogOut, FiPlusSquare, FiRepeat } from "react-icons/fi";
-import { useState } from "react";
-import { FaCheck } from "react-icons/fa6";
+import { FiPlusSquare, } from "react-icons/fi";
+import { useContext, useState } from "react";
+
+import OverviewCards from "../../component/dashboardUI/survey/OverviewCards";
+import DataContext from "../../context/DataContext";
 
 const containerFade = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-// Dummy datasets
-const totalEarnings = 20546;
-const surveyOverview = [
-  { label: "Ongoing Survey", value: 18, color: "bg-indigo-500", icon:<FiLogOut/> },
-  { label: "Pending Survey", value: 18, color: "bg-amber-400", icon:<FiRepeat/> },
-  { label: "Completed Survey", value: 18, color: "bg-emerald-500", icon:<FaCheck/> },
-];
+
 
 const surveys = [
   {
@@ -78,6 +74,7 @@ const surveys = [
 
 export default function DashboardHome() {
   const [togleshow, SetTogleShow] = useState(false);
+  const {  participatedStats, validatedStats, createdStats, overveiwTab, setOverveiwTab,  totalEarnings  } = useContext(DataContext)!;
   return (
     <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-24 ">
@@ -143,34 +140,49 @@ export default function DashboardHome() {
           </div>
         </motion.section>
 
-        {/* Survey Overview (metrics) */}
-        <div className="mt-6">
-          <div className="text-center sm:text-start px-2 py-1">
-            <p className="text-base font-semibold">Survey Overview</p>
-          
-          </div>
+         {/* Tabs */}
 
-          <motion.section
-            variants={containerFade}
-            initial="hidden"
-            animate="visible"
-            className="mt-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        <p className="my-2 font-bold tracking-wider">Survey Overview</p>
+        <div className="flex space-x-6 text-xs border-t border-white/10 mb-6">
+          <button
+            onClick={() => setOverveiwTab("created")}
+            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
+              overveiwTab === "created" ? "border-sky-500" : "border-black/70"
+            }`}
           >
-            {surveyOverview.map((m) => (
-              <div
-                key={m.label}
-                className="rounded-2xl border border-white/10 bg-white/5 p-4"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="text-white/70 text-sm">{m.label}</div>
-                  <span className={`p-1 rounded ${m.color}`} >{m.icon}</span>
-                </div>
-                <div className="mt-4 text-3xl font-semibold">{m.value}</div>
-              </div>
-            ))}
-          </motion.section>
+            Created survey
+          </button>
+          <button
+            onClick={() => setOverveiwTab("participated")}
+            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
+              overveiwTab === "participated"
+                ? "border-sky-500"
+                : "border-black/70"
+            }`}
+          >
+            Survey Participated
+          </button>
+          <button
+            onClick={() => setOverveiwTab("validated")}
+            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
+              overveiwTab === "validated" ? "border-sky-500" : "border-black/70"
+            }`}
+          >
+            Validated Survey
+          </button>
         </div>
 
+        {/* Survey Overview Cards */}
+
+        <OverviewCards
+          data={
+            overveiwTab === "created"
+              ? createdStats
+              : overveiwTab === "validated"
+              ? validatedStats
+              : participatedStats
+          }
+        />
         {/* Available surveys + Carousel */}
         <motion.section
           variants={containerFade}

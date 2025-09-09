@@ -39,3 +39,41 @@
 .ps-sidebar-container::before {
   background: rgba(0, 0, 0, 0.945) !important;
 }
+
+
+
+
+@layer utilities {
+  @keyframes scan-line {
+    0% {
+      top: 0%;
+    }
+    100% {
+      top: 100%;
+    }
+  
+  }
+
+  .animate-scan-line {
+    animation: scan-line 2.5s infinite linear;
+  }
+}
+
+
+@layer utilities {
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.4); /* sky-400 */
+    }
+    70% {
+      box-shadow: 0 0 0 15px rgba(56, 189, 248, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+    }
+  }
+
+  .animate-glow-ring {
+    animation: pulse-ring 2s infinite;
+  }
+}

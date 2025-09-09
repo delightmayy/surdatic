@@ -1,13 +1,15 @@
 import React from "react";
 import "./App.css";
-import  AppRoutes  from "./routes/AppRoutes";
-
+import AppRoutes from "./routes/AppRoutes";
+import { DataProvider } from "./context/DataContext";
 
 const App: React.FC = () => {
   return (
     <div className="">
-      <AppRoutes />
-     {/*  <AuthRoutes /> */}
+      <DataProvider>
+        <AppRoutes />
+      </DataProvider>
+      {/*  <AuthRoutes /> */}
     </div>
   );
 };

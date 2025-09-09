@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
+import success from "../../img/succesimg.png"
 
 const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState(1);
@@ -157,21 +158,7 @@ const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
             <AiOutlineClose size={24} className="" onClick={onClose} />
           </div>
 
-          <div className="w-16 h-16 flex items-center justify-center rounded-full bg-sky-500/20">
-            <svg
-              className="w-10 h-10 text-sky-400"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
-          </div>
+          <img src={success} alt="..." className="w-20 mb-4 mx-auto" />
           <h2 className="text-xl font-semibold text-white">
             Token Sent Successfully
           </h2>
