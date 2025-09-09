@@ -44,7 +44,7 @@ const FormSurveyDetail = () => {
   if (!survey) return <div className="text-white p-4">Loading...</div>;
 
   return (
-    <div className="text-white px-4 pt-2 pb-20 max-w-7xl mx-auto">
+    <div className="text-white  sm:px-4 pt-2 pb-20 max-w-7xl mx-auto">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* LEFT: Survey Details */}
         <div className="w-full  lg:flex-8/12">
@@ -120,8 +120,9 @@ const FormSurveyDetail = () => {
                 </p>
 
                 <p className="text-xs font-semibold  text-white/90">Reward</p>
-                <p className="text-lg font-normal text-white/30 ">
-                  {survey.reward}{" "}
+                <p className="text-lg font-normal text-white/30 flex items-center gap-1">
+                <img src={surdatoken} alt="" className=" hidden sm:block w-6" />
+                  {survey.reward}
                 </p>
               </div>
             </div>
@@ -154,9 +155,9 @@ const FormSurveyDetail = () => {
               <button className="bg-white/15 hover:bg-white/25 w-full  px-4 py-2 rounded text-sm cursor-pointer ">
                 Share
               </button>
-              <button className="bg-blue-600 hover:bg-blue-500 w-full  px-4 py-2 rounded text-sm transition cursor-pointer">
+              <Link to={"/dashboard/questionaire"} className="bg-blue-600 hover:bg-blue-500 w-full  text-center px-4 py-2 rounded text-sm transition cursor-pointer">
                 Proceed
-              </button>
+              </Link>
             </div>
           </div>
         </div>

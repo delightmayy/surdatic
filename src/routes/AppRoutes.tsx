@@ -22,6 +22,7 @@ import Dashtokenomics from "../pages/dashboard/Dashtokenomics";
 import DashApi from "../pages/dashboard/DashApi";
 import DashSettings from "../pages/dashboard/DashSettings";
 import FormSurveyDetail from "../component/dashboardUI/survey/FormSurvey";
+import SurveyQuestionPage from "../component/dashboardUI/survey/SurveyQuestionPage";
 
 export const AppRoutes = () => {
   return (
@@ -31,12 +32,13 @@ export const AppRoutes = () => {
       <Route path="/marketplace" element={<MainMarketPlace />} />
       <Route path="/surda" element={<MainSurda />} />
       <Route path="/survey" element={<MainSurvey />} />
-      {/* <Route path="/dashboard" element={<Layout />} /> */}
+     
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/reset-success" element={<ResetSuccess />} />
+
       <Route path="/dashboard" element={<Layout />}>
         <Route index element={<DashboardHome />} />
         <Route path="wallet" element={<Wallet />} />
@@ -44,6 +46,7 @@ export const AppRoutes = () => {
 
         <Route path="surveys" element={<DashSurvey />} />
         <Route path="surveys/:id" element={<FormSurveyDetail/>}/>
+        <Route path="questionaire" element={<SurveyQuestionPage/>}/>
 
         <Route path="market" element={<DashMarket />} />
         <Route path="airtime" element={<DashData />} />
@@ -53,9 +56,7 @@ export const AppRoutes = () => {
         <Route path="api" element={<DashApi />} />
         <Route path="settings" element={<DashSettings />} />
       </Route>
-      <Route path="survey/:id" element={<Layout />}>
-        <Route index element={<FormSurveyDetail />} />
-      </Route>
+     
     </Routes>
   );
 };
