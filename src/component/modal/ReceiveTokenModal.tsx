@@ -22,7 +22,7 @@ const ReceiveTokenModal: React.FC<ReceiveTokenModalProps> = ({
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.9 }}
-      className="fixed inset-0 z-50 flex items-center  justify-center bg-black/60"
+      className="fixed inset-0 z-50 flex items-center px-4 justify-center bg-black/60"
     >
       <div className="w-full max-w-lg bg-[#111]  max-h-[80vh] overflow-y-auto  border border-white/10 rounded-2xl shadow-lg p-6 relative">
         {/* Header */}

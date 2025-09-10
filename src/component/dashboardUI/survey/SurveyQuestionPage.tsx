@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { FaCheckCircle } from "react-icons/fa";
+import SurveySuccessModal from "../../modal/SuccessModal";
+import { useNavigate } from "react-router-dom";
 
 interface Question {
   id: number;
@@ -79,8 +81,10 @@ const mockQuestions: Question[] = [
 ];
 
 const SurveyQuestionPage = () => {
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [responses, setResponses] = useState<{ [key: number]: string }>({});
+  const navigate = useNavigate();
 
   const currentQuestion = mockQuestions[currentIndex];
   const allAnswered = mockQuestions.every((q) => responses[q.id]);
@@ -192,7 +196,7 @@ const SurveyQuestionPage = () => {
                 <button
                   onClick={() => {
                     console.log("Submitted Responses:", responses);
-                    alert("Survey submitted! Check console for responses.");
+                    setShowSuccessModal(true);
                   }}
                   className=" w-full bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded transition cursor-pointer"
                 >
@@ -227,6 +231,21 @@ const SurveyQuestionPage = () => {
             ))}
           </ul>
         </aside>
+        {showSuccessModal && (
+          <SurveySuccessModal
+            onClose={() => {
+              setShowSuccessModal(false);
+              navigate("/dashboard/surveys");
+            }}
+            title={"Survey Completed "}
+            subtitle={"Your rewards automatically added to your wallet"}
+            rewardAmount={50}
+            titleB={"Survey Completed"}
+            subtitleB={
+              "Your reward will be automatically added to your wallet balance once your response is approved."
+            }
+          />
+        )}
       </main>
     </div>
   );

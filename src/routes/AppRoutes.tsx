@@ -23,6 +23,7 @@ import DashApi from "../pages/dashboard/DashApi";
 import DashSettings from "../pages/dashboard/DashSettings";
 import FormSurveyDetail from "../component/dashboardUI/survey/FormSurvey";
 import SurveyQuestionPage from "../component/dashboardUI/survey/SurveyQuestionPage";
+import VideoSurveyDetail from "../component/dashboardUI/survey/VideoSurvey";
 
 export const AppRoutes = () => {
   return (
@@ -46,6 +47,7 @@ export const AppRoutes = () => {
 
         <Route path="surveys" element={<DashSurvey />} />
         <Route path="surveys/:id" element={<FormSurveyDetail/>}/>
+        <Route path="videos/:id" element={<VideoSurveyDetail/>}/>
         <Route path="questionaire" element={<SurveyQuestionPage/>}/>
 
         <Route path="market" element={<DashMarket />} />

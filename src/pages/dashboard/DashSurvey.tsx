@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { FaClock } from "react-icons/fa";
-import {  FiPlusSquare,  } from "react-icons/fi";
+import { FiPlusSquare } from "react-icons/fi";
 
 import surdacoin from "../../img/tokenicon.png";
 import { useContext, useState } from "react";
@@ -9,14 +9,22 @@ import OverviewCards from "../../component/dashboardUI/survey/OverviewCards";
 import { Link } from "react-router-dom";
 import DataContext from "../../context/DataContext";
 
-
-
-
 const DashSurvey = () => {
-
   const [availableTab, setAvailableTab] = useState("form");
   const [showKyc, setShowKyc] = useState(false);
-  const { surveyCreated, participatedStats, validatedStats, createdStats, surveyValidated, surveyParticipated, overveiwTab, setOverveiwTab } = useContext(DataContext)!;
+  const {
+    surveyCreated,
+    participatedStats,
+    validatedStats,
+    createdStats,
+    surveyValidated,
+    surveyParticipated,
+    overveiwTab,
+    setOverveiwTab,
+    surveyVideoCreated,
+    surveyVideoParticipated,
+    surveyVideoValidated,
+  } = useContext(DataContext)!;
 
   return (
     <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
@@ -30,14 +38,14 @@ const DashSurvey = () => {
               progress
             </p>
           </div>
-          <div className="flex items-center border-2 rounded-tl-xl  rounded-bl-xl border-white/20 ">
+          <div className="flex items-center border-2 rounded-tl-xl  rounded-bl-xl border-white/20 mt-6 mt:pt-0  ">
             <button
               onClick={() => setShowKyc(true)}
-              className="flex gap-1 items-center mt-4 sm:mt-0 px-4 py-2 rounded hover:bg-white/10 text-sm text-white"
+              className="flex gap-1 items-center  sm:mt-0 px-4  py-2 rounded hover:bg-white/10 text-sm text-white"
             >
               Become a Validator
             </button>
-            <button className="flex gap-1 items-center mt-4 sm:mt-0 px-4 py-2  bg-sky-700 hover:bg-sky-600 text-sm text-white">
+            <button className="flex gap-1 items-center sm:mt-0 px-4 py-2  bg-sky-700 hover:bg-sky-600 text-sm text-white">
               <FiPlusSquare size={18} />
               Create Survey
             </button>
@@ -117,105 +125,219 @@ const DashSurvey = () => {
             Video Survey
           </button>
         </div>
-        {/* Survey Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/*  overviewcard for created */}
+        {/* Survey Form Cards Grid */}
+        {availableTab === "form" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/*  overviewcard for created */}
 
-          {overveiwTab === "created" &&
-            surveyCreated.map((survey, idx) => (
-              <Link
-                to={`/dashboard/surveys/${survey.id}`}
-                key={idx}
-                className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
-              >
-                <img
-                  src={survey.frontImg}
-                  alt="card"
-                  className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
-                />
-                <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
-                  <h3 className="text-xs mb-1 flex gap-2 items-center">
-                    <FaClock size={14} /> {survey.date}
-                  </h3>
-                  <p className="font-semibold text-sm mb-4">{survey.title}</p>
-                  <div className="flex justify-between items-center mt-auto">
-                    <div className="flex items-center gap-1 font-semibold">
-                      <p className="font-light">Rewards:</p>
-                      <img src={surdacoin} alt="reward" className="w-5" />
-                      <span className="text-white/90">{survey.reward}</span>
+            {overveiwTab === "created" &&
+              surveyCreated.map((survey, idx) => (
+                <Link
+                  to={`/dashboard/surveys/${survey.id}`}
+                  key={idx}
+                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                >
+                  <img
+                    src={survey.frontImg}
+                    alt="card"
+                    className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                  />
+                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                    <h3 className="text-xs mb-1 flex gap-2 items-center">
+                      <FaClock size={14} /> {survey.date}
+                    </h3>
+                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
+                    <div className="flex justify-between items-center mt-auto">
+                      <div className="flex items-center gap-1 font-semibold">
+                        <p className="font-light">Rewards:</p>
+                        <img src={surdacoin} alt="reward" className="w-5" />
+                        <span className="text-white/90">{survey.reward}</span>
+                      </div>
+                      <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
+                        Buy Survey
+                      </button>
                     </div>
-                    <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
-                      Buy Survey
-                    </button>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
 
-          {/*  overviewcard for Validated */}
-          {overveiwTab === "validated" &&
-            surveyValidated.map((survey, idx) => (
-              <Link
-                to={`/dashboard/surveys/${survey.id}`}
-                key={idx}
-                className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
-              >
-                <img
-                  src={survey.frontImg}
-                  alt="card"
-                  className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
-                />
-                <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
-                  <h3 className="text-xs mb-1 flex gap-2 items-center">
-                    <FaClock size={14} /> {survey.date}
-                  </h3>
-                  <p className="font-semibold text-sm mb-4">{survey.title}</p>
-                  <div className="flex justify-between items-center mt-auto">
-                    <div className="flex items-center gap-1 font-semibold">
-                      <p className="font-light">Rewards:</p>
-                      <img src={surdacoin} alt="reward" className="w-5" />
-                      <span className="text-white/90">{survey.reward}</span>
+            {/*  overviewcard for Validated */}
+            {overveiwTab === "validated" &&
+              surveyValidated.map((survey, idx) => (
+                <Link
+                  to={`/dashboard/surveys/${survey.id}`}
+                  key={idx}
+                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                >
+                  <img
+                    src={survey.frontImg}
+                    alt="card"
+                    className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                  />
+                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                    <h3 className="text-xs mb-1 flex gap-2 items-center">
+                      <FaClock size={14} /> {survey.date}
+                    </h3>
+                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
+                    <div className="flex justify-between items-center mt-auto">
+                      <div className="flex items-center gap-1 font-semibold">
+                        <p className="font-light">Rewards:</p>
+                        <img src={surdacoin} alt="reward" className="w-5" />
+                        <span className="text-white/90">{survey.reward}</span>
+                      </div>
+                      <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
+                        Buy Survey
+                      </button>
                     </div>
-                    <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
-                      Buy Survey
-                    </button>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
 
-          {/*  overviewcard for Validated */}
-          {overveiwTab === "participated" &&
-            surveyParticipated.map((survey, idx) => (
-              <Link
-                to={`/dashboard/surveys/${survey.id}`}
-                key={idx}
-                className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
-              >
-                <img
-                  src={survey.frontImg}
-                  alt="card"
-                  className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
-                />
-                <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
-                  <h3 className="text-xs mb-1 flex gap-2 items-center">
-                    <FaClock size={14} /> {survey.date}
-                  </h3>
-                  <p className="font-semibold text-sm mb-4">{survey.title}</p>
-                  <div className="flex justify-between items-center mt-auto">
-                    <div className="flex items-center gap-1 font-semibold">
-                      <p className="font-light">Rewards:</p>
-                      <img src={surdacoin} alt="reward" className="w-5" />
-                      <span className="text-white/90">{survey.reward}</span>
+            {/*  overviewcard for Validated */}
+            {overveiwTab === "participated" &&
+              surveyParticipated.map((survey, idx) => (
+                <Link
+                  to={`/dashboard/surveys/${survey.id}`}
+                  key={idx}
+                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                >
+                  <img
+                    src={survey.frontImg}
+                    alt="card"
+                    className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                  />
+                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                    <h3 className="text-xs mb-1 flex gap-2 items-center">
+                      <FaClock size={14} /> {survey.date}
+                    </h3>
+                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
+                    <div className="flex justify-between items-center mt-auto">
+                      <div className="flex items-center gap-1 font-semibold">
+                        <p className="font-light">Rewards:</p>
+                        <img src={surdacoin} alt="reward" className="w-5" />
+                        <span className="text-white/90">{survey.reward}</span>
+                      </div>
+                      <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
+                        Buy Survey
+                      </button>
                     </div>
-                    <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
-                      Buy Survey
-                    </button>
                   </div>
-                </div>
-              </Link>
-            ))}
-        </div>
+                </Link>
+              ))}
+          </div>
+        )}
+        {/* Survey Video Cards Grid */}
+        {availableTab === "video" && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {overveiwTab === "created" &&
+              surveyVideoCreated.map((survey, idx) => (
+                <Link
+                  to={`/dashboard/videos/${survey.id}`}
+                  key={idx}
+                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                >
+                  <div className="relative">
+                    <img
+                      src={survey.frontImg}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="absolute top-2 left-2 bg-black/50 rounded px-2 text-xs flex items-center gap-1 text-white">
+                      <FaClock size={12} />
+                      <span>{survey.duration || "15 Mins"}</span>
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                    <p className="text-xs mb-1 text-white/60">{survey.date}</p>
+                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
+                    <div className="flex justify-between items-center mt-auto">
+                      <div className="flex items-center gap-1 font-semibold">
+                        <p className="font-light">Reward:</p>
+                        <img src={surdacoin} alt="reward" className="w-5" />
+                        <span className="text-white/90">{survey.reward}</span>
+                      </div>
+                      <button className="bg-sky-700 text-white text-xs px-3 py-1 rounded-md hover:bg-sky-600 transition hover:scale-95 cursor-pointer flex items-center gap-1">
+                        <FiPlusSquare size={16} />
+                        Video Survey
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            {overveiwTab === "validated" &&
+              surveyVideoValidated.map((survey, idx) => (
+                <Link
+                  to={`/dashboard/videos/${survey.id}`}
+                  key={idx}
+                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                >
+                  <div className="relative">
+                    <img
+                      src={survey.frontImg}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="absolute top-2 left-2 bg-black/50 rounded px-2 text-xs flex items-center gap-1 text-white">
+                      <FaClock size={12} />
+                      <span>{survey.duration || "15 Mins"}</span>
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                    <p className="text-xs mb-1 text-white/60">{survey.date}</p>
+                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
+                    <div className="flex justify-between items-center mt-auto">
+                      <div className="flex items-center gap-1 font-semibold">
+                        <p className="font-light">Reward:</p>
+                        <img src={surdacoin} alt="reward" className="w-5" />
+                        <span className="text-white/90">{survey.reward}</span>
+                      </div>
+                      <button className="bg-sky-700 text-white text-xs px-3 py-1 rounded-md hover:bg-sky-600 transition hover:scale-95 cursor-pointer flex items-center gap-1">
+                        <FiPlusSquare size={16} />
+                        Video Survey
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            {overveiwTab === "participated" &&
+              surveyVideoParticipated.map((survey, idx) => (
+                <Link
+                  to={`/dashboard/videos/${survey.id}`}
+                  key={idx}
+                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                >
+                  <div className="relative">
+                    <img
+                      src={survey.frontImg}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="absolute top-2 left-2 bg-black/50 rounded px-2 text-xs flex items-center gap-1 text-white">
+                      <FaClock size={12} />
+                      <span>{survey.duration || "15 Mins"}</span>
+                    </div>
+                  </div>
+                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                    <p className="text-xs mb-1 text-white/60">{survey.date}</p>
+                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
+                    <div className="flex justify-between items-center mt-auto">
+                      <div className="flex items-center gap-1 font-semibold">
+                        <p className="font-light">Reward:</p>
+                        <img src={surdacoin} alt="reward" className="w-5" />
+                        <span className="text-white/90">{survey.reward}</span>
+                      </div>
+                      <button className="bg-sky-700 text-white text-xs px-3 py-1 rounded-md hover:bg-sky-600 transition hover:scale-95 cursor-pointer flex items-center gap-1">
+                        <FiPlusSquare size={16} />
+                        Video Survey
+                      </button>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+
+            
+          </div>
+        )}
       </div>
 
       {showKyc && <KYCModal onClose={() => setShowKyc(false)} />}

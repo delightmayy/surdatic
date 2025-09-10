@@ -121,7 +121,11 @@ const FormSurveyDetail = () => {
 
                 <p className="text-xs font-semibold  text-white/90">Reward</p>
                 <p className="text-lg font-normal text-white/30 flex items-center gap-1">
-                <img src={surdatoken} alt="" className=" hidden sm:block w-6" />
+                  <img
+                    src={surdatoken}
+                    alt=""
+                    className=" hidden sm:block w-6"
+                  />
                   {survey.reward}
                 </p>
               </div>
@@ -155,7 +159,10 @@ const FormSurveyDetail = () => {
               <button className="bg-white/15 hover:bg-white/25 w-full  px-4 py-2 rounded text-sm cursor-pointer ">
                 Share
               </button>
-              <Link to={"/dashboard/questionaire"} className="bg-blue-600 hover:bg-blue-500 w-full  text-center px-4 py-2 rounded text-sm transition cursor-pointer">
+              <Link
+                to={"/dashboard/questionaire"}
+                className="bg-blue-600 hover:bg-blue-500 w-full  text-center px-4 py-2 rounded text-sm transition cursor-pointer"
+              >
                 Proceed
               </Link>
             </div>

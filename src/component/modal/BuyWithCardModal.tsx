@@ -8,7 +8,7 @@ import mastercard from "../../img/mastercard.png";
 import paypal from "../../img/paypal.png";
 import google from "../../img/googlepay.png";
 import surdatoken from "../../img/SurdaToken.png";
-import success from "../../img/succesimg.png"
+import success from "../../img/succesimg.png";
 
 const BuyWithCardModal = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState(1);
@@ -51,11 +51,11 @@ const BuyWithCardModal = ({ onClose }: { onClose: () => void }) => {
           {/* Token */}
           <div className="flex flex-col text-sm">
             <label className="text-white/70 mb-1">Token</label>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 mb-2">
               <img
                 src={surdatoken}
                 alt="Surda"
-                className="w-20 h-auto rounded-full"
+                className="w-6 h-auto rounded-full"
               />
               <span className="font-medium">Surda Token</span>
             </div>
@@ -64,22 +64,26 @@ const BuyWithCardModal = ({ onClose }: { onClose: () => void }) => {
                 type="number"
                 value={amount}
                 onChange={(e) => setAmount(Number(e.target.value))}
-                className="bg-transparent  outline-none "
+                className="bg-transparent w-3/5  outline-none  "
                 placeholder="0.00"
                 required
               />
-              <p className="text-white/60 flex items-center gap-1 ml-1">  <img
-                src={surdatoken}
-                alt="Surda"
-                className="w-6 h-6 rounded-full"
-              />Surda</p>
+              <p className="text-white/60 flex items-center gap-1 ">
+                {" "}
+                <img
+                  src={surdatoken}
+                  alt="Surda"
+                  className="w-6 h-6 rounded-full"
+                />
+                Surda
+              </p>
             </div>
           </div>
 
           {/* Card Details */}
           <div className="flex flex-col gap-4 text-sm">
             <label className="text-white/70 mb-1">Card Type</label>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <img src={visa} alt="Visa" className="h-8" />
               <img src={stripe} alt="Stripe" className="h-8" />{" "}
               <img src={mastercard} alt="MasterCard" className="h-8" />
@@ -100,7 +104,7 @@ const BuyWithCardModal = ({ onClose }: { onClose: () => void }) => {
               className="bg-[#1a1a1a] px-4 py-3 rounded-md text-white"
             />
 
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <input
                 type="text"
                 placeholder="MM/YY"
@@ -138,8 +142,7 @@ const BuyWithCardModal = ({ onClose }: { onClose: () => void }) => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.4 }}
         >
-
-              {/* Header */}
+          {/* Header */}
           <div className="flex w-full px-3 justify-between border-b-2 border-dashed border-b-white/20 pb-3  ">
             <div className="text-start">
               <h2 className="text-xl font-semibold text-white">
@@ -156,7 +159,7 @@ const BuyWithCardModal = ({ onClose }: { onClose: () => void }) => {
             />
           </div>
 
-           <img src={success} alt="..." className="w-20 mb-4 mx-auto" />
+          <img src={success} alt="..." className="w-20 mb-4 mx-auto" />
 
           <h2 className="text-xl font-semibold text-white">
             {amount.toLocaleString()} Surda

@@ -21,6 +21,18 @@ export interface Survey {
   description: string;
   keyPoints: string[];
 }
+export interface Video {
+  id: string;
+  title: string;
+  frontImg: string;
+  date: string;
+  reward: number;
+  duration: string;
+  videoUrl: string;
+  questions: number;
+  description: string;
+  keyPoints: string[];
+}
 
 interface DataContextType {
   overveiwTab: string;
@@ -34,6 +46,10 @@ interface DataContextType {
   surveyCreated: Survey[];
   surveyValidated: Survey[];
   surveyParticipated: Survey[];
+
+  surveyVideoValidated: Video[];
+  surveyVideoParticipated: Video[];
+  surveyVideoCreated: Video[];
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -403,6 +419,161 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     },
   ];
 
+ const surveyVideoCreated = [
+  {
+    id: "video-001",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=11",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "video-002",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=12",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "video-003",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=13",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "video-004",
+    title: "Examining Safety Compliance...",
+   frontImg: "https://picsum.photos/400/300?random=14",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+];
+
+
+  const surveyVideoParticipated = [
+  {
+    id: "videopart-001",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=1",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "videopart-002",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=2",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "videopart-003",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=3",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "videopart-004",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=4",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+];
+
+  const surveyVideoValidated = [
+  {
+    id: "videoval-001",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=5",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "videoval-002",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=6",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "videoval-003",
+    title: "Examining Safety Compliance...",
+   frontImg: "https://picsum.photos/400/300?random=7",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+  {
+    id: "videoval-004",
+    title: "Examining Safety Compliance...",
+    frontImg: "https://picsum.photos/400/300?random=8",
+    date: "2025-09-08",
+    reward: 100,
+    duration: "15 Mins",
+    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    questions: 10,
+    description: "Video-based survey focused on safety compliance.",
+    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+  },
+];
+
+
   return (
     <DataContext.Provider
       value={{
@@ -416,6 +587,9 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         surveyValidated,
         validatedStats,
         participatedStats,
+        surveyVideoCreated,
+        surveyVideoParticipated,
+        surveyVideoValidated,
       }}
     >
       {children}
