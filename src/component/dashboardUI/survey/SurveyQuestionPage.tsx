@@ -244,6 +244,7 @@ const SurveyQuestionPage = () => {
             subtitleB={
               "Your reward will be automatically added to your wallet balance once your response is approved."
             }
+            buttonA={"More Surveys"}
           />
         )}
       </main>

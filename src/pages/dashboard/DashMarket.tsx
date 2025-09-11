@@ -7,8 +7,8 @@ import surdatoken from "../../img/SurdaToken.png"
 // Placeholder images with Unsplash
 const placeholderImages = [
   "https://images.unsplash.com/photo-1551434678-e076c223a692",
-  "https://images.unsplash.com/photo-1581090700227-1e8e93994a67",
-  "https://images.unsplash.com/photo-1523966211575-eb4a01e7dd53",
+  "https://images.unsplash.com/photo-1560264280-88b68371db39",
+  "https://images.unsplash.com/photo-1552664730-d307ca884978",
   "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
   "https://images.unsplash.com/photo-1560264280-88b68371db39",
   "https://images.unsplash.com/photo-1552664730-d307ca884978",

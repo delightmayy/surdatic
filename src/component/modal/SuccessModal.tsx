@@ -11,6 +11,7 @@ interface SurveySuccessModalProps {
   rewardAmount: number;
   titleB: string;
   subtitleB: string;
+  buttonA: string;
 }
 
 const SurveySuccessModal:React.FC <SurveySuccessModalProps>  = ({
@@ -20,6 +21,7 @@ const SurveySuccessModal:React.FC <SurveySuccessModalProps>  = ({
   rewardAmount,
   titleB,
   subtitleB,
+   buttonA
 }) => {
   return (
     <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center">
@@ -66,7 +68,7 @@ const SurveySuccessModal:React.FC <SurveySuccessModalProps>  = ({
             className="flex-1 bg-white/10 hover:bg-white/20 py-2 rounded-md text-white text-sm transition"
             onClick={onClose}
           >
-            More Surveys
+           {buttonA}
           </button>
           <Link to={"/dashboard/wallet"} className="flex-1 bg-sky-600 hover:bg-sky-500 py-2 rounded-md text-white text-sm transition">
             Wallet

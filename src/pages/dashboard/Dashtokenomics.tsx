@@ -23,7 +23,7 @@ const Dashtokenomics = () => {
   ];
 
   return (
-    <main className=" space-y-4">
+    <main className=" space-y-4 pb-20">
       <div className="p-4">
         <h1 className="text-base font-semibold">Tokenomics</h1>
         <p className="text-xs text-white/60">
@@ -47,9 +47,9 @@ const Dashtokenomics = () => {
         </div>
       </section>
 
-      <section className="bg-black border-white/20 text-white px-6 pb-8 pt-8 md:px-16 md:pb-16 relative">
-        <div className="absolute bottom-15 left-10 bg-cyan-300/70 p-14 blur-[100px]"></div>
-        <div className="absolute bottom-10 right-10 hidden sm:block bg-blue-500/40 p-30 blur-[100px]"></div>
+      <section className="bg-black border border-white/15 text-white px-6 pb-8 pt-8 md:px-16 md:pb-16 relative">
+        <div className="absolute bottom-15 left-10 bg-cyan-300/70 p-14  blur-[100px]"></div>
+        <div className="absolute bottom-10 right-10 hidden sm:block bg-blue-500/60 py-16 px-30 blur-[100px]"></div>
          <div className="text-xs max-w-fit  text-white/90  p-2 mt-2 bg-white/10 rounded">
           Surda Roadmap
         </div>
@@ -62,7 +62,7 @@ const Dashtokenomics = () => {
             />
           </div>
           {/* Roadmap Items */}
-          <div className="flex flex-col md:flex-row md:space-x-4 space-y-6 md:space-y-0 max-w-5xl pt-10 mx-auto">
+          <div className="flex flex-col md:flex-row md:space-x-4 space-y-6 md:space-y-0 max-w-5xl pt-10 mx-auto overflow-x-auto">
             {roadmapItems.map(({ id, quarter, points }, idx) => (
               <div
                 key={id}
