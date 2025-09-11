@@ -41,7 +41,7 @@ const DashEarn = () => {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleClaim = (index) => {
+  const handleClaim = (index:number) => {
     setReferralList((prev) =>
       prev.map((ref, i) =>
         i === index && ref.status === "Pending"
