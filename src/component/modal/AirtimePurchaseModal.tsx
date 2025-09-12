@@ -9,6 +9,7 @@ import Airtelicon from "../../img/airtel.png";
 import Nmobileicon from "../../img/9mobile.png";
 import token from "../../img/SurdaToken.png";
 import { Link } from "react-router-dom";
+import PinModal from "./PinModal";
 
 const AirtimePurchaseModal = ({
   onClose,
@@ -29,6 +30,8 @@ const AirtimePurchaseModal = ({
 }) => {
   const [step, setStep] = useState(1);
   const [pin, setPin] = useState(["", "", "", ""]);
+  const [switchModal, setSwitchModal] = useState(false);
+  const [mode, setMode] = useState<"create" | "reset">("create");
 
   const currentDate = new Date().toLocaleDateString("en-GB", {
     day: "2-digit",
@@ -54,38 +57,6 @@ const AirtimePurchaseModal = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 ">
-      {/* Step 1: Confirm Details */}
-      {/* {step === 1 && (
-        <motion.form
-          onSubmit={handleConfirm}
-          className="bg-[#111] text-white w-full max-w-md rounded-2xl p-6 border border-white/20 shadow-xl"
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold capitalize">{option} Purchase</h2>
-            <AiOutlineClose onClick={onClose} className="cursor-pointer" />
-          </div>
-
-          <p className="text-sm text-white/60 mb-2">
-            You're about to purchase:
-          </p>
-          <div className="bg-black/20 p-4 rounded-md mb-4 space-y-1">
-            <p className="text-white text-lg font-bold">{option==="Data"?dataAmount: "₦" + amount} </p>
-            <p className="text-white/70 text-sm">Phone: {phone}</p>
-            <p className="text-white/70 text-sm">Network: {network}</p>
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-blue-500 text-white font-semibold py-3 rounded-md hover:bg-blue-600"
-          >
-            Proceed
-          </button>
-        </motion.form>
-      )} */}
-
       {step === 1 && (
         <motion.form
           onSubmit={handleConfirm}
@@ -238,7 +209,15 @@ const AirtimePurchaseModal = ({
           </div>
           <p className="text-xs">
             Forget pin?{" "}
-            <span className="text-blue-400 cursor-pointer">Reset Pin</span>
+            <span
+              onClick={() => {
+                setMode("reset");
+                setSwitchModal(true);
+              }}
+              className="text-blue-400 cursor-pointer"
+            >
+              Reset Pin
+            </span>
           </p>
           <button
             onClick={handleVerify}
@@ -248,7 +227,16 @@ const AirtimePurchaseModal = ({
           </button>
           <p className="text-xs text-center">
             Don’t have transaction pin?{" "}
-            <span className="text-blue-400 cursor-pointer"> Create Pin</span>
+            <span
+              onClick={() => {
+                setMode("create");
+                setSwitchModal(true);
+              }}
+              className="text-blue-400 cursor-pointer"
+            >
+              {" "}
+              Create Pin
+            </span>
           </p>
         </motion.div>
       )}
@@ -299,6 +287,10 @@ const AirtimePurchaseModal = ({
             </button>
           </div>
         </motion.div>
+      )}
+
+      {switchModal && (
+        <PinModal onClose={() => setSwitchModal(false)} mode={mode} />
       )}
     </div>
   );
