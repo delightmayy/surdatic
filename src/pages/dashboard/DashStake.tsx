@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import numberBg from "../../img/numberBg.png";
 import token from "../../img/SurdaToken.png";
 import StakeFormModal from "../../component/modal/StakeModal";
-//import { FiSend, FiDownload, FiPlusSquare, FiFilter } from "react-icons/fi";
+import StakeSuccessModal from "../../component/modal/StakeSuccessModal";
 
 /* Plan type */
 type Plan = {
@@ -17,16 +17,16 @@ type Plan = {
 const stakingPlans: Plan[] = [
   {
     type: "Flexible",
-    durationDays: 1,
-    durationLabel: "1 Days",
-    apy: 35,
+    durationDays: 7,
+    durationLabel: "7 Days",
+    apy: 15,
     minStake: 500,
   },
   {
     type: "Flexible",
     durationDays: 14,
     durationLabel: "14 Days",
-    apy: 35,
+    apy: 25,
     minStake: 800,
   },
   {
@@ -40,7 +40,35 @@ const stakingPlans: Plan[] = [
     type: "Flexible",
     durationDays: 60,
     durationLabel: "60 Days",
+    apy: 50,
+    minStake: 1500,
+  },
+  {
+    type: "Locked",
+    durationDays: 7,
+    durationLabel: "7 Days",
+    apy: 15,
+    minStake: 500,
+  },
+  {
+    type: "Locked",
+    durationDays: 14,
+    durationLabel: "14 Days",
+    apy: 25,
+    minStake: 800,
+  },
+  {
+    type: "Locked",
+    durationDays: 30,
+    durationLabel: "30 Days",
     apy: 35,
+    minStake: 1000,
+  },
+  {
+    type: "Locked",
+    durationDays: 60,
+    durationLabel: "60 Days",
+    apy: 50,
     minStake: 1500,
   },
 ];
@@ -87,6 +115,7 @@ const DashStake: React.FC = () => {
   });
 
   const [isStakeModalOpen, setStakeModalOpen] = useState(false);
+  const [isStakeSuccessModal, setStakeSuccessModal] = useState(false);
 
   // remaining ms for UI
   const [remainingMs, setRemainingMs] = useState<number>(() => {
@@ -195,7 +224,8 @@ const DashStake: React.FC = () => {
     );
 
     if (planIndex === -1) {
-      console.error("Plan not found");
+      console.error();
+      alert("Plan not found");
       return;
     }
 
@@ -212,12 +242,13 @@ const DashStake: React.FC = () => {
 
     // Close modal
     setStakeModalOpen(false);
+    setStakeSuccessModal(true);
 
     console.log("Staked:", { plan, period, amount });
   }
 
   return (
-    <div className="text-white pb-20 max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
+    <div className="  text-white pb-20  max-w-7xl mx-auto flex flex-col lg:flex-row md:gap-2 gap-4 ">
       {/* Left Column */}
       <div className="w-full lg:w-2/3 space-y-4 sm:px-4">
         <div>
@@ -229,7 +260,7 @@ const DashStake: React.FC = () => {
         </div>
 
         {/* Stake Status Box */}
-        <div className="bg-white/5 border border-white/10 p-6 rounded-lg space-y-6">
+        <div className="bg-white/5 border shadow-inner shadow-white/20 border-white/10 p-6 rounded-lg space-y-6">
           <div className="flex flex-col items-center justify-center space-y-2  ">
             {/* progress circle */}
             <div className="relative w-32 h-32 flex flex-col items-center justify-center gap-2">
@@ -277,7 +308,7 @@ const DashStake: React.FC = () => {
         </div>
 
         {/* Staking Details Box */}
-        <div className="bg-white/5 border border-white/10 p-6 rounded-lg space-y-3 text-xs">
+        <div className="bg-white/5 border shadow-inner shadow-white/20  border-white/10 p-6 rounded-lg space-y-3 text-xs">
           <div className="flex justify-between">
             <span className="text-white/60">Staking Plan:</span>
             <span className="text-white/80">
@@ -286,7 +317,10 @@ const DashStake: React.FC = () => {
           </div>
           <div className="flex justify-between">
             <span className="text-white/60">Asset Staked:</span>
-            <span className="text-white/80">Surda</span>
+            <p className="text-white/80 flex items-center gap-1 ">
+              <img src={token} alt="token" className="w-5" />
+              Surda
+            </p>
           </div>
           <div className="flex justify-between">
             <span className="text-white/60">Period of Staking:</span>
@@ -326,7 +360,7 @@ const DashStake: React.FC = () => {
             disabled={!selectedPlan}
             className={`w-full mt-4 text-sm py-2 rounded-md transition ${
               selectedPlan
-                ? "bg-blue-500 hover:bg-blue-600 text-black"
+                ? "bg-blue-400 hover:bg-blue-500 text-black"
                 : "bg-white/10 text-white/40 cursor-not-allowed"
             }`}
           >
@@ -336,13 +370,16 @@ const DashStake: React.FC = () => {
       </div>
 
       {/* Right Column */}
-      <div className="w-full lg:w-1/3 sm:px-4 lg:px-0 space-y-6">
+      <div className="w-full lg:w-1/3 sm:px-4 lg:px-0 space-y-6 ">
         {/* How to Stake */}
-        <div className="bg-white/5 border border-white/10 p-4 rounded-lg">
+
+        <div className="">
           <h3 className="text-sm font-semibold mb-1">How to Stake</h3>
-          <p className="text-xs text-white/60 mb-4">
+          <p className="text-xs text-white/60 ">
             Learn how to stake SURDA effectively in four simple steps
           </p>
+        </div>
+        <div className="bg-white/5 border shadow-inner shadow-white/20   border-white/10 p-4 rounded-lg">
           <p className="text-sm font-medium mb-3 px-4 py-1 bg-white/10 w-fit">
             Guidelines
           </p>
@@ -371,38 +408,57 @@ const DashStake: React.FC = () => {
         </div>
 
         {/* Staking Plans */}
-        <div className="bg-white/5 border border-white/10 p-4 rounded-lg">
+        <div className="bg-white/5 border shadow-inner shadow-white/20   border-white/10 p-4 rounded-lg">
           <h3 className="text-sm font-medium mb-3 px-4 py-1 bg-white/10 w-fit">
             Staking Plan
           </h3>
           <p className="text-xs text-white/60 mb-4">
             Choose the plan that suits your needs
           </p>
-          <div className="space-y-3">
+          <div className="space-y-3 overflow-y-auto max-h-[30vh]">
             {stakingPlans.map((plan, idx) => (
               <div
                 key={idx}
-                className="bg-black/50 text-xs p-4 rounded-xl flex items-center justify-between hover:scale-95 transition-transform"
+                className="bg-black/30 text-xs p-4 rounded-xl shadow-inner shadow-white/20 hover:scale-95 transition-transform flex flex-col gap-2"
               >
-                <div className="space-y-1">
-                  <p className="font-semibold">
-                    {plan.type} •{" "}
-                    {plan.durationLabel ?? `${plan.durationDays} Days`}
+                <div className="space-y-1 flex justify-between">
+                  <p className=" flex items-center font-semibold tracking-wider text-xl  gap-1">
+                    <span className="text-blue-400 text-3xl -mt-2">• </span>
+                    {plan.type}
                   </p>
-                  <p className="text-white/60">APY: {plan.apy}%</p>
-                  <p className="text-white/40">Min: {plan.minStake} tokens</p>
+                  <p className="text-white/40 font-semibold gap-1 flex items-center">
+                    APY
+                    <span className=" text-3xl font-semibold text-white/80">
+                      {plan.apy}%
+                    </span>
+                  </p>
                 </div>
-                <button
-                  /* onClick={() => activatePlan(idx)} */
-                  onClick={() => setStakeModalOpen(true)}
-                  className={`px-4 py-2 rounded-md text-xs font-medium transition ${
-                    activeStake?.planIndex === idx
-                      ? "bg-white text-black"
-                      : "bg-blue-500 hover:bg-blue-600 text-black"
-                  }`}
-                >
-                  {activeStake?.planIndex === idx ? "Activated" : "Activate"}
-                </button>
+                <div className=" flex justify-between items-end">
+                  <div className=" flex flex-col gap-2">
+                    <p className=" flex gap-2">
+                      <span className="text-white/40">Duration:</span>{" "}
+                      {plan.durationLabel ?? `${plan.durationDays}Days`}
+                    </p>
+                    <div className="flex gap-2">
+                      <p className="text-white/40 flex gap-1 items-center">
+                        Min Stake:
+                        <img src={token} alt="token" className="w-5" />
+                      </p>{" "}
+                      {plan.minStake} tokens
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => setStakeModalOpen(true)}
+                    className={`px-4 py-2 rounded-lg text-xs font-medium transition ${
+                      activeStake?.planIndex === idx
+                        ? "bg-white text-black"
+                        : "bg-blue-400 hover:bg-blue-500 text-black"
+                    }`}
+                  >
+                    {activeStake?.planIndex === idx ? "Activated" : "Activate"}
+                  </button>
+                </div>
               </div>
             ))}
           </div>
@@ -417,6 +473,9 @@ const DashStake: React.FC = () => {
           defaultPeriod="7 Days"
           onStake={handleStake}
         />
+      )}
+      {isStakeSuccessModal && (
+        <StakeSuccessModal onClose={() => setStakeSuccessModal(false)} />
       )}
     </div>
   );

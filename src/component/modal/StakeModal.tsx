@@ -9,7 +9,11 @@ interface StakeFormModalProps {
   available: number;
   defaultPlan: "Flexible" | "Locked";
   defaultPeriod: string;
-  onStake: (data: { plan: "Flexible" | "Locked"; period: string; amount: number }) => void | Promise<void>;
+  onStake: (data: {
+    plan: "Flexible" | "Locked";
+    period: string;
+    amount: number;
+  }) => void | Promise<void>;
 }
 
 const StakeFormModal: React.FC<StakeFormModalProps> = ({
@@ -156,19 +160,17 @@ const StakeFormModal: React.FC<StakeFormModalProps> = ({
           />
 
           <img src={success} alt="..." className="w-20 mb-4 mx-auto" />
-          <h2 className="text-xl font-semibold text-white">Stake Successful</h2>
-          <p className="text-sm text-gray-400">
-            Your tokens are now staked successfully.
-          </p>
+          <h2 className="text-xl font-semibold text-white">
+            Stake Unsuccessful
+          </h2>
+          <p className="text-sm text-gray-400">Plan not Found.</p>
           <div className="flex gap-4 w-full max-w-sm">
-            <button className="flex-1 bg-sky-500/70 hover:bg-sky-600 px-6 py-3 rounded-md text-white text-sm">
-              View Stakes
-            </button>
+           
             <button
               onClick={onClose}
               className="flex-1 bg-gray-700 hover:bg-gray-600 px-6 py-3 rounded-md text-white text-sm"
             >
-              Close
+              Done
             </button>
           </div>
         </motion.div>
