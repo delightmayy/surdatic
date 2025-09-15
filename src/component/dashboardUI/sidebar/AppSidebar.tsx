@@ -1,9 +1,11 @@
 // Sidebar.tsx
 import React from "react";
 import { Sidebar, Menu, MenuItem, sidebarClasses } from "react-pro-sidebar";
-import { Link } from "react-router-dom";
+/* import { Link } from "react-router-dom"; */
 import logo from "../../../img/logo.png";
 import sidebarimg from "../../../img/sidebarimg.png";
+import { Link, useLocation } from "react-router-dom";
+
 import {
   FiHome,
   FiCreditCard,
@@ -26,6 +28,8 @@ interface SidebarProps {
 }
 
 const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
+  const location = useLocation();
+
   return (
     <Sidebar
       image={sidebarimg}
@@ -57,80 +61,94 @@ const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
       <div className="flex-1 overflow-y-auto px-2 py-3">
         <Menu
           menuItemStyles={{
-            button: {
+            button: ({ active }: { active?: boolean }) => ({
               padding: "6px 10px",
               fontSize: "13px",
               borderRadius: "6px",
               margin: "4px 6px",
-              color: "#fff",
-              backgroundColor: "rgba(0,0,0,0.4)",
+              color: active ? "#000" : "#fff",
+              backgroundColor: active
+                ? "rgba(59,130,246,0.9)"
+                : "rgba(0,0,0,0.4)",
               border: "1px solid rgba(255,255,255,0.2)",
               transition: "all 0.2s ease-in-out",
-
               "&:hover": {
-                backgroundColor: "rgba(59,130,246,0.9)", // same as Tailwind's blue-500/90
+                backgroundColor: "rgba(59,130,246,0.4)",
                 color: "#000",
-                borderRadius: "6px", // makes the hover rounded effect work
               },
-            },
+            }),
             icon: {
               fontSize: "14px",
             },
           }}
         >
-          <MenuItem icon={<FiHome />} component={<Link to="/dashboard" />}>
+          <MenuItem icon={<FiHome />} component={<Link to="/dashboard" />}
+           active={
+              location.pathname === ("/dashboard")
+            }>
             Home
           </MenuItem>
           <MenuItem
             icon={<FiCreditCard />}
             component={<Link to="/dashboard/wallet" />}
+            active={location.pathname.startsWith("/dashboard/wallet")}
           >
             Wallet
           </MenuItem>
           <MenuItem
             icon={<FiRepeat />}
-            component={<Link to="/dashboard/marketplace" />}
+            component={<Link to="/dashboard/p2pmarket" />}
+            active={location.pathname.startsWith("/dashboard/p2pmarket")}
           >
             P2P Marketplace
           </MenuItem>
           <MenuItem
             icon={<FiFileText />}
             component={<Link to="/dashboard/surveys" />}
-            /*  active={location.pathname.startsWith("/dashboard/survey")} */
+              active={location.pathname.startsWith("/dashboard/survey")||location.pathname.startsWith("/dashboard/questionaire")} 
           >
             Surveys
           </MenuItem>
           <MenuItem
             icon={<FiShoppingCart />}
             component={<Link to="/dashboard/market" />}
+            active={location.pathname.startsWith("/dashboard/market")}
           >
             Marketplace
           </MenuItem>
           <MenuItem
             icon={<FiSmartphone />}
             component={<Link to="/dashboard/airtime" />}
+            active={location.pathname.startsWith("/dashboard/airtime")}
           >
             Airtime & Data
           </MenuItem>
           <MenuItem
             icon={<FiBarChart2 />}
             component={<Link to="/dashboard/stake" />}
+            active={location.pathname.startsWith("/dashboard/stake")}
           >
             Stake
           </MenuItem>
           <MenuItem
             icon={<FiUsers />}
             component={<Link to="/dashboard/earn" />}
+            active={location.pathname.startsWith("/dashboard/earn")}
           >
             Refer and Earn
           </MenuItem>
           <MenuItem
             icon={<FiPieChart />}
             component={<Link to="/dashboard/tokenomics" />}
+            active={location.pathname.startsWith("/dashboard/tokenomics")}
           >
             Tokenomics
           </MenuItem>
-          <MenuItem icon={<FiCode />} component={<Link to="/dashboard/api" />}>
+          <MenuItem
+            icon={<FiCode />}
+            component={<Link to="/dashboard/api" />}
+            active={location.pathname.startsWith("/dashboard/api")}
+          >
             API & Integrations
           </MenuItem>
         </Menu>
@@ -140,22 +158,22 @@ const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
       <div className="border-t border-white/10 px-2 py-3">
         <Menu
           menuItemStyles={{
-            button: {
+            button: ({ active }: { active?: boolean }) => ({
               padding: "6px 10px",
               fontSize: "13px",
               borderRadius: "6px",
               margin: "4px 6px",
-              color: "#fff",
-              backgroundColor: "rgba(0,0,0,0.4)",
+              color: active ? "#000" : "#fff",
+              backgroundColor: active
+                ? "rgba(59,130,246,0.9)"
+                : "rgba(0,0,0,0.4)",
               border: "1px solid rgba(255,255,255,0.2)",
               transition: "all 0.2s ease-in-out",
-
               "&:hover": {
-                backgroundColor: "rgba(59,130,246,0.9)", // same as Tailwind's blue-500/90
+                backgroundColor: "rgba(59,130,246,0.9)",
                 color: "#000",
-                borderRadius: "6px", // makes the hover rounded effect work
               },
-            },
+            }),
             icon: {
               fontSize: "14px",
             },
@@ -163,6 +181,7 @@ const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
         >
           <MenuItem
             icon={<FiSettings />}
+            active={location.pathname.startsWith("/dashboard/settings")}
             component={<Link to="/dashboard/settings" />}
           >
             Settings

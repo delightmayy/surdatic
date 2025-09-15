@@ -118,7 +118,7 @@ const DashEarn = () => {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left border border-white/5">
+              <table className="w-full min-w-[500px] text-xs text-left border border-white/5">
                 <thead className="bg-white/5 text-white/50 text-xs">
                   <tr>
                     <th className="py-2 px-3 border-b border-white/5">#</th>

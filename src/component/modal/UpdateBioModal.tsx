@@ -34,7 +34,7 @@ const UpdateBioModal = ({ onClose }: { onClose: () => void }) => {
           </div>
 
           {/* Example form fields */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <input
               type="text"
               placeholder="First Name"

@@ -34,9 +34,24 @@ export interface Video {
   keyPoints: string[];
 }
 
+export interface MarketPlaceData {
+  id: string;
+  frontImg: string;
+  type: string;
+  title: string;
+  status: string;
+  reward: number;
+  date: string;
+  questions: number;
+  description: string;
+  keyPoints: string[];
+}
+
 interface DataContextType {
   overveiwTab: string;
   setOverveiwTab: (value: string) => void;
+  UserSigned: boolean;
+  setUserSigned: (value: boolean) => void;
   targetDate: Date;
   totalEarnings: number;
   createdStats: Stat[];
@@ -50,6 +65,7 @@ interface DataContextType {
   surveyVideoValidated: Video[];
   surveyVideoParticipated: Video[];
   surveyVideoCreated: Video[];
+  marketPlaceData: MarketPlaceData[];
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -60,6 +76,7 @@ interface DataProviderProps {
 
 export const DataProvider = ({ children }: DataProviderProps) => {
   const [overveiwTab, setOverveiwTab] = useState("created");
+  const [UserSigned, setUserSigned] = useState(true);
 
   const targetDate = new Date("2025-09-30T00:00:00Z");
   const totalEarnings = 20546;
@@ -419,166 +436,247 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     },
   ];
 
- const surveyVideoCreated = [
-  {
-    id: "video-001",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=11",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "video-002",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=12",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "video-003",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=13",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "video-004",
-    title: "Examining Safety Compliance...",
-   frontImg: "https://picsum.photos/400/300?random=14",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-];
-
+  const surveyVideoCreated = [
+    {
+      id: "video-001",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=11",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "video-002",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=12",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "video-003",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=13",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "video-004",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=14",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+  ];
 
   const surveyVideoParticipated = [
-  {
-    id: "videopart-001",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=1",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "videopart-002",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=2",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "videopart-003",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=3",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "videopart-004",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=4",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-];
+    {
+      id: "videopart-001",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=1",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "videopart-002",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=2",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "videopart-003",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=3",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "videopart-004",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=4",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+  ];
 
   const surveyVideoValidated = [
-  {
-    id: "videoval-001",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=5",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "videoval-002",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=6",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "videoval-003",
-    title: "Examining Safety Compliance...",
-   frontImg: "https://picsum.photos/400/300?random=7",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-  {
-    id: "videoval-004",
-    title: "Examining Safety Compliance...",
-    frontImg: "https://picsum.photos/400/300?random=8",
-    date: "2025-09-08",
-    reward: 100,
-    duration: "15 Mins",
-    videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    questions: 10,
-    description: "Video-based survey focused on safety compliance.",
-    keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
-  },
-];
+    {
+      id: "videoval-001",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=5",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "videoval-002",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=6",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "videoval-003",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=7",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "videoval-004",
+      title: "Examining Safety Compliance...",
+      frontImg: "https://picsum.photos/400/300?random=8",
+      date: "2025-09-08",
+      reward: 100,
+      duration: "15 Mins",
+      videoUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+  ];
 
+  const marketPlaceData = [
+    {
+      id: "s1",
+      title:
+        "Examining safety compliance rate among senior managers in corporate organisations in Nigeria",
+      date: "2025-09-07",
+      type: "Validated",
+      reward: 100,
+      status: "Validated",
+      frontImg: "https://images.unsplash.com/photo-1551434678-e076c223a692",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "s2",
+      title:
+        "Examining safety compliance rate among senior managers in corporate organisations in Nigeria",
+      date: "2025-09-09",
+      type: "Video",
+      reward: 120,
+      status: "Validated",
+      frontImg: "https://images.unsplash.com/photo-1560264280-88b68371db39",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "s3",
+      title:
+        "Examining safety compliance rate among senior managers in corporate organisations in Nigeria",
+      date: "2025-09-10",
+      type: "Validated",
+      reward: 80,
+      status: "Validated",
+      frontImg: "https://images.unsplash.com/photo-1552664730-d307ca884978",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "s4",
+      title:
+        "Examining safety compliance rate among senior managers in corporate organisations in Nigeria",
+      date: "2025-09-03",
+      type: "Video",
+      reward: 90,
+      status: "Validated",
+      frontImg: "https://images.unsplash.com/photo-1519389950473-47ba0277781c",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "s5",
+      title:
+        "Examining safety compliance rate among senior managers in corporate organisations in Nigeria",
+      date: "2025-09-01",
+      type: "Validated",
+      reward: 95,
+      status: "Validated",
+      frontImg: "https://images.unsplash.com/photo-1560264280-88b68371db39",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+    {
+      id: "s6",
+      title:
+        "Examining safety compliance rate among senior managers in corporate organisations in Nigeria",
+      date: "2025-09-08",
+      type: "Video",
+      reward: 110,
+      status: "Validated",
+      frontImg: "https://images.unsplash.com/photo-1552664730-d307ca884978",
+      questions: 10,
+      description: "Video-based survey focused on safety compliance.",
+      keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
+    },
+  ];
 
   return (
     <DataContext.Provider
       value={{
         overveiwTab,
         setOverveiwTab,
+        UserSigned,
+        setUserSigned,
         targetDate,
         totalEarnings,
         createdStats,
@@ -590,6 +688,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         surveyVideoCreated,
         surveyVideoParticipated,
         surveyVideoValidated,
+        marketPlaceData,
       }}
     >
       {children}

@@ -24,6 +24,9 @@ import DashSettings from "../pages/dashboard/DashSettings";
 import FormSurveyDetail from "../component/dashboardUI/survey/FormSurvey";
 import SurveyQuestionPage from "../component/dashboardUI/survey/SurveyQuestionPage";
 import VideoSurveyDetail from "../component/dashboardUI/survey/VideoSurvey";
+import ErrorPage from "../pages/dashboard/ErrorPage";
+import MarketPlaceDetails from "../component/dashboardUI/marketplace/MarketPlaceDetails";
+import P2POrderPage from "../component/dashboardUI/p2p/P2POrderPage";
 
 export const AppRoutes = () => {
   return (
@@ -33,7 +36,7 @@ export const AppRoutes = () => {
       <Route path="/marketplace" element={<MainMarketPlace />} />
       <Route path="/surda" element={<MainSurda />} />
       <Route path="/survey" element={<MainSurvey />} />
-     
+
       <Route path="/register" element={<Register />} />
       <Route path="/login" element={<Login />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -43,22 +46,26 @@ export const AppRoutes = () => {
       <Route path="/dashboard" element={<Layout />}>
         <Route index element={<DashboardHome />} />
         <Route path="wallet" element={<Wallet />} />
-        <Route path="marketplace" element={<PTPMarket />} />
+        <Route path="p2pmarket" element={<PTPMarket />} />
+        <Route path="p2p-order" element={<P2POrderPage />} />
 
         <Route path="surveys" element={<DashSurvey />} />
-        <Route path="surveys/:id" element={<FormSurveyDetail/>}/>
-        <Route path="videos/:id" element={<VideoSurveyDetail/>}/>
-        <Route path="questionaire" element={<SurveyQuestionPage/>}/>
+        <Route path="surveys/:id" element={<FormSurveyDetail />} />
+        <Route path="videos/:id" element={<VideoSurveyDetail />} />
+        <Route path="questionaire" element={<SurveyQuestionPage />} />
 
         <Route path="market" element={<DashMarket />} />
+        <Route path="markets/:id" element={<MarketPlaceDetails />} />
         <Route path="airtime" element={<DashData />} />
         <Route path="stake" element={<DashStake />} />
         <Route path="earn" element={<DashEarn />} />
         <Route path="tokenomics" element={<Dashtokenomics />} />
         <Route path="api" element={<DashApi />} />
         <Route path="settings" element={<DashSettings />} />
+
+        <Route path="*" element={<ErrorPage />} />
       </Route>
-     
+      <Route path="*" element={<ErrorPage />} />
     </Routes>
   );
 };
