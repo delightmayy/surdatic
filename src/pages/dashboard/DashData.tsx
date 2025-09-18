@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import mtnicon from "../../img/mtn.png";
 import gloicon from "../../img/glo.png";
 import Airtelicon from "../../img/airtel.png";
 import Nmobileicon from "../../img/9mobile.png";
 import token from "../../img/SurdaToken.png";
-import { FaWallet } from "react-icons/fa";
+import { FaSpinner, FaWallet } from "react-icons/fa";
 import AirtimePurchaseModal from "../../component/modal/AirtimePurchaseModal";
+import axios from "axios";
+import ErrorModal from "../../component/modal/ErrorModal";
 
 const networks = [
   { name: "Mtn", icon: mtnicon },
@@ -47,11 +49,106 @@ const presetData = [
 
 const DashData = () => {
   const [activeNetwork, setActiveNetwork] = useState("Mtn");
-  const [purchaseOption, setPurchaseOption] = useState("Airtime");
+  const [purchaseOption, setPurchaseOption] = useState<"Airtime" | "Data">(
+    "Airtime"
+  );
   const [Phone, setPhone] = useState("");
   const [airtimeModal, setAirtimeModal] = useState(false);
+  const [step, setStep] = useState(1);
   const [amount, setAmount] = useState<number | null>(null);
   const [dataAmount, setDataAmount] = useState("");
+  const [PresetBundle, setPresetBundle] = useState([]);
+
+  const [errorModal, setErrorModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const surdaAmount = amount ? (amount / 1000).toFixed(2) : "0.00";
+
+  const handleDefaultField = () => {
+    if (!activeNetwork || !purchaseOption || !amount || !Phone) {
+      setErrorMessage(" Please fill all fields");
+      setErrorModal(true);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!activeNetwork || !purchaseOption || !amount || !Phone) {
+      setErrorMessage(" Please fill all fields");
+      setErrorModal(true);
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const postData =
+        purchaseOption === "Airtime"
+          ? {
+              phone: Phone,
+              network: activeNetwork.toLowerCase(),
+              token_amount: surdaAmount,
+            }
+          : {
+              phone: Phone,
+              network: activeNetwork.toLowerCase(),
+              variation_id: "5506674",
+              token_amount: surdaAmount,
+            };
+
+      const response = await axios.post(
+        `https://api-surdatics.onrender.com/api/v1/redeem/${purchaseOption.toLowerCase()}`,
+
+        postData
+      );
+
+      if (response.data.code === "success") {
+        alert("✅ Top-up successful!");
+        setStep(2);
+        console.log("Transaction ID:", response.data.order_id);
+      } else {
+        setErrorMessage(` Failed: ${response.data.message}`);
+        setErrorModal(true);
+      }
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          setErrorMessage(
+            `API Error: ${
+              error.response.data?.message || "Something went wrong"
+            }`
+          );
+          setErrorModal(true);
+        } else {
+          setErrorMessage(" Network Error. Please check your connection.");
+          setErrorModal(true);
+        }
+      } else {
+        setErrorMessage(" Unexpected error occurred");
+        setErrorModal(true);
+      }
+      console.error("Top-up error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `https://api-surdatics.onrender.com/api/v1/redeem/products/${activeNetwork.toLocaleLowerCase()}`
+        );
+        if (response.status) {
+          setPresetBundle(response.data.data);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+
+  console.log(PresetBundle);
 
   return (
     <div className="text-white pb-20 max-w-7xl mx-auto flex flex-col lg:flex-row gap-4">
@@ -153,14 +250,9 @@ const DashData = () => {
                     alt="network"
                     className=" w-10  "
                   />
-                  {/* <select name="selectnetwork" id="selectnetwork" className=" border border-white/5! ">
-                    {networks.map((x, xid) => (
-                      <option key={x.name} className="bg-black/90 border border-white/5 text-xs">{xid === 0 ? ">" : x.name}</option>
-                    ))}
-                  </select> */}
                 </div>
                 <input
-                  type="number"
+                  type="text"
                   required
                   value={Phone}
                   onChange={(e) => setPhone(e.target.value)}
@@ -234,7 +326,7 @@ const DashData = () => {
               className="w-full flex items-center gap-2 bg-black/30 border border-white/10 px-4 py-3 rounded-md text-sm focus:outline-none text-white/60"
             >
               <img src={token} alt="surda" className="h-5 w-5" />
-              {`${amount ? (amount / 1000).toFixed(2) : "0.00"}`}
+              {surdaAmount}
             </button>
           </div>
 
@@ -259,10 +351,20 @@ const DashData = () => {
 
           {/* Purchase Button */}
           <button
-            onClick={() => setAirtimeModal(true)}
-            className="w-full bg-blue-400 hover:bg-blue-400/70 text-black py-3 rounded-md mt-4 transition-all text-sm font-semibold"
+            onClick={() => {
+              handleDefaultField();
+              setAirtimeModal(true);
+            }}
+            className="w-full bg-blue-400 hover:bg-blue-400/70 text-black py-3 rounded-md mt-4 transition-all text-sm font-semibold justify-center flex gap-2 items-center"
           >
-            Purchase
+            {loading ? (
+              <>
+                Processing...
+                <FaSpinner className="animate-spin text-black text-sm" />
+              </>
+            ) : (
+              "Purchase"
+            )}
           </button>
         </div>
       </div>
@@ -313,7 +415,19 @@ const DashData = () => {
           network={activeNetwork}
           option={purchaseOption}
           dataAmount={dataAmount}
-          surdaAmount={`${amount ? (amount / 1000).toFixed(2) : "0.00"}`}
+          surdaAmount={surdaAmount}
+          step={step}
+          setStep={setStep}
+          handleProceed={handleSubmit}
+        />
+      )}
+      {errorModal && (
+        <ErrorModal
+          onClose={() => {
+            setErrorModal(false);
+            setAirtimeModal(false);
+          }}
+          message={errorMessage}
         />
       )}
     </div>
@@ -321,3 +435,23 @@ const DashData = () => {
 };
 
 export default DashData;
+
+/*  return (
+    <div>
+      <input
+        type="text"
+        placeholder="Phone number"
+        value={phoneNumber}
+        onChange={(e) => setPhoneNumber(e.target.value)}
+      />
+      <input
+        type="number"
+        placeholder="Amount"
+        value={selectedAmount}
+        onChange={(e) => setSelectedAmount(Number(e.target.value))}
+      />
+      <button onClick={handleSubmit} disabled={loading}>
+        {loading ? "Processing..." : "Top Up"}
+      </button>
+    </div>
+  ); */

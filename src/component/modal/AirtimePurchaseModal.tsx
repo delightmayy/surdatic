@@ -19,16 +19,22 @@ const AirtimePurchaseModal = ({
   option,
   dataAmount,
   surdaAmount,
+  handleProceed,
+  step,
+  setStep
 }: {
   onClose: () => void;
+  handleProceed: () => void;
   phone: string;
   amount: number;
   network: string;
   option: string;
   dataAmount: string;
   surdaAmount: string;
+  step: number;
+  setStep: React.Dispatch<React.SetStateAction<number>>
 }) => {
-  const [step, setStep] = useState(1);
+  /* const [step, setStep] = useState(1); */
   const [pin, setPin] = useState(["", "", "", ""]);
   const [switchModal, setSwitchModal] = useState(false);
   const [mode, setMode] = useState<"create" | "reset">("create");
@@ -42,7 +48,7 @@ const AirtimePurchaseModal = ({
   const transactionId = "cxucxwievm[rep]ewe";
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
-    setStep(2);
+    handleProceed();
   };
 
   const handleVerify = () => {

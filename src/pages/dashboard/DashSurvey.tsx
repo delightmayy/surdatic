@@ -29,7 +29,7 @@ const DashSurvey = () => {
   return (
     <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-2 pb-24">
-        {/* Top bar with title and button */}
+        {/* heading */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           <div className="">
             <h1 className="text-2xl font-semibold">Surveys</h1>
