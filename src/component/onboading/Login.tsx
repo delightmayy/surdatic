@@ -1,10 +1,66 @@
-"use client";
+
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import img from "../../img/onboardingimg.png";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import axios from "axios";
+import { FaSpinner } from "react-icons/fa";
 
 const Login = () => {
   const navigate = useNavigate();
+
+  // Form state
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Handle input changes
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Handle form submit
+  const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        "https://api.surdatics.com/auth/login", // ✅ confirm backend login endpoint
+        {
+          email: formData.email,
+          password: formData.password,
+        }
+      );
+
+      setLoading(false);
+
+      // Save token if provided
+      if (response.data?.access) {
+        localStorage.setItem("token", response.data.access);
+      }
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } catch (err: any) {
+      setLoading(false);
+      console.log(err);
+      
+      setError(
+        err.response?.data?.data ||
+          err.message ||
+          "Login failed. Please try again."
+      );
+    }
+  };
 
   return (
     <section className="bg-black min-h-screen flex flex-col md:flex-row text-white relative">
@@ -22,7 +78,9 @@ const Login = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           />
-          <h2 className="text-xl lg:mt-14 mt-8 font-medium">Get Started In Minutes</h2>
+          <h2 className="text-xl lg:mt-14 mt-8 font-medium">
+            Get Started In Minutes
+          </h2>
           <p className="text-gray-400 mt-2">
             Join, verify, and start earning through surveys.
           </p>
@@ -35,8 +93,11 @@ const Login = () => {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
+            onSubmit={handleLogin}
           >
-            <h2 className="text-2xl font-semibold text-center">Sign In To Your Account</h2>
+            <h2 className="text-2xl font-semibold text-center">
+              Sign In To Your Account
+            </h2>
             <p className="text-sm text-gray-400 text-center">
               Welcome, provide your login details below to sign in to your account.
             </p>
@@ -46,9 +107,12 @@ const Login = () => {
               <label className="text-sm mb-1">Email</label>
               <input
                 type="email"
+                name="email"
                 placeholder="Enter your email"
                 className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
                 required
+                value={formData.email}
+                onChange={handleChange}
               />
             </div>
 
@@ -57,9 +121,12 @@ const Login = () => {
               <label className="text-sm mb-1">Password</label>
               <input
                 type="password"
+                name="password"
                 placeholder="Enter your password"
                 className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
                 required
+                value={formData.password}
+                onChange={handleChange}
               />
             </div>
 
@@ -77,13 +144,18 @@ const Login = () => {
               </span>
             </div>
 
+            {/* Show error */}
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
+
             {/* Submit */}
             <button
               type="submit"
-              onClick={() => navigate("/dashboard")}
-              className="bg-sky-500/60 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
+              disabled={loading}
+              className="bg-sky-500/60 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md flex items-center justify-center gap-2 disabled:opacity-30"
             >
-              Done
+              {loading ? "Signing In" : "Done"} {loading && <FaSpinner />}
             </button>
 
             {/* Footer Link */}

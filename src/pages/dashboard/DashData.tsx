@@ -134,9 +134,17 @@ const DashData = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem("token");
+      console.log(token);
+
       try {
         const response = await axios.get(
-          `https://api-surdatics.onrender.com/api/v1/redeem/products/${activeNetwork.toLocaleLowerCase()}`
+          `https://api-surdatics.onrender.com/api/v1/redeem/products/${activeNetwork.toLocaleLowerCase()}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         if (response.status) {
           setPresetBundle(response.data.data);
@@ -146,7 +154,7 @@ const DashData = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [activeNetwork]);
 
   console.log(PresetBundle);
 

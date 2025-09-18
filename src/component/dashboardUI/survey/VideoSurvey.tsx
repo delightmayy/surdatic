@@ -30,7 +30,7 @@ const VideoSurveyDetail = () => {
   const [availableSurvey, setAvailableSurvey] = useState<Video[]>([]);
   const [videoModal, setVideoModal] = useState(false);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   useEffect(() => {
     let source: Video[] = [];
@@ -68,9 +68,11 @@ const VideoSurveyDetail = () => {
         {/* LEFT: Main Video Survey Detail */}
         <div className="w-full lg:w-8/12">
           <div className="p-4">
-            <p className="text-xs text-white/90 font-semibold">Survey Video</p>
+            <p className="text-sm text-white/90 font-bold">
+              Survey Information
+            </p>
             <p className="text-xs font-normal text-white/50">
-              Learn, respond, earn
+              Your response, your reward
             </p>
           </div>
           <div className="bg-black/40 p-4 rounded-xl shadow-md">
@@ -277,9 +279,14 @@ const VideoSurveyDetail = () => {
 
         {/* RIGHT: Available Surveys */}
         <div className="hidden lg:block lg:w-4/12">
-          <h3 className="text-white/70 text-sm mb-4 p-4">
-            Available Video Surveys
-          </h3>
+          <div className="mb-4 ps-12 p-4">
+            <p className="text-xs text-white/90 font-bold">
+              Available Video Surveys
+            </p>
+            <p className="text-xs font-normal text-white/50">
+              See more surveys you can take
+            </p>{" "}
+          </div>
           <div className="flex flex-col gap-4 max-h-[800px] overflow-y-auto pr-2">
             {availableSurvey.map((s) => (
               <Link
@@ -320,9 +327,11 @@ const VideoSurveyDetail = () => {
           id: survey.id,
           title: survey.title,
           frontImg: survey.frontImg,
-          duration:survey.duration,
+          duration: survey.duration,
         }}
-        onTakeSurvey={() => {navigate("/dashboard/videocall")}}
+        onTakeSurvey={() => {
+          navigate("/dashboard/videocall");
+        }}
       />
     </div>
   );
