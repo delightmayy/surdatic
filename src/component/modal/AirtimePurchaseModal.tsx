@@ -123,7 +123,7 @@ const AirtimePurchaseModal = ({
           "https://api-surdatics.onrender.com/api/v1/redeem/save_beneficiary",
           {
             phone: phone,
-            network: network.charAt(1).toUpperCase + network.substring(1),
+            network: network.charAt(0).toUpperCase() + network.substring(1),
           },
 
           {
