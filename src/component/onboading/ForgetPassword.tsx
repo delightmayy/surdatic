@@ -2,9 +2,42 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import img from "../../img/onboardingimg.png";
+import { useState, type FormEvent } from "react";
+import axios from "axios";
+import { FaSpinner } from "react-icons/fa";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [email, setEmail] = useState<string>("");
+
+  // Handle form submit
+  const handleforgetPassWord = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      /* const token = localStorage.getItem("token"); */
+      const response = await axios.post(
+        "https://api.surdatics.com/auth/reset_password",
+        { email } // ✅ confirm backend login endpoint
+      );
+
+      setLoading(false);
+      response.data && navigate("/reset-password");
+    } catch (err: any) {
+      setLoading(false);
+      console.log(err);
+
+      setError(
+        err.response?.data?.data ||
+          err.message ||
+          "Password Reset failed. Please try again."
+      );
+    }
+  };
 
   return (
     <section className="bg-black min-h-screen flex flex-col md:flex-row text-white relative">
@@ -22,7 +55,9 @@ const ForgotPassword = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           />
-          <h2 className="text-xl lg:mt-14 mt-8 font-medium">Get Started In Minutes</h2>
+          <h2 className="text-xl lg:mt-14 mt-8 font-medium">
+            Get Started In Minutes
+          </h2>
           <p className="text-gray-400 mt-2">
             Join, verify, and start earning through surveys.
           </p>
@@ -31,12 +66,15 @@ const ForgotPassword = () => {
         {/* Right Side */}
         <div className="lg:w-3/5 flex items-center justify-center py-10 relative z-10">
           <motion.form
+            onSubmit={handleforgetPassWord}
             className="w-full max-w-xl bg-white/5 border border-white/20 shadow-lg rounded-2xl px-6 py-8 flex flex-col gap-5"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl font-semibold text-center">Forgot your password?</h2>
+            <h2 className="text-2xl font-semibold text-center">
+              Forgot your password?
+            </h2>
             <p className="text-sm text-gray-400 text-center">
               Enter your registered email to receive a password reset link.
             </p>
@@ -46,19 +84,33 @@ const ForgotPassword = () => {
               <label className="text-sm mb-1">Email</label>
               <input
                 type="email"
+                name="email"
                 placeholder="Enter your email"
+                onChange={(e) => setEmail(e.target.value)}
                 className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
                 required
               />
             </div>
 
             {/* Submit */}
-            <button
+            {/* <button
               type="submit"
-              onClick={() => navigate("/reset-password")}
               className="bg-sky-500/60 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
             >
               Proceed
+            </button> */}
+
+            {/* Show error */}
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
+
+            <button
+              type="submit"
+              className="bg-sky-500/60 hover:bg-sky-600 items-center justify-center flex gap-1 transition-all text-white text-sm font-medium py-3 rounded-md disabled:opacity-20"
+            >
+              {loading ? "Loading" : " Proceed"}{" "}
+              {loading && <FaSpinner className="animate-spin" />}
             </button>
 
             {/* Footer Link */}

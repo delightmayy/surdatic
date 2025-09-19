@@ -16,36 +16,22 @@ const networks = [
   { name: "9Mobile", icon: Nmobileicon },
 ];
 
-const beneficiaries = [
-  { network: "Mtn", number: "09012345671" },
-  { network: "Glo", number: "09012345672" },
-  { network: "Airtel", number: "09012345673" },
-  { network: "9Mobile", number: "09012345674" },
-  { network: "Mtn", number: "09012345675" },
-  { network: "Mtn", number: "09012345671" },
-  { network: "Glo", number: "09012345672" },
-  { network: "Airtel", number: "09012345673" },
-  { network: "9Mobile", number: "09012345674" },
-  { network: "Mtn", number: "09012345675" },
-  { network: "Mtn", number: "09012345671" },
-  { network: "Glo", number: "09012345672" },
-  { network: "Airtel", number: "09012345673" },
-  { network: "9Mobile", number: "09012345674" },
-  { network: "Mtn", number: "09012345675" },
-  { network: "Mtn", number: "09012345671" },
-  { network: "Glo", number: "09012345672" },
-  { network: "Airtel", number: "09012345673" },
-  { network: "9Mobile", number: "09012345674" },
-  { network: "Mtn", number: "09012345675" },
-];
+interface Beneficiary {
+  network: string;
+  phone: string;
+}
 
-const presetAmounts = [100, 200, 500, 1000];
-const presetData = [
-  { plan: "1gb", amount: 1000 },
-  { plan: "2gb", amount: 2000 },
-  { plan: "5gb", amount: 3000 },
-  { plan: "10gb", amount: 4000 },
-];
+interface PresetBundle {
+  availability: string;
+  data_plan: string;
+  price: string;
+  reseller_price: string;
+  service_id: string;
+  service_name: string;
+  variation_id: number;
+}
+
+const presetAmounts = [100, 200, 500, 1000, 2000, 5000, 10000];
 
 const DashData = () => {
   const [activeNetwork, setActiveNetwork] = useState("Mtn");
@@ -57,13 +43,18 @@ const DashData = () => {
   const [step, setStep] = useState(1);
   const [amount, setAmount] = useState<number | null>(null);
   const [dataAmount, setDataAmount] = useState("");
-  const [PresetBundle, setPresetBundle] = useState([]);
+  const [vId, setVId] = useState("");
+  const [PresetBundle, setPresetBundle] = useState<PresetBundle[] | null>(null);
+  const [beneficiaries, setBeneficiaries] = useState<Beneficiary[] | null>(
+    null
+  );
+
+  const [accessPin, setAccessPin] = useState("");
 
   const [errorModal, setErrorModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-
-  const surdaAmount = amount ? (amount / 1000).toFixed(2) : "0.00";
+  const [surdaAmount, setSurdaAmount] = useState("0.00");
 
   const handleDefaultField = () => {
     if (!activeNetwork || !purchaseOption || !amount || !Phone) {
@@ -86,24 +77,26 @@ const DashData = () => {
           ? {
               phone: Phone,
               network: activeNetwork.toLowerCase(),
-              token_amount: surdaAmount,
+              token_amount: "0.02" /*  surdaAmount */,
+              pin: accessPin,
             }
           : {
               phone: Phone,
               network: activeNetwork.toLowerCase(),
-              variation_id: "5506674",
+              variation_id: vId,
               token_amount: surdaAmount,
+              pin: accessPin,
             };
 
       const response = await axios.post(
-        `https://api-surdatics.onrender.com/api/v1/redeem/${purchaseOption.toLowerCase()}`,
+        `https://api-surdatics.onrender.com/api/v1/redeeem/${purchaseOption.toLowerCase()}`,
 
         postData
       );
 
       if (response.data.code === "success") {
-        alert("✅ Top-up successful!");
-        setStep(2);
+        /*  alert("✅ Top-up successful!"); */
+        setStep(3);
         console.log("Transaction ID:", response.data.order_id);
       } else {
         setErrorMessage(` Failed: ${response.data.message}`);
@@ -117,6 +110,7 @@ const DashData = () => {
               error.response.data?.message || "Something went wrong"
             }`
           );
+
           setErrorModal(true);
         } else {
           setErrorMessage(" Network Error. Please check your connection.");
@@ -132,11 +126,26 @@ const DashData = () => {
     }
   };
 
+  const handleConvertToken = async (Amount: number) => {
+    try {
+      const response = await axios.post(
+        "https://api-surdatics.onrender.com/api/v1/convert/ngn_to_token",
+        {
+          token_name: "surda",
+          amount_in_naira: Amount?.toString(),
+        }
+      );
+      response.status && setSurdaAmount(response.data.amount_in_token);
+    } catch (error) {
+      setSurdaAmount("");
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
-      console.log(token);
-
+      setPresetBundle(null);
       try {
         const response = await axios.get(
           `https://api-surdatics.onrender.com/api/v1/redeem/products/${activeNetwork.toLocaleLowerCase()}`,
@@ -153,10 +162,29 @@ const DashData = () => {
         console.log(error);
       }
     };
-    fetchData();
-  }, [activeNetwork]);
 
-  console.log(PresetBundle);
+    const fetchBeneficiary = async () => {
+      const token = localStorage.getItem("token");
+      setPresetBundle(null);
+      try {
+        const response = await axios.get(
+          `https://api-surdatics.onrender.com/api/v1/redeem/beneficiaries`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        if (response.status) {
+          setBeneficiaries(response.data.beneficiaries);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchBeneficiary();
+    fetchData();
+  }, [activeNetwork, purchaseOption]);
 
   return (
     <div className="text-white pb-20 max-w-7xl mx-auto flex flex-col lg:flex-row gap-4">
@@ -277,11 +305,14 @@ const DashData = () => {
               <h2 className="w-fit px-2 py-1 text-white/60 bg-white/10 capitalize rounded mb-3 text-sm">
                 Amount (₦)
               </h2>
-              <div className="flex gap-3">
+              <div className="flex flex-wrap gap-3">
                 {presetAmounts.map((amt) => (
                   <button
                     key={amt}
-                    onClick={() => setAmount(amt)}
+                    onClick={() => {
+                      setAmount(amt);
+                      handleConvertToken(amt);
+                    }}
                     className={`px-4 py-2 rounded-md border text-sm ${
                       amount === amt
                         ? "border-blue-500/30 text-white"
@@ -298,24 +329,39 @@ const DashData = () => {
           {purchaseOption === "Data" && (
             <div>
               <h2 className="w-fit px-2 py-1 text-white/60 bg-white/10 capitalize rounded mb-3 text-sm">
-                Amount (gb)
+                {activeNetwork} Data
               </h2>
-              <div className="flex gap-3">
-                {presetData.map((amt) => (
-                  <button
-                    key={amt.plan}
+              <div className="flex flex-wrap gap-3 items-center justify-center ">
+                {PresetBundle === null && (
+                  <div className="italic text-xs w-full text-blue-400 text-center bg-white/2 border border-white/20 p-3">
+                    Loading Data
+                  </div>
+                )}
+                {PresetBundle?.filter(
+                  (d) => (d.availability = "Available")
+                ).map((b) => (
+                  <div
+                    key={b.variation_id}
                     onClick={() => {
-                      setAmount(amt.amount);
-                      setDataAmount(amt.plan);
+                      setAmount(Number(b.price));
+                      setDataAmount(b.data_plan);
+                      setVId(b.variation_id.toString());
+                      handleConvertToken(Number(b.price));
                     }}
-                    className={`px-4 py-2 rounded-md border text-sm ${
-                      amount === amt.amount
-                        ? "border-blue-500/30 text-white"
-                        : "border-white/10 text-white/70 hover:bg-white/5"
+                    className={`p-2 rounded-md border flex flex-col justify-between items-center  h-22 gap-2 text-sm ${
+                      amount === Number(b.price)
+                        ? "border-blue-500/40 text-white"
+                        : "border-white/20 text-white/70 hover:bg-white/5"
                     }`}
                   >
-                    {amt.plan}
-                  </button>
+                    {" "}
+                    <p className=" w-16 flex flex-wrap items text-xs text-center center justify-center">
+                      {b.data_plan}
+                    </p>
+                    <p className=" w-12 flex flex-wrap items text-center text-xs text-blue-400 center justify-center">
+                      ₦ {b.price}
+                    </p>
+                  </div>
                 ))}
               </div>
             </div>
@@ -340,7 +386,7 @@ const DashData = () => {
 
           {/* Wallet Info */}
           <h2 className="w-fit px-2 py-1 bg-white/10 capitalize rounded mb-2 text-sm">
-            Amount in Surda
+            Wallet
           </h2>
           <div>
             <p className="text-xs block mb-1 text-white/70">Wallet</p>
@@ -348,7 +394,6 @@ const DashData = () => {
               disabled
               className="w-full flex items-center gap-2 font-bold bg-black/30 border border-white/10 px-4 py-3 rounded-md text-sm focus:outline-none text-white/60"
             >
-              {" "}
               <FaWallet size={16} /> Pay with Wallet
             </button>
           </div>
@@ -363,7 +408,8 @@ const DashData = () => {
               handleDefaultField();
               setAirtimeModal(true);
             }}
-            className="w-full bg-blue-400 hover:bg-blue-400/70 text-black py-3 rounded-md mt-4 transition-all text-sm font-semibold justify-center flex gap-2 items-center"
+            disabled={surdaAmount === ""}
+            className={`w-full bg-blue-400 hover:bg-blue-400/70 text-black py-3 rounded-md mt-4 transition-all text-sm font-semibold justify-center flex gap-2 items-center cursor-pointer disabled:cursor-not-allowed `}
           >
             {loading ? (
               <>
@@ -385,36 +431,45 @@ const DashData = () => {
             Access beneficiary lists ea-basesily
           </p>
         </div>
-        <ul className="space-y-3  bg-white/2 p-4 border border-white/5 max-h-[90vh] overflow-y-auto">
-          {beneficiaries.map((b, idx) => (
-            <li
-              key={idx}
-              onClick={() => {
-                setActiveNetwork(b.network);
-                setPhone(b.number);
-              }}
-              className="bg-black/10 border border-white/10 hover:border-blue-400/30 px-4 py-2 rounded-md flex items-center gap-3"
-            >
-              <img
-                src={
-                  b.network === "Mtn"
-                    ? mtnicon
-                    : b.network === "Glo"
-                    ? gloicon
-                    : b.network === "Airtel"
-                    ? Airtelicon
-                    : Nmobileicon
-                }
-                alt={b.network}
-                className=" w-10 h-10 p-1 rounded-full"
-              />
-              <span className="text-md tracking-widest hover:text-blue-400 text-white/80 ">
-                {b.number}
-              </span>
-            </li>
-          ))}
+        <ul className="space-y-3  bg-white/2 p-4 border border-white/5 h-[70vh]  lg:h-screen overflow-y-auto">
+          {beneficiaries === null ? (
+            <div className="italic text-xs w-full text-blue-400 text-center bg-white/2 border border-white/20 p-3">
+              Loading Data
+            </div>
+          ) : (
+            beneficiaries.map((b, idx) => (
+              <li
+                key={idx}
+                onClick={() => {
+                  setActiveNetwork(
+                    b.network.charAt(0).toUpperCase() + b.network.substring(1)
+                  );
+                  setPhone(b.phone);
+                }}
+                className="bg-black/10 border border-white/10 hover:border-blue-400/30 px-4 py-2 rounded-md flex items-center gap-3"
+              >
+                <img
+                  src={
+                    b.network === "mtn"
+                      ? mtnicon
+                      : b.network === "glo"
+                      ? gloicon
+                      : b.network === "airtel"
+                      ? Airtelicon
+                      : Nmobileicon
+                  }
+                  alt={b.network}
+                  className=" w-10 h-10 p-1 rounded-full"
+                />
+                <span className="text-md tracking-widest hover:text-blue-400 text-white/80 ">
+                  {b.phone}
+                </span>
+              </li>
+            ))
+          )}
         </ul>
       </div>
+
       {airtimeModal && (
         <AirtimePurchaseModal
           onClose={() => setAirtimeModal(false)}
@@ -426,6 +481,8 @@ const DashData = () => {
           surdaAmount={surdaAmount}
           step={step}
           setStep={setStep}
+          /* accessPin={accessPin} */
+          setAccessPin={setAccessPin}
           handleProceed={handleSubmit}
         />
       )}
@@ -443,23 +500,3 @@ const DashData = () => {
 };
 
 export default DashData;
-
-/*  return (
-    <div>
-      <input
-        type="text"
-        placeholder="Phone number"
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
-      />
-      <input
-        type="number"
-        placeholder="Amount"
-        value={selectedAmount}
-        onChange={(e) => setSelectedAmount(Number(e.target.value))}
-      />
-      <button onClick={handleSubmit} disabled={loading}>
-        {loading ? "Processing..." : "Top Up"}
-      </button>
-    </div>
-  ); */

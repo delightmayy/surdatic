@@ -3,6 +3,8 @@ import { motion } from "framer-motion";
 import React, { useState, useRef } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import success from "../../img/succesimg.png"; // ✅ adjust path
+import axios from "axios";
+import { FaSpinner } from "react-icons/fa";
 
 type PinModalProps = {
   onClose: () => void;
@@ -11,20 +13,18 @@ type PinModalProps = {
 
 const PinModal: React.FC<PinModalProps> = ({ onClose, mode }) => {
   const [step, setStep] = useState(1);
+  const [error, setError] = useState("");
+  const [loading, setloading] = useState(false);
 
-  // 🔹 Step 1: PIN (4 digits)
+  // 🔹 Step 2: PIN (4 digits)
   const [pin, setPin] = useState<string[]>(["", "", "", ""]);
   const pinRef = useRef<(HTMLInputElement | null)[]>([]);
 
-  // 🔹 Step 2: OTP (6 digits)
+  // 🔹 Step 1: OTP (6 digits)
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
   const otpRef = useRef<(HTMLInputElement | null)[]>([]);
 
-  const handleChange = (
-    value: string,
-    index: number,
-    type: "pin" | "otp"
-  ) => {
+  const handleChange = (value: string, index: number, type: "pin" | "otp") => {
     if (/^[0-9]?$/.test(value)) {
       if (type === "pin") {
         const newPin = [...pin];
@@ -59,17 +59,104 @@ const PinModal: React.FC<PinModalProps> = ({ onClose, mode }) => {
     }
   };
 
-  const handleSubmitPin = (e: React.FormEvent) => {
+  const handleSubmitPin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (pin.every((p) => p !== "")) {
-      setStep(2); // go to OTP stage
+      try {
+        setloading(true);
+        setError("");
+        const response = await axios.get(
+          "https://api-surdatics.onrender.com/api/v1/transactions/request_otp",
+
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("✅ Pin verified successfully:", response.data);
+          setError(response.data.message);
+          setStep(2);
+        }
+      } catch (error: any) {
+        console.error(
+          " Error Sending OTP:",
+          error.response?.data || error.message
+        );
+        setError(" Error Sending OTP");
+      } finally {
+        setloading(false);
+      }
     }
   };
 
-  const handleSubmitOtp = (e: React.FormEvent) => {
+  const handleCreatePin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (otp.every((o) => o !== "")) {
-      setStep(3); // go to success stage
+    if (otp.every((o) => o !== "") && mode === "create") {
+      /* console.log("pin", pin.join(""));
+      console.log("otp", otp.join("")); */
+
+      try {
+        setloading(true);
+        const response = await axios.post(
+          "https://api-surdatics.onrender.com/api/v1/transactions/create_pin",
+          { pin: pin.join(""), otp: otp.join("") },
+
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("✅ Pin verified successfully:", response.data);
+          setError(response.data.message);
+          setStep(3);
+        }
+      } catch (error: any) {
+        console.error(
+          " Pin Creation failed:",
+          error.response?.data || error.message
+        );
+        setError(" Pin Creation failed");
+      } finally {
+        setloading(false);
+      }
+    }
+    if (otp.every((o) => o !== "") && mode === "reset") {
+      try {
+        setloading(true);
+        const response = await axios.put(
+          "https://api-surdatics.onrender.com/api/v1/transactions/reset_pin",
+          { otp: otp.join(""), new_pin: pin.join("") },
+
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("✅ Pin Reset successfully:", response.data);
+          setError(response.data.message);
+          setStep(3);
+        }
+      } catch (error: any) {
+        console.error(
+          " Pin Reset failed:",
+          error.response?.data || error.message
+        );
+        setError(" Pin Reset failed");
+      } finally {
+        setloading(false);
+      }
     }
   };
 
@@ -82,6 +169,7 @@ const PinModal: React.FC<PinModalProps> = ({ onClose, mode }) => {
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
       {/* Step 1: Enter Pin */}
+
       {step === 1 && (
         <motion.form
           onSubmit={handleSubmitPin}
@@ -125,12 +213,20 @@ const PinModal: React.FC<PinModalProps> = ({ onClose, mode }) => {
               />
             ))}
           </div>
+          {error != "" && (
+            <p className={`text-xs text-center italic  text-red-400  `}>
+              {error}
+            </p>
+          )}
 
           <button
             type="submit"
-            className="bg-sky-500/70 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
+            className="bg-sky-500/70 flex justify-center items-center gap-2 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
           >
             {mode === "create" ? "Create" : "Reset"}
+            {loading && (
+              <FaSpinner className="animate-spin text-black text-sm" />
+            )}
           </button>
         </motion.form>
       )}
@@ -138,7 +234,7 @@ const PinModal: React.FC<PinModalProps> = ({ onClose, mode }) => {
       {/* Step 2: OTP Verification */}
       {step === 2 && (
         <motion.form
-          onSubmit={handleSubmitOtp}
+          onSubmit={handleCreatePin}
           className="w-full max-w-lg bg-[#111] border border-white/20 shadow-lg rounded-2xl px-6 py-8 flex flex-col gap-6"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -181,11 +277,24 @@ const PinModal: React.FC<PinModalProps> = ({ onClose, mode }) => {
             ))}
           </div>
 
+          {error != "" && (
+            <p className={`text-xs text-center italic text-yellow-400  `}>
+              {error}
+            </p>
+          )}
+
           <button
             type="submit"
-            className="bg-sky-500/70 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
+            className="bg-sky-500/70 flex justify-center items-center gap-2 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
           >
-            Verify
+            {loading ? (
+              <>
+                Processing
+                <FaSpinner className="animate-spin text-black text-sm" />
+              </>
+            ) : (
+              "Verify"
+            )}
           </button>
         </motion.form>
       )}

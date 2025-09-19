@@ -207,7 +207,7 @@ const Register = () => {
               disabled={!check || loading}
               className="bg-sky-500/60 hover:bg-sky-600 items-center justify-center flex gap-1 transition-all text-white text-sm font-medium py-3 rounded-md disabled:opacity-20"
             >
-              {loading ? "Registering" : "Done"} {loading && <FaSpinner />}
+              {loading ? "Registering" : "Done"} {loading && <FaSpinner className="animate-spin" />}
             </button>
 
             {/* Footer Link */}

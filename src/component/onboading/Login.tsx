@@ -155,7 +155,7 @@ const Login = () => {
               disabled={loading}
               className="bg-sky-500/60 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md flex items-center justify-center gap-2 disabled:opacity-30"
             >
-              {loading ? "Signing In" : "Done"} {loading && <FaSpinner />}
+              {loading ? "Signing In" : "Done"} {loading && <FaSpinner className="animate-spin" />}
             </button>
 
             {/* Footer Link */}

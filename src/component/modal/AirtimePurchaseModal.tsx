@@ -1,6 +1,6 @@
 // components/modals/AirtimePurchaseModal.tsx
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import successIcon from "../../img/succesimg.png";
 import mtnicon from "../../img/mtn.png";
@@ -10,6 +10,8 @@ import Nmobileicon from "../../img/9mobile.png";
 import token from "../../img/SurdaToken.png";
 import { Link } from "react-router-dom";
 import PinModal from "./PinModal";
+import axios from "axios";
+import { FaSpinner } from "react-icons/fa";
 
 const AirtimePurchaseModal = ({
   onClose,
@@ -21,7 +23,9 @@ const AirtimePurchaseModal = ({
   surdaAmount,
   handleProceed,
   step,
-  setStep
+  setStep,
+  /*  accessPin, */
+  setAccessPin,
 }: {
   onClose: () => void;
   handleProceed: () => void;
@@ -32,33 +36,118 @@ const AirtimePurchaseModal = ({
   dataAmount: string;
   surdaAmount: string;
   step: number;
-  setStep: React.Dispatch<React.SetStateAction<number>>
+  setStep: React.Dispatch<React.SetStateAction<number>>;
+  /* accessPin: string; */
+  setAccessPin: React.Dispatch<React.SetStateAction<string>>;
 }) => {
-  /* const [step, setStep] = useState(1); */
-  const [pin, setPin] = useState(["", "", "", ""]);
   const [switchModal, setSwitchModal] = useState(false);
   const [mode, setMode] = useState<"create" | "reset">("create");
+  const [pin, setPin] = useState(["", "", "", ""]);
+  const [error, setError] = useState("");
+  const [loading, setloading] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const currentDate = new Date().toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
 
-  const transactionId = "cxucxwievm[rep]ewe";
+  /* const transactionId = "cxucxwievm[rep]ewe"; */
   const handleConfirm = (e: React.FormEvent) => {
     e.preventDefault();
-    handleProceed();
+    setStep(2);
   };
 
-  const handleVerify = () => {
-    setStep(3);
+  const handleVerify = async () => {
+    try {
+      setloading(true);
+      const response = await axios.post(
+        "https://api-surdatics.onrender.com/api/v1/transactions/verify_pin",
+        { pin: pin.join("") },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log("✅ Pin verified successfully:", response.data);
+        setAccessPin(pin.join(""));
+        setError(response.data.message);
+        handleProceed();
+      }
+    } catch (error: any) {
+      console.error(
+        " Pin verification failed:",
+        error.response?.data || error.message
+      );
+      setError(
+        error.response?.data || error.message || " Pin verification failed"
+      );
+    } finally {
+      setloading(false);
+    }
   };
 
-  const handlePinChange = (value: string, index: number) => {
+  const handlePinChange = (value: string, idx: number) => {
     const newPin = [...pin];
-    newPin[index] = value;
+    newPin[idx] = value.replace(/[^0-9]/g, ""); // allow only digits
     setPin(newPin);
+
+    if (value && idx < pin.length - 1) {
+      inputRefs.current[idx + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    idx: number
+  ) => {
+    if (e.key === "Backspace" && !pin[idx] && idx > 0) {
+      inputRefs.current[idx - 1]?.focus();
+    }
+  };
+
+  const handleToggle = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setIsChecked(checked);
+
+    if (checked) {
+      try {
+        setloading(true);
+        const response = await axios.post(
+          "https://api-surdatics.onrender.com/api/v1/redeem/save_beneficiary",
+          {
+            phone: phone,
+            network: network.charAt(1).toUpperCase + network.substring(1),
+          },
+
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (response.status === 200) {
+          console.log("✅ Beneficiaries:", response.data);
+          setError(response.data.message);
+        }
+      } catch (error: any) {
+        console.error(
+          " fail to save Beneficiaries",
+          error.response?.data || error.message
+        );
+        setError(" fail to save Beneficiaries");
+      } finally {
+        setloading(false);
+      }
+    }
   };
 
   return (
@@ -118,7 +207,6 @@ const AirtimePurchaseModal = ({
             <div className="flex justify-between items-center">
               <span className="text-white/60">Network:</span>
               <span className="text-white/80 flex items-center gap-1 capitalize">
-                {/* Replace this src with actual logo logic if needed */}
                 <img
                   src={
                     network === "Mtn"
@@ -139,10 +227,10 @@ const AirtimePurchaseModal = ({
               <span className="text-white/60">Phone Number:</span>
               <span className="text-white/80">{phone}</span>
             </div>
-            <div className="flex justify-between">
+            {/*  <div className="flex justify-between">
               <span className="text-white/60">Transaction ID:</span>
               <span className="text-white/80">{transactionId}</span>
-            </div>
+            </div> */}
             <div className="flex justify-between">
               <span className="text-white/60">Date and Time:</span>
               <span className="text-white/80">{currentDate}</span>
@@ -155,7 +243,8 @@ const AirtimePurchaseModal = ({
                 <input
                   type="checkbox"
                   className="sr-only peer"
-                  defaultChecked
+                  checked={isChecked}
+                  onChange={handleToggle}
                 />
                 <div className="relative w-10 h-5 bg-white/10 peer-focus:outline-none peer-checked:bg-blue-500 rounded-full transition-all"></div>
               </label>
@@ -190,7 +279,14 @@ const AirtimePurchaseModal = ({
               </p>
             </div>
 
-            <AiOutlineClose size={24} className="" onClick={onClose} />
+            <AiOutlineClose
+              size={24}
+              className=""
+              onClick={() => {
+                setStep(1);
+                onClose();
+              }}
+            />
           </div>
 
           <p className="text-2xl font-semibold tracking-wider text-white/60 text-center">
@@ -205,10 +301,14 @@ const AirtimePurchaseModal = ({
             {pin.map((val, idx) => (
               <input
                 key={idx}
+                ref={(el) => {
+                  inputRefs.current[idx] = el;
+                }}
                 type="password"
                 maxLength={1}
                 value={val}
                 onChange={(e) => handlePinChange(e.target.value, idx)}
+                onKeyDown={(e) => handleKeyDown(e, idx)}
                 className="w-12 h-12 bg-black/30 border border-white/20 text-white text-center text-lg rounded focus:outline-none focus:ring-1 ring-blue-400"
               />
             ))}
@@ -227,10 +327,26 @@ const AirtimePurchaseModal = ({
           </p>
           <button
             onClick={handleVerify}
-            className="w-full bg-blue-500 text-white font-semibold py-3 rounded-md hover:bg-blue-600"
+            disabled={pin.join("").length < 4}
+            className="w-full flex items-center justify-center bg-blue-500 text-white font-semibold py-3 rounded-md hover:bg-blue-600 disabled: cursor-not-allowed disabled:bg-blue-500/40"
           >
-            Verify
+            {loading ? (
+              <>
+                Processing...
+                <FaSpinner className="animate-spin text-black text-sm" />
+              </>
+            ) : (
+              "Verify"
+            )}
           </button>
+
+          <p
+            className={`text-xs text-center italic ${
+              error.includes("successfully") ? "text-green-400" : "text-red-400"
+            }`}
+          >
+            {error}
+          </p>
           <p className="text-xs text-center">
             Don’t have transaction pin?{" "}
             <span
@@ -266,7 +382,14 @@ const AirtimePurchaseModal = ({
               </p>
             </div>
 
-            <AiOutlineClose size={24} className="" onClick={onClose} />
+            <AiOutlineClose
+              size={24}
+              className=""
+              onClick={() => {
+                setStep(1);
+                onClose();
+              }}
+            />
           </div>
 
           <img src={successIcon} alt="Success" className="w-16" />
@@ -286,7 +409,10 @@ const AirtimePurchaseModal = ({
               Wallet
             </Link>
             <button
-              onClick={onClose}
+              onClick={() => {
+                setStep(1);
+                onClose();
+              }}
               className="flex-1 bg-black/30 border border-white/10 py-3 rounded-md hover:bg-white/10"
             >
               More Services
