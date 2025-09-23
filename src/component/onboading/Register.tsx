@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import img from "../../img/onboardingimg.png";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import axios from "axios";
-import { FaSpinner } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaSpinner } from "react-icons/fa";
 import OtpModal from "../modal/OTPModal";
 
 const Register = () => {
@@ -23,6 +23,7 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [check, setCheck] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Handle input changes
   const handleChange = (
@@ -47,16 +48,15 @@ const Register = () => {
         // add country here if backend expects it
       };
       const response = await axios.post(
-        "https://api.surdatics.com/auth/register", // confirm correct URL
+        "https://api.surdatics.com/auth/register",
         registerInfo
       );
 
       setLoading(false);
       // Success — redirect to login page
-       response.status && setOpenModal(true);
+      response.status === 201 && setOpenModal(true);
     } catch (err: any) {
       setLoading(false);
-      setOpenModal(true)
       setError(
         err.response?.data ||
           err.message ||
@@ -146,10 +146,10 @@ const Register = () => {
             </div>
 
             {/* Password */}
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <label className="text-sm mb-1">Password</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter your password"
                 className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
@@ -157,6 +157,12 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
+              <span
+                className="absolute right-3 top-10 text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
 
             {/* Country */}
@@ -207,7 +213,8 @@ const Register = () => {
               disabled={!check || loading}
               className="bg-sky-500/60 hover:bg-sky-600 items-center justify-center flex gap-1 transition-all text-white text-sm font-medium py-3 rounded-md disabled:opacity-20"
             >
-              {loading ? "Registering" : "Done"} {loading && <FaSpinner className="animate-spin" />}
+              {loading ? "Registering" : "Done"}{" "}
+              {loading && <FaSpinner className="animate-spin" />}
             </button>
 
             {/* Footer Link */}

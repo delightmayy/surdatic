@@ -1,4 +1,4 @@
-// components/modals/AirtimePurchaseModal.tsx
+
 import { motion } from "framer-motion";
 import React, { useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";

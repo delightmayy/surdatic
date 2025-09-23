@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import img from "../../img/onboardingimg.png";
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import axios from "axios";
-import { FaSpinner } from "react-icons/fa";
+import { FaEye, FaEyeSlash, FaSpinner } from "react-icons/fa";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -17,6 +17,7 @@ const Login = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   // Handle input changes
   const handleChange = (
@@ -117,10 +118,10 @@ const Login = () => {
             </div>
 
             {/* Password */}
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <label className="text-sm mb-1">Password</label>
               <input
-                type="password"
+                  type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter your password"
                 className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
@@ -128,6 +129,12 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
+                <span
+                            className="absolute right-3 top-10 text-gray-400 cursor-pointer"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <FaEyeSlash /> : <FaEye />}
+                          </span>
             </div>
 
             {/* Remember + Forgot */}
@@ -160,7 +167,7 @@ const Login = () => {
 
             {/* Footer Link */}
             <p className="mt-4 text-sm text-center text-gray-400">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <span
                 onClick={() => navigate("/register")}
                 className="text-sky-400 underline cursor-pointer"

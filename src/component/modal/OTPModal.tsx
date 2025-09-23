@@ -14,6 +14,7 @@ type OtpModalProps = {
 const OtpModal: React.FC<OtpModalProps> = ({ onClose, email }) => {
   const navigate = useNavigate();
   const [otp, setOtp] = useState<string[]>(["", "", "", "", "", ""]);
+  const [Error, setError] = useState("");
   const otpRef = useRef<(HTMLInputElement | null)[]>([]);
 
   const handleChange = (value: string, index: number) => {
@@ -45,10 +46,10 @@ const OtpModal: React.FC<OtpModalProps> = ({ onClose, email }) => {
       // Success — redirect to login page
       response.data?.success === true
         ? navigate("/login")
-        : alert("Invalid OTP Value");
+        : setError("Invalid OTP Value");
       console.log("auth successful");
     } catch (err: any) {
-      alert(err?.message);
+      setError(err?.message);
       console.log(err?.message);
     }
   };
@@ -107,6 +108,9 @@ const OtpModal: React.FC<OtpModalProps> = ({ onClose, email }) => {
             />
           ))}
         </div>
+        {Error != " " && (
+          <p className="text-xs text-yellow-400 italic">{Error}</p>
+        )}
 
         <button
           type="submit"

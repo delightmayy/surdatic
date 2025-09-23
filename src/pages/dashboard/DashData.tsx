@@ -77,7 +77,7 @@ const DashData = () => {
           ? {
               phone: Phone,
               network: activeNetwork.toLowerCase(),
-              token_amount: "0.02" /*  surdaAmount */,
+              token_amount: surdaAmount,
               pin: accessPin,
             }
           : {
@@ -89,7 +89,7 @@ const DashData = () => {
             };
 
       const response = await axios.post(
-        `https://api-surdatics.onrender.com/api/v1/redeeem/${purchaseOption.toLowerCase()}`,
+        `https://api-surdatics.onrender.com/api/v1/redeeem/${purchaseOption.toLowerCase()}`, // remember to remove extra e
 
         postData
       );
@@ -262,7 +262,7 @@ const DashData = () => {
             </div>
           </div>
 
-          {/* From & To Number */}
+          {/* To Number */}
           <div className="space-y-4">
             <div>
               <h2 className="w-fit px-2 py-1 text-white/60 bg-white/10 capitalize rounded mb-2 text-sm">

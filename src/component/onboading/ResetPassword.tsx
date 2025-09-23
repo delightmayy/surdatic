@@ -2,9 +2,58 @@
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import img from "../../img/onboardingimg.png";
+import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
+import { useState, type FormEvent } from "react";
+import axios from "axios";
 
 const ResetPassword = () => {
   const navigate = useNavigate();
+
+  // Input states
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  
+
+  // UI States
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleResetPassWord = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+
+    try {
+      const response = await axios.post(
+        "https://api.surdatics.com/auth/confirm_reset_password",
+        {
+          password,
+          confirmPassword,
+          otp,
+        }
+      );
+
+      setLoading(false);
+      if (response.data) {
+        navigate("/reset-success");
+      }
+    } catch (err: any) {
+      setLoading(false);
+      console.error(err);
+      setError(
+        err.response?.data?.data ||
+          err.message ||
+          "Password Reset failed. Please try again."
+      );
+    }
+  };
+
+  // Validation
+  const isFormValid =
+    password && confirmPassword  === password;
 
   return (
     <section className="bg-black min-h-screen flex flex-col md:flex-row text-white relative">
@@ -22,7 +71,9 @@ const ResetPassword = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           />
-          <h2 className="text-xl lg:mt-14 mt-8 font-medium">Get Started In Minutes</h2>
+          <h2 className="text-xl lg:mt-14 mt-8 font-medium">
+            Get Started In Minutes
+          </h2>
           <p className="text-gray-400 mt-2">
             Join, verify, and start earning through surveys.
           </p>
@@ -31,42 +82,92 @@ const ResetPassword = () => {
         {/* Right Side */}
         <div className="lg:w-3/5 flex items-center justify-center py-10 relative z-10">
           <motion.form
+            onSubmit={handleResetPassWord}
             className="w-full max-w-xl bg-white/5 border border-white/20 shadow-lg rounded-2xl px-6 py-8 flex flex-col gap-5"
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-2xl font-semibold text-center">Set New Password</h2>
+            <h2 className="text-2xl font-semibold text-center">
+              Set New Password
+            </h2>
 
             {/* New Password */}
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <label className="text-sm mb-1">New Password</label>
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter new password"
-                className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
+                className="bg-[#1a1a1a] text-sm px-4 py-3 pr-10 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
                 required
               />
+              <span
+                className="absolute right-3 top-10 text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
 
             {/* Confirm Password */}
-            <div className="flex flex-col">
+            <div className="flex flex-col relative">
               <label className="text-sm mb-1">Confirm Password</label>
               <input
-                type="password"
+                type={showConfirmPassword ? "text" : "password"}
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
                 placeholder="Confirm new password"
+                className="bg-[#1a1a1a] text-sm px-4 py-3 pr-10 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
+                required
+              />
+              <span
+                className="absolute right-3 top-10 text-gray-400 cursor-pointer"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
+            </div>
+
+            {/* OTP */}
+            <div className="flex flex-col">
+              <label className="text-sm mb-1">Enter OTP</label>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter OTP"
                 className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
                 required
               />
             </div>
 
-            {/* Submit */}
+            {/* Show error */}
+            {error && (
+              <p className="text-red-500 text-sm text-center">{error}</p>
+            )}
+            {!isFormValid && (
+              <p className="text-red-500 text-sm text-center capitalize">password does not match</p>
+            )}
+
+            {/* Submit Button */}
             <button
               type="submit"
-              onClick={() => navigate("/reset-success")}
-              className="bg-sky-500/60 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
+              disabled={!isFormValid || loading}
+              className={`${
+                !isFormValid || loading
+                  ? "bg-sky-500/30 cursor-not-allowed"
+                  : "bg-sky-500/60 hover:bg-sky-600"
+              } transition-all text-white text-sm font-medium py-3 rounded-md flex justify-center items-center gap-2`}
             >
-              Proceed
+              {loading ? (
+                <>
+                  Processing <FaSpinner className="animate-spin" />
+                </>
+              ) : (
+                "Reset Password"
+              )}
             </button>
           </motion.form>
         </div>

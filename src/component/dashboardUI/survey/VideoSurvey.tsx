@@ -170,7 +170,7 @@ const VideoSurveyDetail = () => {
                   <h3 className="text-xs max-w-fit text-white/90 mb-2 p-2 bg-white/10 rounded">
                     Respondent Schedule
                   </h3>
-                  <div className="flex flex-wrap items-center gap-2 mb-3 bg-black/30 border border-white/10 pe-3 rounded-lg">
+                  <div className="flex flex-wrap items-center gap-2 mb-3 bg-white/3 border border-white/10 pe-3 rounded-lg">
                     <input
                       type="datetime-local"
                       className="flex-1  rounded-lg px-3 py-2 uppercase text-xs text-white/60 focus:outline-none focus:border-blue-500 "

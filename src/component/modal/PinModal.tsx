@@ -2,7 +2,7 @@
 import { motion } from "framer-motion";
 import React, { useState, useRef } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import success from "../../img/succesimg.png"; // ✅ adjust path
+import success from "../../img/succesimg.png";
 import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
 

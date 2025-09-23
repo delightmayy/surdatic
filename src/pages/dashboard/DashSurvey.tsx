@@ -8,10 +8,12 @@ import KYCModal from "../../component/modal/KYCModal";
 import OverviewCards from "../../component/dashboardUI/survey/OverviewCards";
 import { Link } from "react-router-dom";
 import DataContext from "../../context/DataContext";
+import CreateSurveyModal from "../../component/modal/CreateSurveyModal";
 
 const DashSurvey = () => {
   const [availableTab, setAvailableTab] = useState("form");
   const [showKyc, setShowKyc] = useState(false);
+  const [openCreateModal, setopenCreateModal] = useState(false);
   const {
     surveyCreated,
     participatedStats,
@@ -45,7 +47,9 @@ const DashSurvey = () => {
             >
               Become a Validator
             </button>
-            <button className="flex gap-1 items-center sm:mt-0 px-4 py-2  bg-sky-700 hover:bg-sky-600 text-sm text-white">
+            <button 
+              onClick={() => setopenCreateModal(true)}
+            className="flex gap-1 items-center sm:mt-0 px-4 py-2  bg-sky-700 hover:bg-sky-600 text-sm text-white">
               <FiPlusSquare size={18} />
               Create Survey
             </button>
@@ -341,6 +345,7 @@ const DashSurvey = () => {
       </div>
 
       {showKyc && <KYCModal onClose={() => setShowKyc(false)} />}
+      {openCreateModal && <CreateSurveyModal onClose={() => setopenCreateModal(false)} />}
     </motion.main>
   );
 };
