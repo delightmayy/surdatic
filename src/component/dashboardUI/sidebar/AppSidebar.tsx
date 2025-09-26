@@ -4,7 +4,7 @@ import { Sidebar, Menu, MenuItem, sidebarClasses } from "react-pro-sidebar";
 /* import { Link } from "react-router-dom"; */
 import logo from "../../../img/logo.png";
 import sidebarimg from "../../../img/sidebarimg.png";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import {
   FiHome,
@@ -29,6 +29,8 @@ interface SidebarProps {
 
 const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
   const location = useLocation();
+  const navigate = useNavigate();
+
 
   return (
     <Sidebar
@@ -52,6 +54,7 @@ const AppSidebar: React.FC<SidebarProps> = ({ toggled, setToggled }) => {
         <motion.div
           className="flex-shrink-0 flex items-center gap-2"
           whileHover={{ scale: 1.05 }}
+          onClick={()=>navigate("/")}
         >
           <img src={logo} alt="Logo" className="w-22" />
         </motion.div>

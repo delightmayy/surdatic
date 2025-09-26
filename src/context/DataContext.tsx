@@ -4,6 +4,7 @@ import cardimg1 from "../img/card1img.png";
 import cardimg2 from "../img/card2img.png";
 import { FiLogOut, FiRepeat } from "react-icons/fi";
 import { FaCheck, FaRepeat, FaXmark } from "react-icons/fa6";
+import { useCookies } from "react-cookie";
 
 export interface Stat {
   title: string;
@@ -49,6 +50,7 @@ export interface MarketPlaceData {
 
 interface DataContextType {
   overveiwTab: string;
+  isAuthenticated: string;
   setOverveiwTab: (value: string) => void;
   UserSigned: boolean;
   setUserSigned: (value: boolean) => void;
@@ -77,6 +79,14 @@ interface DataProviderProps {
 export const DataProvider = ({ children }: DataProviderProps) => {
   const [overveiwTab, setOverveiwTab] = useState("created");
   const [UserSigned, setUserSigned] = useState(true);
+ /*  const [isAuthenticated] = useState(
+    localStorage.getItem("autoLogin") || "false"
+  ); */
+  const [cookies] = useCookies(["autoLogin"]);
+   const [isAuthenticated] = useState(
+   cookies.autoLogin || "false"
+  );
+  console.log(isAuthenticated);
 
   const targetDate = new Date("2025-09-30T00:00:00Z");
   const totalEarnings = 20546;
@@ -689,6 +699,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         surveyVideoParticipated,
         surveyVideoValidated,
         marketPlaceData,
+        isAuthenticated,
       }}
     >
       {children}

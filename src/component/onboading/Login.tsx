@@ -1,13 +1,13 @@
-
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import img from "../../img/onboardingimg.png";
 import { useState, type ChangeEvent, type FormEvent } from "react";
-import axios from "axios";
 import { FaEye, FaEyeSlash, FaSpinner } from "react-icons/fa";
+import { useAuth } from "../../api/useAuth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   // Form state
   const [formData, setFormData] = useState({
@@ -20,9 +20,7 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
 
   // Handle input changes
-  const handleChange = (
-    e: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -34,27 +32,15 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://api.surdatics.com/auth/login", // ✅ confirm backend login endpoint
-        {
-          email: formData.email,
-          password: formData.password,
-        }
-      );
+      await login(formData.email, formData.password);
 
       setLoading(false);
-
-      // Save token if provided
-      if (response.data?.access) {
-        localStorage.setItem("token", response.data.access);
-      }
-
       // Redirect to dashboard
       navigate("/dashboard");
     } catch (err: any) {
       setLoading(false);
-      console.log(err);
-      
+      /* console.log(err);
+       */
       setError(
         err.response?.data?.data ||
           err.message ||
@@ -100,7 +86,8 @@ const Login = () => {
               Sign In To Your Account
             </h2>
             <p className="text-sm text-gray-400 text-center">
-              Welcome, provide your login details below to sign in to your account.
+              Welcome, provide your login details below to sign in to your
+              account.
             </p>
 
             {/* Email */}
@@ -121,7 +108,7 @@ const Login = () => {
             <div className="flex flex-col relative">
               <label className="text-sm mb-1">Password</label>
               <input
-                  type={showPassword ? "text" : "password"}
+                type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Enter your password"
                 className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none transition-all focus:ring-1 focus:ring-sky-500/30"
@@ -129,18 +116,22 @@ const Login = () => {
                 value={formData.password}
                 onChange={handleChange}
               />
-                <span
-                            className="absolute right-3 top-10 text-gray-400 cursor-pointer"
-                            onClick={() => setShowPassword(!showPassword)}
-                          >
-                            {showPassword ? <FaEyeSlash /> : <FaEye />}
-                          </span>
+              <span
+                className="absolute right-3 top-10 text-gray-400 cursor-pointer"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </span>
             </div>
 
             {/* Remember + Forgot */}
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="accent-sky-500" />
+                <input
+                  type="checkbox"
+                  /*   onChange={() => setAutoLogin(true)} */
+                  className="accent-sky-500"
+                />
                 Remember me
               </label>
               <span
@@ -162,7 +153,8 @@ const Login = () => {
               disabled={loading}
               className="bg-sky-500/60 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md flex items-center justify-center gap-2 disabled:opacity-30"
             >
-              {loading ? "Signing In" : "Done"} {loading && <FaSpinner className="animate-spin" />}
+              {loading ? "Signing In" : "Done"}{" "}
+              {loading && <FaSpinner className="animate-spin" />}
             </button>
 
             {/* Footer Link */}

@@ -4,6 +4,7 @@ import token from "../../img/SurdaToken.png";
 import profile from "../../img/profileEmail.png";
 import numberBg from "../../img/numberBg.png";
 import SurveySuccessModal from "../../component/modal/SuccessModal";
+import { useAuth } from "../../api/useAuth";
 
 const initialReferrals = [
   { email: "jibug@example.com", reward: 50, status: "Pending" },
@@ -30,18 +31,18 @@ const referralEarnings = [
 
 const DashEarn = () => {
   const [copied, setCopied] = useState(false);
+
   const [show, setShow] = useState(false);
+  const {code} = useAuth()
   const [referralList, setReferralList] = useState(initialReferrals);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(
-      "https://surdarticles.com/referral?code=ABCD1234"
-    );
+    navigator.clipboard.writeText(`https://surdatics.com/auth?r=${code}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleClaim = (index:number) => {
+  const handleClaim = (index: number) => {
     setReferralList((prev) =>
       prev.map((ref, i) =>
         i === index && ref.status === "Pending"
@@ -60,6 +61,8 @@ const DashEarn = () => {
     );
   };
 
+ /*  console.log(code); */
+  
   return (
     <div className="text-white pb-20 max-w-7xl mx-auto flex flex-col lg:flex-row gap-6">
       {/* Left Section */}
@@ -85,11 +88,16 @@ const DashEarn = () => {
               <input
                 type="text"
                 className="flex-1 px-4 py-3 bg-transparent text-sm text-white/50 focus:outline-none"
-                value="https://surdarticles.com/referral?code=ABCD1234"
+                value={
+                  code != ""
+                    ? `https://surdatics.com/auth?r=${code}`
+                    : "loading"
+                }
                 disabled
               />
               <button
                 onClick={handleCopy}
+                disabled={code === ""}
                 className={`px-4 py-2 border-white/10 rounded-md  text-xs transition ${
                   copied
                     ? "border border-white/10 text-blue-400 bg-white/10"
@@ -292,7 +300,7 @@ const DashEarn = () => {
           subtitleB={
             "Your reward has been claimed and is automatically added to your wallet balance"
           }
-           buttonA={"More Rewards"}
+          buttonA={"More Rewards"}
         />
       )}
     </div>

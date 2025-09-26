@@ -8,18 +8,19 @@ import cardimg1 from "../../img/card1img.png";
 import { FaClock, FaEye, FaEyeSlash, FaUsers } from "react-icons/fa";
 import surdacoin from "../../img/tokenicon.png";
 import earnbg from "../../img/daskearnbg.png";
-import { FiPlusSquare, } from "react-icons/fi";
+import { FiPlusSquare } from "react-icons/fi";
 import { useContext, useState } from "react";
 
 import OverviewCards from "../../component/dashboardUI/survey/OverviewCards";
 import DataContext from "../../context/DataContext";
+import { Link } from "react-router-dom";
+import CreateSurveyModal from "../../component/modal/CreateSurveyModal";
+import { useAuth } from "../../api/useAuth";
 
 const containerFade = {
   hidden: { opacity: 0, y: 16 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
-
-
 
 const surveys = [
   {
@@ -73,8 +74,26 @@ const surveys = [
 ];
 
 export default function DashboardHome() {
+  const { becomeValidator } = useAuth();
   const [togleshow, SetTogleShow] = useState(false);
-  const {  participatedStats, validatedStats, createdStats, overveiwTab, setOverveiwTab,  totalEarnings  } = useContext(DataContext)!;
+  const [openCreateModal, setOpenCreateModal] = useState(false);
+  const {
+    participatedStats,
+    validatedStats,
+    createdStats,
+    overveiwTab,
+    setOverveiwTab,
+    totalEarnings,
+  } = useContext(DataContext)!;
+
+  const handleBecomeValidator = async () => {
+    try {
+      await becomeValidator();
+    } catch (err: any) {
+      console.log(err);
+    }
+  };
+
   return (
     <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 pb-24 ">
@@ -115,14 +134,23 @@ export default function DashboardHome() {
                 </span>
               </h3>
               <div className="flex w-full sm:w-auto flex-col sm:flex-row items-center gap-3 bg-black/90 rounded-3xl p-6 sm:p-1 sm:rounded-sm">
-                <button className="px-4 py-2 rounded-sm bg-white/10 hover:bg-white/15 text-sm cursor-pointer min-w-34 sm:min-w-0 ">
+                <button
+                  onClick={() => handleBecomeValidator()}
+                  className="px-4 py-2 rounded-sm bg-white/10 hover:bg-white/15 text-sm cursor-pointer min-w-34 sm:min-w-0 "
+                >
                   Become a Verifier
                 </button>
-                <button className="px-4 py-2 rounded-sm flex gap-1 items-center bg-white/90 hover:bg-white/70 text-sm cursor-pointer text-black min-w-34 sm:min-w-0">
+                <Link
+                  to={"/dashboard/surveys"}
+                  className="px-4 py-2 rounded-sm flex gap-1 items-center bg-white/90 hover:bg-white/70 text-sm cursor-pointer text-black min-w-34 sm:min-w-0"
+                >
                   <FaUsers size={20} />
                   Take Survey
-                </button>
-                <button className="flex gap-1 px-4 py-2 items-center rounded-sm bg-sky-500/70 hover:bg-sky-600 text-sm cursor-pointer text-black min-w-34 sm:min-w-0">
+                </Link>
+                <button
+                  onClick={() => setOpenCreateModal(true)}
+                  className="flex gap-1 px-4 py-2 items-center rounded-sm bg-sky-500/70 hover:bg-sky-600 text-sm cursor-pointer text-black min-w-34 sm:min-w-0"
+                >
                   <FiPlusSquare size={20} />
                   Create Survey
                 </button>
@@ -140,7 +168,7 @@ export default function DashboardHome() {
           </div>
         </motion.section>
 
-         {/* Tabs */}
+        {/* Tabs */}
 
         <p className="my-2 font-bold tracking-wider">Survey Overview</p>
         <div className="flex space-x-6 text-xs border-t border-white/10 mb-6">
@@ -193,8 +221,9 @@ export default function DashboardHome() {
           <div className="p-2 text-center sm:text-start">
             <h3 className="text-lg font-semibold">Available surveys</h3>
             <p className="text-sm text-white/55 mt-2">
-             Discover available surveys, share your insights, and earn SURDA tokens for every validated response
-            </p> 
+              Discover available surveys, share your insights, and earn SURDA
+              tokens for every validated response
+            </p>
           </div>
 
           <div className="mt-4">
@@ -265,8 +294,9 @@ export default function DashboardHome() {
           <div className="p-2 text-center sm:text-start">
             <h3 className="text-lg font-semibold">Available surveys</h3>
             <p className="text-sm text-white/55 mt-2">
-             Discover available surveys, share your insights, and earn SURDA tokens for every validated response
-            </p> 
+              Discover available surveys, share your insights, and earn SURDA
+              tokens for every validated response
+            </p>
           </div>
 
           <div className="mt-4">
@@ -327,6 +357,9 @@ export default function DashboardHome() {
           </div>
         </motion.section>
       </div>
+      {openCreateModal && (
+        <CreateSurveyModal onClose={() => setOpenCreateModal(false)} />
+      )}
     </motion.main>
   );
 }

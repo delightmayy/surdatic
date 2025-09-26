@@ -3,40 +3,16 @@ import { useEffect, useRef, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
-import success from "../../img/succesimg.png"
-import facescan from "../../img/facescan.png"
+import success from "../../img/succesimg.png";
+import facescan from "../../img/facescan.png";
+import { useAuth } from "../../api/useAuth";
 
 const KYCModal = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState(1);
   const [modelsLoaded, setModelsLoaded] = useState(false);
+  const { faceVerify } = useAuth();
 
   const handleStartVerification = () => setStep(2);
-
-  /* api */
-
-  /*  const handleConfirmFace = async () => {
-  const imageSrc = webcamRef.current?.getScreenshot();
-
-  if (!imageSrc) return;
-
-  try {
-    const response = await fetch("/api/kyc-upload", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ image: imageSrc }),
-    });
-
-    const data = await response.json();
-    console.log("Upload success:", data);
-    setStep(3); // Proceed to success step
-  } catch (err) {
-    console.error("Upload failed:", err);
-    alert("Failed to upload face image.");
-  }
-};
- */
 
   const videoConstraints = {
     width: 300,
@@ -45,6 +21,8 @@ const KYCModal = ({ onClose }: { onClose: () => void }) => {
   };
 
   const webcamRef = useRef<Webcam>(null);
+
+ 
 
   const handleConfirmFace = async () => {
     const video = webcamRef.current?.video;
@@ -55,6 +33,7 @@ const KYCModal = ({ onClose }: { onClose: () => void }) => {
     }
 
     try {
+      // ✅ Detect face
       const detection = await faceapi.detectSingleFace(
         video,
         new faceapi.TinyFaceDetectorOptions()
@@ -67,11 +46,25 @@ const KYCModal = ({ onClose }: { onClose: () => void }) => {
 
       console.log("✅ Face detected");
 
-      // (Optional) Simulate backend upload delay
-      await new Promise((res) => setTimeout(res, 1000));
+      // ✅ Take snapshot of the frame
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Proceed to next step
-      setStep(3);
+      // Convert to base64 (JPEG/PNG)
+      const imageData = canvas.toDataURL("image/jpeg");
+
+      // ✅ Send to backend
+      const response = await faceVerify(imageData);
+
+      if (response.data.success) {
+        console.log("✅ Backend verified:", response.data);
+        setStep(3); // proceed
+      } else {
+        alert("❌ Verification failed");
+      }
     } catch (err) {
       console.error("Face detection error:", err);
       alert("Something went wrong.");
@@ -83,7 +76,7 @@ const KYCModal = ({ onClose }: { onClose: () => void }) => {
     const loadModels = async () => {
       const MODEL_URL = "/models"; // Adjust path as needed
       await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
-       setModelsLoaded(true);
+      setModelsLoaded(true);
     };
     loadModels();
   }, []);
@@ -134,7 +127,6 @@ const KYCModal = ({ onClose }: { onClose: () => void }) => {
         </motion.div>
       )}
 
-     
       {step === 2 && (
         <motion.div
           className="w-full max-w-md bg-[#111] border border-white/20 shadow-lg rounded-2xl px-6 py-8 flex flex-col gap-6 items-center text-center"
@@ -183,7 +175,7 @@ const KYCModal = ({ onClose }: { onClose: () => void }) => {
 
           <button
             onClick={handleConfirmFace}
-             disabled={!modelsLoaded}
+            disabled={!modelsLoaded}
             className="bg-sky-500/70 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md w-full"
           >
             {modelsLoaded ? "Proceed" : "Loading models..."}
@@ -215,9 +207,11 @@ const KYCModal = ({ onClose }: { onClose: () => void }) => {
             />
           </div>
 
-           <img src={success} alt="..." className="w-20 mb-4 mx-auto" />
+          <img src={success} alt="..." className="w-20 mb-4 mx-auto" />
 
-          <h2 className="text-xl text-white font-semibold text-start ">KYC Approved</h2>
+          <h2 className="text-xl text-white font-semibold text-start ">
+            KYC Approved
+          </h2>
           <p className="text-sm text-gray-400">
             You can now proceed to take surveys and earn.
           </p>

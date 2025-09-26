@@ -1,19 +1,19 @@
-"use client";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+/* import { useNavigate } from "react-router-dom"; */
 import img from "../../img/onboardingimg.png";
 import { FaSpinner, FaEye, FaEyeSlash } from "react-icons/fa";
 import { useState, type FormEvent } from "react";
-import axios from "axios";
+/* import axios from "axios"; */
+import { useAuth } from "../../api/useAuth";
 
 const ResetPassword = () => {
-  const navigate = useNavigate();
+  /* const navigate = useNavigate(); */
+  const { resetPassword } = useAuth();
 
   // Input states
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [otp, setOtp] = useState("");
-  
 
   // UI States
   const [loading, setLoading] = useState(false);
@@ -27,33 +27,22 @@ const ResetPassword = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post(
-        "https://api.surdatics.com/auth/confirm_reset_password",
-        {
-          password,
-          confirmPassword,
-          otp,
-        }
-      );
-
-      setLoading(false);
-      if (response.data) {
-        navigate("/reset-success");
-      }
+      await resetPassword("", confirmPassword, otp);
     } catch (err: any) {
       setLoading(false);
       console.error(err);
       setError(
-        err.response?.data?.data ||
+        err.response?.data.data ||
           err.message ||
           "Password Reset failed. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
   // Validation
-  const isFormValid =
-    password && confirmPassword  === password;
+  const isFormValid = password && confirmPassword === password;
 
   return (
     <section className="bg-black min-h-screen flex flex-col md:flex-row text-white relative">
@@ -148,7 +137,11 @@ const ResetPassword = () => {
               <p className="text-red-500 text-sm text-center">{error}</p>
             )}
             {!isFormValid && (
-              <p className="text-red-500 text-sm text-center capitalize">password does not match</p>
+              <p className="text-red-500 text-sm text-center capitalize">
+                {password != "" && confirmPassword != ""
+                  ? "password does not match"
+                  : ""}
+              </p>
             )}
 
             {/* Submit Button */}

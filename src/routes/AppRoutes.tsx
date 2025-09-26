@@ -30,8 +30,15 @@ import P2POrderPage from "../component/dashboardUI/p2p/P2POrderPage";
 import SurveyHistoryPage from "../component/dashboardUI/survey/SurveyHistoryPage";
 import SurveyAnalysisPage from "../component/dashboardUI/survey/SurveyAnalysisPage";
 import VideoSurveyCallPage from "../component/dashboardUI/survey/VideoSurveyCallPage";
+import ProtectedRoute from "./ProtectedRoute";
+/* import { useState } from "react"; */
 
 export const AppRoutes = () => {
+   /* const isAuthenticated = false */
+   
+   /* destructure save login check from login page save in localStorage or cookies for is isAuthenticated */
+  
+
   return (
     <Routes>
       <Route path="/" element={<MainHome />} />
@@ -46,31 +53,34 @@ export const AppRoutes = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/reset-success" element={<ResetSuccess />} />
 
-      <Route path="/dashboard" element={<Layout />}>
-        <Route index element={<DashboardHome />} />
-        <Route path="wallet" element={<Wallet />} />
-        <Route path="p2pmarket" element={<PTPMarket />} />
-        <Route path="p2p-order" element={<P2POrderPage />} />
+      <Route element={<ProtectedRoute   />}> 
+        <Route path="/dashboard" element={<Layout />}>
+          <Route index element={<DashboardHome />} />
+          <Route path="wallet" element={<Wallet />} />
+          <Route path="p2pmarket" element={<PTPMarket />} />
+          <Route path="p2p-order" element={<P2POrderPage />} />
 
-        <Route path="surveys" element={<DashSurvey />} />
-        <Route path="surveys/:id" element={<FormSurveyDetail />} />
-        <Route path="videos/:id" element={<VideoSurveyDetail />} />
-        <Route path="questionaire" element={<SurveyQuestionPage />} />
-        <Route path="history" element={<SurveyHistoryPage />} />
-        <Route path="analysis/:id" element={<SurveyAnalysisPage />} />
-        <Route path="videocall" element={<VideoSurveyCallPage />} />
+          <Route path="surveys" element={<DashSurvey />} />
+          <Route path="surveys/:id" element={<FormSurveyDetail />} />
+          <Route path="videos/:id" element={<VideoSurveyDetail />} />
+          <Route path="questionaire" element={<SurveyQuestionPage />} />
+          <Route path="history" element={<SurveyHistoryPage />} />
+          <Route path="analysis/:id" element={<SurveyAnalysisPage />} />
+          <Route path="videocall" element={<VideoSurveyCallPage />} />
 
-        <Route path="market" element={<DashMarket />} />
-        <Route path="markets/:id" element={<MarketPlaceDetails />} />
-        <Route path="airtime" element={<DashData />} />
-        <Route path="stake" element={<DashStake />} />
-        <Route path="earn" element={<DashEarn />} />
-        <Route path="tokenomics" element={<Dashtokenomics />} />
-        <Route path="api" element={<DashApi />} />
-        <Route path="settings" element={<DashSettings />} />
+          <Route path="market" element={<DashMarket />} />
+          <Route path="markets/:id" element={<MarketPlaceDetails />} />
+          <Route path="airtime" element={<DashData />} />
+          <Route path="stake" element={<DashStake />} />
+          <Route path="earn" element={<DashEarn />} />
+          <Route path="tokenomics" element={<Dashtokenomics />} />
+          <Route path="api" element={<DashApi />} />
+          <Route path="settings" element={<DashSettings />} />
 
-        <Route path="*" element={<ErrorPage />} />
-      </Route>
+          <Route path="*" element={<ErrorPage />} />
+        </Route>
+       </Route> 
+
       <Route path="*" element={<ErrorPage />} />
     </Routes>
   );

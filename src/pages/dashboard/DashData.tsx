@@ -89,7 +89,7 @@ const DashData = () => {
             };
 
       const response = await axios.post(
-        `https://api-surdatics.onrender.com/api/v1/redeeem/${purchaseOption.toLowerCase()}`, // remember to remove extra e
+        `https://api-surdatics.onrender.com/api/v1/redeem/${purchaseOption.toLowerCase()}`, // remember to remove extra e
 
         postData
       );

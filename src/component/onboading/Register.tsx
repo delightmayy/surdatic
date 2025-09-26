@@ -45,7 +45,7 @@ const Register = () => {
         last_name: formData.last_name,
         email: formData.email,
         password: formData.password,
-        // add country here if backend expects it
+       
       };
       const response = await axios.post(
         "https://api.surdatics.com/auth/register",

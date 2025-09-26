@@ -3,13 +3,45 @@ import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import success from "../../img/succesimg.png";
+import { useAuth } from "../../api/useAuth";
+import ErrorModal from "./ErrorModal";
 
 const UpdateBioModal = ({ onClose }: { onClose: () => void }) => {
   const [step, setStep] = useState(1);
+  const [errmsg, setErrmsg] = useState("");
+  const [openError, setOpenError] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { updateProfile } = useAuth();
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setStep(2);
+
+    const formData = new FormData(e.currentTarget);
+
+    const data = {
+      first_name: formData.get("firstName"),
+      last_name: formData.get("lastName"),
+      dob: formData.get("dob"),
+      country: formData.get("country"),
+      phone: formData.get("phone"),
+      address: formData.get("address"),
+      occupation: formData.get("occupation"),
+      gender: formData.get("gender"),
+      city: formData.get("city"),
+      profession: formData.get("profession"),
+      bio: formData.get("bio"),
+    };
+
+    console.log("Submitting Data:", data);
+
+    try {
+      const response = await updateProfile(data);
+      /*  console.log("✅ Update Success:", response.data); */
+      response.data && setStep(2); // move to success step
+    } catch (error) {
+      setErrmsg("Something went wrong while updating your profile.");
+      setOpenError(true);
+    }
   };
 
   return (
@@ -25,7 +57,9 @@ const UpdateBioModal = ({ onClose }: { onClose: () => void }) => {
         >
           <div className="flex justify-between border-b-2 border-dashed border-b-white/30 pb-3">
             <div>
-              <h2 className="text-xl font-semibold text-white">Update Biodata</h2>
+              <h2 className="text-xl font-semibold text-white">
+                Update Biodata
+              </h2>
               <p className="text-sm text-white/50">
                 Complete/Update your profile
               </p>
@@ -37,49 +71,88 @@ const UpdateBioModal = ({ onClose }: { onClose: () => void }) => {
           <div className="flex flex-col sm:flex-row gap-4">
             <input
               type="text"
+              name="firstName"
               placeholder="First Name"
-              className="flex-1 bg-[#1a1a1a] px-4 py-3 rounded-md outline-none text-sm"
+              className="flex-1 bg-white/5 px-4 py-3 rounded-md outline-none text-sm"
               required
             />
             <input
               type="text"
+              name="lastName"
               placeholder="Last Name"
-              className="flex-1 bg-[#1a1a1a] px-4 py-3 rounded-md outline-none text-sm "
+              className="flex-1 bg-white/5 px-4 py-3 rounded-md outline-none text-sm "
               required
             />
           </div>
 
           <input
             type="date"
-            className="bg-[#1a1a1a] text-blue-400 px-4 py-3 rounded-md outline-none text-sm uppercase"
+            name="dob"
+            className="bg-white/5 text-blue-400 px-4 py-3 rounded-md outline-none text-sm uppercase"
             required
           />
 
-          <select className="bg-[#1a1a1a] text-blue-400 px-4 py-3 rounded-md outline-none text-sm">
-            <option>Select Gender</option>
-            <option>Male</option>
-            <option>Female</option>
+          <input
+            type="text"
+            name="country"
+            placeholder="Country"
+            className="flex-1 bg-white/5 px-4 py-3 rounded-md outline-none text-sm "
+            required
+          />
+
+          <input
+            type="text"
+            name="phone"
+            placeholder="Phone"
+            className="flex-1 bg-white/5 px-4 py-3 rounded-md outline-none text-sm "
+            required
+          />
+
+          <input
+            type="text"
+            name="address"
+            placeholder="Address"
+            className="flex-1 bg-white/5 px-4 py-3 rounded-md outline-none text-sm "
+            required
+          />
+
+          <input
+            type="text"
+            name="occupation"
+            placeholder="Occupation"
+            className="flex-1 bg-white/5 px-4 py-3 rounded-md outline-none text-sm "
+            required
+          />
+
+          <select
+            name="gender"
+            className="bg-white/5 text-blue-400 px-4 py-3 rounded-md outline-none text-sm"
+          >
+            <option value="">Select Gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
           </select>
 
           <input
             type="text"
-            placeholder="Enter Address"
-            className="bg-[#1a1a1a] px-4 py-3 rounded-md outline-none text-sm"
+            name="city"
+            placeholder="City"
+            className="bg-white/5 px-4 py-3 rounded-md outline-none text-sm"
+            required
+          />
+          <input
+            type="text"
+            name="profession"
+            placeholder="Profession"
+            className="bg-white/5 px-4 py-3 rounded-md outline-none text-sm"
             required
           />
 
-          <select className="bg-[#1a1a1a] text-blue-400 px-4 py-3 rounded-md outline-none text-sm">
-            <option>Select Occupation</option>
-            <option>Developer</option>
-            <option>Designer</option>
-            <option>Other</option>
-          </select>
-
-          <input
-            type="text"
+          <textarea
+            name="bio"
             placeholder="Short Bio (50 characters max)"
             maxLength={50}
-            className="bg-[#1a1a1a] px-4 py-3 rounded-md outline-none text-sm"
+            className="bg-white/5 px-4 py-3 min-h-28 rounded-md outline-none text-sm"
           />
 
           <button
@@ -114,6 +187,10 @@ const UpdateBioModal = ({ onClose }: { onClose: () => void }) => {
             Done
           </button>
         </motion.div>
+      )}
+
+      {openError && (
+        <ErrorModal onClose={() => setOpenError(false)} message={errmsg} />
       )}
     </div>
   );

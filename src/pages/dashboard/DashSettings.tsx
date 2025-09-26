@@ -2,12 +2,17 @@ import { useState } from "react";
 import UpdateBioModal from "../../component/modal/UpdateBioModal";
 import KYCModal from "../../component/modal/KYCModal";
 import PinModal from "../../component/modal/PinModal";
+import { useAuth } from "../../api/useAuth";
+
 
 const DashSettings = () => {
   const [showBiodata, setShowBiodata] = useState(false);
+  const {refStatus} = useAuth();
   const [showKYC, setShowKYC] = useState(false);
   const [showPin, setShowPin] = useState(false);
 
+ /*  console.log(refStatus); */
+  
   return (
     <div className="min-h-screen text-white pt-4 pb-20 max-w-7xl mx-auto">
       {/* Header */}
@@ -49,8 +54,13 @@ const DashSettings = () => {
               <p className="text-xs text-white/60">Provide KYC information</p>
             </div>
 
-            <p className="text-xs w-fit px-4 text-emerald-400 border border-emerald-500/30 rounded flex items-center gap-1 py-2">
-              <span className="text-white/80">Status:</span> Verified
+            <p className="text-xs w-fit px-4 border border-emerald-500/30 rounded flex items-center gap-1 py-2">
+              <span className="text-white/80">Status:</span>
+              {refStatus ? (
+                <span className=" text-emerald-400">Verified</span>
+              ) : (
+                <span className="text-yellow-400">Unverified</span>
+              )}
             </p>
           </div>
         </section>

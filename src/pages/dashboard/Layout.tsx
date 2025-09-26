@@ -1,11 +1,41 @@
 // Layout.tsx
-import React from "react";
+import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { FiBell, FiSearch, FiMenu } from "react-icons/fi";
 import AppSidebar from "../../component/dashboardUI/sidebar/AppSidebar";
+import ErrorModal from "../../component/modal/ErrorModal";
+import { useAuth } from "../../api/useAuth";
+import { type Notification } from "../../context/AuthContext";
 
 export default function Layout() {
-  const [toggled, setToggled] = React.useState(false);
+  const { user, notifyUser } = useAuth();
+  const [toggled, setToggled] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [notifyModal, setNotifityModal] = useState(false);
+  const [notification, setNotification] = useState<Notification[] | []>([]);
+
+  useEffect(() => {
+    const handleNotifyMessage = async () => {
+      setLoading(true);
+      try {
+        const response = await notifyUser();
+        if (response.data) {
+          setNotification(response.data);
+          /* console.log("check", response.data); */
+        }
+      } catch (err: any) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    handleNotifyMessage();
+
+    const interval = setInterval(handleNotifyMessage, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="h-screen overflow-hidden bg-[#0b0c10] text-white flex">
@@ -42,14 +72,41 @@ export default function Layout() {
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500" />
               </button>
               <div className="flex items-center gap-3">
-                <img
-                  src="https://i.pravatar.cc/56?img=12"
-                  alt="avatar"
-                  className="w-9 h-9 rounded-full object-cover"
-                />
+                <p
+                  /*  src="https://i.pravatar.cc/56?img=12"
+                  alt="avatar" */
+                  className="w-9 h-9 relative rounded-full flex justify-center text-xl text-center items-center bg-white/15 object-cover"
+                >
+                  {user?.last_name.charAt(0).toUpperCase()}
+                  {notification.length > 0 && (
+                    <p
+                      onClick={() => setNotifityModal(true)}
+                      className={`w-3 h-3 rounded-full  absolute -top-0.5 right-1 ${
+                        loading ? "bg-yellow-500/70" : "bg-green-500/70"
+                      }`}
+                    ></p>
+                  )}
+                </p>
                 <div className="hidden sm:block">
-                  <div className="text-sm font-medium">Alison Dye</div>
-                  <div className="text-[11px] text-white/50">@alison.dev</div>
+                  {user === null ? (
+                    <div className="text-sm font-light italic text-white/90 capitalize">
+                      loading... {/* {profile?.first_name} */}
+                    </div>
+                  ) : (
+                    <div className="text-sm font-light text-white/90 capitalize">
+                      {user?.last_name} {/* {profile?.first_name} */}
+                    </div>
+                  )}
+
+                  {user === null ? (
+                    <div className="text-[11px] italic text-white/50">
+                      loading user mail...
+                    </div>
+                  ) : (
+                    <div className="text-[11px] text-white/50">
+                      {user?.email}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -61,6 +118,12 @@ export default function Layout() {
           <Outlet />
         </main>
       </div>
+      {notifyModal && (
+        <ErrorModal
+          onClose={() => setNotifityModal(false)}
+          message=" fake check"
+        />
+      )}
     </div>
   );
 }

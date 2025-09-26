@@ -3,39 +3,34 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import img from "../../img/onboardingimg.png";
 import { useState, type FormEvent } from "react";
-import axios from "axios";
 import { FaSpinner } from "react-icons/fa";
+import { useAuth } from "../../api/useAuth";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
+  const { forgetPassword } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [email, setEmail] = useState<string>("");
 
   // Handle form submit
   const handleforgetPassWord = async (e: FormEvent<HTMLFormElement>) => {
+    
     e.preventDefault();
     setError(null);
     setLoading(true);
 
     try {
-      /* const token = localStorage.getItem("token"); */
-      const response = await axios.post(
-        "https://api.surdatics.com/auth/reset_password",
-        { email } // ✅ confirm backend login endpoint
-      );
-
-      setLoading(false);
-      response.data && navigate("/reset-password");
+      await forgetPassword(email);
     } catch (err: any) {
-      setLoading(false);
-      console.log(err);
-
+      /*  console.log(err); */
       setError(
         err.response?.data?.data ||
           err.message ||
           "Password Reset failed. Please try again."
       );
+    } finally {
+      setLoading(false);
     }
   };
 
