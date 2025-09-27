@@ -51,6 +51,13 @@ export interface Notification {
   user: string; // UUID
 }
 
+export interface stakeData {
+  amount: string;
+  profit: string;
+  user: string;
+  active: boolean;
+}
+
 interface AuthContextType {
   user: UserProfile | null;
   code: string;
@@ -68,6 +75,71 @@ interface AuthContextType {
   updateProfile: (data: ProfileData) => Promise<AxiosResponse<any>>;
 
   notifyUser: () => Promise<AxiosResponse<any>>;
+
+  addStake: (data: stakeData) => Promise<AxiosResponse<any>>;
+
+  userStake: () => Promise<AxiosResponse<any>>;
+
+  sumStake: () => Promise<AxiosResponse<any>>;
+
+  userStakewithId: (id: string) => Promise<AxiosResponse<any>>;
+
+  withdrawStake: (id: string) => Promise<AxiosResponse<any>>;
+
+  covertSurda: (amount: number, asset: string) => Promise<AxiosResponse<any>>;
+
+  evmAssetSurdaSwapID: (
+    amount: number,
+    id: string
+  ) => Promise<AxiosResponse<any>>;
+
+  walletAssetConvertID: (
+    amount: number,
+    id: string
+  ) => Promise<AxiosResponse<any>>;
+
+  evmAssetTransferID: (
+    amount: number,
+    id: string,
+    to: string
+  ) => Promise<AxiosResponse<any>>;
+
+  walletAssetTransferID: (
+    amount: number,
+    id: string,
+    to: string
+  ) => Promise<AxiosResponse<any>>;
+
+  walletTransfer: (
+    amount: number,
+    to: string
+  ) => Promise<AxiosResponse<any>>;
+
+  getEvmAssetID: (id: string) => Promise<AxiosResponse<any>>;
+
+  userAssetTransactionID: (id: string) => Promise<AxiosResponse<any>>;
+
+  getEvmAsset: () => Promise<AxiosResponse<any>>;
+
+  getEvmWallet: () => Promise<AxiosResponse<any>>;
+
+  getLskBalance: () => Promise<AxiosResponse<any>>;
+
+  getSurdaRate: () => Promise<AxiosResponse<any>>;
+
+  transferFee: () => Promise<AxiosResponse<any>>;
+
+  userIcpAsset: () => Promise<AxiosResponse<any>>;
+
+  userTransaction: () => Promise<AxiosResponse<any>>;
+
+  userWallet: () => Promise<AxiosResponse<any>>;
+
+  userIcpAssetID: (id: string) => Promise<AxiosResponse<any>>;
+
+  userTransactionID: (id: string) => Promise<AxiosResponse<any>>;
+
+  verifyLskTransaction: (tx: string) => Promise<AxiosResponse<any>>;
 
   resetPassword: (
     email: string,
@@ -189,6 +261,125 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     return api.get("/auth/user_notification");
   };
 
+  const addStake = async (data: stakeData): Promise<AxiosResponse<any>> => {
+    return api.post("/wallet/add_staken", data);
+  };
+
+  const userStake = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/user_stake");
+  };
+
+  const userStakewithId = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/wallet/user_stake/${id}`);
+  };
+
+  const sumStake = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/user_stake_sum");
+  };
+
+  const withdrawStake = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/wallet/withdraw_stake/${id}`);
+  };
+
+  const covertSurda = async (
+    amount: number,
+    asset: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post("/wallet/convert_surda", { amount, asset });
+  };
+
+  const evmAssetSurdaSwapID = async (
+    amount: number,
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/wallet/evm_asset_surda_swap/${id}`, { amount });
+  };
+
+  const evmAssetTransferID = async (
+    amount: number,
+    id: string,
+    to: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/wallet/evm_asset_transfer/${id}`, { to, amount });
+  };
+
+  const getEvmAssetID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/wallet/get_evm_asset/${id}`);
+  };
+
+  const getEvmAsset = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/get_evm_assets");
+  };
+
+  const getEvmWallet = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/get_evm_wallet");
+  };
+
+  const getLskBalance = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/get_lsk_balance");
+  };
+
+  const getSurdaRate = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/get_surda_rate");
+  };
+  const transferFee = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/transfer_fee");
+  };
+
+  const userAssetTransactionID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/wallet/user_asset_transaction/${id}`);
+  };
+
+  const userIcpAssetID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/wallet/user_icp_assets/${id}`);
+  };
+
+  const userTransactionID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/wallet/user_transaction/${id}`);
+  };
+
+  const userIcpAsset = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/user_icp_assets");
+  };
+
+  const userTransaction = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/user_transaction");
+  };
+
+  const userWallet = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/wallet/user_wallet");
+  };
+
+  const verifyLskTransaction = async (
+    tx: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post("/wallet/verify_lsk_transaction", tx);
+  };
+
+  const walletAssetConvertID = async (
+    amount: number,
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/wallet/wallet_asset_convert/${id}`, { amount });
+  };
+
+  const walletAssetTransferID = async (
+    amount: number,
+    id: string,
+    to: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/wallet/wallet_asset_transfer/${id}`, { to, amount });
+  };
+
+  const walletTransfer = async (
+    amount: number,
+    to: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post("/wallet/wallet_transfer", { to, amount });
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -209,6 +400,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         faceVerify,
         updateProfile,
         notifyUser,
+        addStake,
+        userStake,
+        userStakewithId,
+        sumStake,
+        withdrawStake,
+        covertSurda,
+        evmAssetSurdaSwapID,
+        evmAssetTransferID,
+        getEvmAssetID,
+        getEvmAsset,
+        getEvmWallet,
+        getLskBalance,
+        getSurdaRate,
+        transferFee,
+        userAssetTransactionID,
+        userIcpAsset,
+        userIcpAssetID,
+        userTransaction,
+        userTransactionID,
+        userWallet,
+        verifyLskTransaction,
+        walletAssetConvertID,
+        walletAssetTransferID,
+        walletTransfer,
         logout,
         isAuthenticated: !!token,
       }}

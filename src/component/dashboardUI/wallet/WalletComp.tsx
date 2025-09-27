@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
   FiSend,
@@ -14,15 +14,53 @@ import ReceiveTokenModal from "../../modal/ReceiveTokenModal";
 import ConvertTokenModal from "../../modal/ConvertTokenModal";
 import BuyTokenModal from "../../modal/BuyTokenModal";
 import BuyWithCardModal from "../../modal/BuyWithCardModal";
+import { useAuth } from "../../../api/useAuth";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+import DataContext from "../../../context/DataContext";
 
-type Token = {
+interface UserWallet {
+  address: string;
+  user: string;
+  balance: number;
+}
+
+interface UserICPAsset {
   id: string;
   name: string;
   symbol: string;
-  icon?: string;
-  portfolioPct: number;
-  price: number;
   balance: number;
+  decimals: number;
+  canister_id: string;
+  image: string;
+  created_at: string; // ISO or formatted date string
+  updated_at: string; // ISO or formatted date string
+}
+
+interface EvmAsset {
+  id: string;
+  name: string;
+  symbol: string;
+  balance: number;
+  decimals: number;
+  chain_id: string;
+  contract_address: string;
+  rpc_url: string;
+  image: string;
+  explorer_url: string | null;
+  explorer_api_url: string | null;
+  created_at: string; // formatted or ISO date string
+  updated_at: string; // formatted or ISO date string
+}
+
+export type CommonAsset = {
+  id: string;
+  balance: number;
+  name: string;
+  symbol: string;
+  image: string;
+  decimals: number;
+  created_at: string;
+  updated_at: string;
 };
 
 type NFT = {
@@ -31,45 +69,6 @@ type NFT = {
   image: string;
   price: number;
 };
-
-const DUMMY_TOKENS: Token[] = [
-  {
-    id: "surda",
-    name: "Surda",
-    symbol: "SURDA",
-    icon: "https://picsum.photos/seed/surda/40/40",
-    portfolioPct: 8.08,
-    price: 0.001,
-    balance: 20546,
-  },
-  {
-    id: "ckusdt",
-    name: "ckUSDT",
-    symbol: "cKUSDT",
-    icon: "https://picsum.photos/seed/usdt/40/40",
-    portfolioPct: 12.3,
-    price: 1.0,
-    balance: 1000,
-  },
-  {
-    id: "ckusdc",
-    name: "ckUSDC",
-    symbol: "cKUSDC",
-    icon: "https://picsum.photos/seed/usdc/40/40",
-    portfolioPct: 5.1,
-    price: 1.0,
-    balance: 500,
-  },
-  {
-    id: "lisk",
-    name: "LISK",
-    symbol: "LISK",
-    icon: "https://picsum.photos/seed/lisk/40/40",
-    portfolioPct: 20,
-    price: 2.5,
-    balance: 200,
-  },
-];
 
 const DUMMY_NFTS: NFT[] = [
   {
@@ -98,9 +97,16 @@ const containerFade = {
 };
 
 const WalletComponent = () => {
-  const [tokens] = useState<Token[]>(DUMMY_TOKENS);
+  const { userWallet, userIcpAsset, getEvmAsset, userTransaction } = useAuth();
+  const { togleshow, SetTogleShow } = useContext(DataContext)!;
+  const [UserWallet, setUserWallet] = useState<UserWallet | null>();
+  const [UserICPAsset, setUserICPAsset] = useState<UserICPAsset[] | null>();
+  const [UserEvmAsset, setUserEvmAsset] = useState<EvmAsset[] | null>();
+  const [UserHistory, setUserHistory] = useState<EvmAsset[] | null>();
+  const userAddress = UserWallet?.address;
+
   const [nfts] = useState<NFT[]>(DUMMY_NFTS);
-  const [query /* setQuery */] = useState("");
+  const [query] = useState("");
   const [sendModalState, setSendModalState] = useState(false);
   const [receiveModalState, setReceiveModalState] = useState(false);
   const [convertModalState, setConvertModalState] = useState(false);
@@ -108,17 +114,41 @@ const WalletComponent = () => {
   const [buywithCardState, setBuyWithCardState] = useState(false);
 
   const [sort, setSort] = useState<
-    "recent" | "name-asc" | "low-high" | "high-low"
-  >("recent");
+    "name-asc" | "recent" | "low-high" | "high-low"
+  >("name-asc");
 
   const [showSort, setShowSort] = useState(false);
-  const [activeTab, setActiveTab] = useState<"tokens" | "nfts">("tokens");
+  const [activeTab, setActiveTab] = useState<"tokens" | "nfts" | "history">(
+    "tokens"
+  );
 
-  const userAddress = "rnz5UXKNZN4yKaBqkuBnEQF4aTS8N1j6TL";
+  const Assets: CommonAsset[] = [
+    ...(UserICPAsset?.map((a) => ({
+      id: a.id,
+      balance: a.balance,
+      name: a.name,
+      symbol: a.symbol,
+      image: a.image,
+      decimals: a.decimals,
+      created_at: a.created_at,
+      updated_at: a.updated_at,
+    })) ?? []),
+
+    ...(UserEvmAsset?.map((b) => ({
+      id: b.id,
+      balance: b.balance,
+      name: b.name,
+      symbol: b.symbol,
+      image: b.image,
+      decimals: b.decimals,
+      created_at: b.created_at,
+      updated_at: b.updated_at,
+    })) ?? []),
+  ];
 
   // Derived tokens based on search + sort
-  const visibleTokens = useMemo(() => {
-    let list = tokens.filter(
+  const visibleAssets = useMemo(() => {
+    let list = Assets.filter(
       (t) =>
         t.name.toLowerCase().includes(query.toLowerCase()) ||
         t.symbol.toLowerCase().includes(query.toLowerCase())
@@ -126,14 +156,14 @@ const WalletComponent = () => {
 
     if (sort === "name-asc") {
       list = [...list].sort((a, b) => a.name.localeCompare(b.name));
-    } else if (sort === "low-high") {
+    } /*  else if (sort === "low-high") {
       list = [...list].sort((a, b) => a.price - b.price);
     } else if (sort === "high-low") {
       list = [...list].sort((a, b) => b.price - a.price);
-    }
+    } */
 
     return list;
-  }, [tokens, query, sort]);
+  }, [Assets, query, sort]);
 
   const quickActions = [
     {
@@ -157,6 +187,57 @@ const WalletComponent = () => {
       click: () => setConvertModalState(true),
     },
   ];
+
+  useEffect(() => {
+    const handleUserWallet = async () => {
+      try {
+        const res = await userWallet();
+        if (res.data) {
+          setUserWallet(res.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    const handleUserIcpAsset = async () => {
+      try {
+        const res = await userIcpAsset();
+        if (res.data) {
+          setUserICPAsset(res.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    const handleGetEvmAsset = async () => {
+      try {
+        const res = await getEvmAsset();
+        if (res.data) {
+          setUserEvmAsset(res.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    const handleUserTransaction = async () => {
+      try {
+        const res = await userTransaction();
+        if (res.data) {
+          setUserHistory(res.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    handleUserWallet();
+    handleUserIcpAsset();
+    handleGetEvmAsset();
+    handleUserTransaction();
+  }, []);
 
   const totalEarnings = 20546; // dummy
 
@@ -182,12 +263,34 @@ const WalletComponent = () => {
               }}
             >
               <h3 className="text-sm font-semibold text-white/80 mb-2 ">
-                Available Balance
+                Available Balance{" "}
+                <p
+                  onClick={() => SetTogleShow((prev) => !prev)}
+                  className=" cursor-pointer flex items-center justify-center text-center"
+                >
+                  {togleshow ? (
+                    <FaEye size={24} className="text-blue-600" />
+                  ) : (
+                    <FaEyeSlash size={24} className="text-blue-600" />
+                  )}
+                </p>
               </h3>
               <div className="bg-black/40 w-full  lg:px-6 pb-1 ">
-                <p className="text-3xl md:text-4xl font-extrabold">500 546</p>
+                {togleshow ? (
+                  <p className="text-3xl md:text-4xl font-extrabold">
+                    {UserWallet?.balance ? (
+                      Number(UserWallet.balance).toFixed(2)
+                    ) : (
+                      <span className=" text-base italic font-light  tracking-wider text-yellow-400 ">
+                        {"loading..."}
+                      </span>
+                    )}
+                  </p>
+                ) : (
+                  <p className="text-3xl md:text-4xl  font-extrabold">*****</p>
+                )}
                 <p className="text-xs text-end text-white/60 mt-1 pe-2">
-                  ~500.546 USDT
+                  {Number(UserWallet?.balance).toFixed(3)} SURDA
                 </p>
               </div>
             </div>
@@ -227,14 +330,14 @@ const WalletComponent = () => {
           </div>
 
           {/* Assets Table Card */}
-          <div className="rounded-2xl border border-white/6 bg-white/3 p-4">
+          <div className="rounded-2xl min-h-[55vh] mt-3 border border-white/6 bg-white/3 p-4">
             {/* Header row */}
             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-black/80 border-t border-t-white/20">
               {/* Left: Tabs */}
               <div className="flex items-center gap-2 rounded-lg p-1">
                 <button
                   onClick={() => setActiveTab("tokens")}
-                  className={`px-4 py-1.5 rounded-md text-xs ${
+                  className={`px-4 py-1.5 rounded-md cursor-pointer text-xs ${
                     activeTab === "tokens"
                       ? "text-blue-600 border-t-2 border-t-blue-600"
                       : "text-white/70 hover:bg-white/10"
@@ -244,7 +347,7 @@ const WalletComponent = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("nfts")}
-                  className={`px-4 py-1.5 rounded-md text-xs ${
+                  className={`px-4 py-1.5 rounded-md cursor-pointer text-xs ${
                     activeTab === "nfts"
                       ? "text-blue-600 border-t-2 border-t-blue-600"
                       : "text-white/70 hover:bg-white/10"
@@ -270,7 +373,7 @@ const WalletComponent = () => {
                     {showSort && (
                       <div
                         id="sort-panel"
-                        className="absolute -right-18 sm:right-0 mt-2 w-40 bg-black/90 border border-white/10 rounded-md p-2 py-4 text-sm z-20"
+                        className="absolute -right-18 sm:right-0 mt-2 w-40 bg-black/90 border border-white/10 space-y-1 rounded-md p-2 py-4 text-sm z-20"
                       >
                         <button
                           className="block w-full text-left px-2 py-1 hover:bg-white/10 rounded"
@@ -314,7 +417,14 @@ const WalletComponent = () => {
                 )}
 
                 {/* History button */}
-                <button className="px-4 py-1.5 rounded-md  text-xs">
+                <button
+                  onClick={() => {setActiveTab("history"); console.log(UserHistory)}}
+                  className={`px-4 py-1.5 rounded-md cursor-pointer text-xs ${
+                    activeTab === "history"
+                      ? "text-blue-600 border-t-2 border-t-blue-600"
+                      : "text-white/70 hover:bg-white/10"
+                  }`}
+                >
                   History
                 </button>
               </div>
@@ -323,12 +433,12 @@ const WalletComponent = () => {
             {/* Content */}
             {activeTab === "tokens" ? (
               <>
-                <WalletTable tokens={visibleTokens} />
-                <div className="mt-3 text-xs text-white/50">
-                  Showing {visibleTokens.length} tokens
+                <WalletTable tokens={visibleAssets} />
+                <div className="mt-3  ps-4 italic text-xs text-white/50">
+                  Showing {visibleAssets.length} tokens
                 </div>
               </>
-            ) : (
+            ) : activeTab === "nfts" ? (
               <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {nfts.map((nft) => (
                   <div
@@ -347,6 +457,8 @@ const WalletComponent = () => {
                   </div>
                 ))}
               </div>
+            ) : (
+              <div className=" p-8 italic text-center">no data available </div>
             )}
           </div>
         </div>
@@ -394,23 +506,5 @@ const WalletComponent = () => {
     </div>
   );
 };
-
-/* Quick Action */
-/* function QuickAction({
-  icon,
-  label,
-}: {
-  icon: React.ReactNode;
-  label: string;
-}) {
-  return (
-    <button className="flex items-center gap-2 bg-black/40 hover:bg-white/10 px-3 py-2 rounded-md text-sm">
-      <span className="w-7 h-7 grid place-items-center rounded bg-white/5">
-        {icon}
-      </span>
-      <span className="text-sm">{label}</span>
-    </button>
-  );
-} */
 
 export default WalletComponent;

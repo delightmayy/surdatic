@@ -1,5 +1,5 @@
 import { createContext, useState } from "react";
-import type { ReactNode } from "react";
+import type { Dispatch, ReactNode, SetStateAction } from "react";
 import cardimg1 from "../img/card1img.png";
 import cardimg2 from "../img/card2img.png";
 import { FiLogOut, FiRepeat } from "react-icons/fi";
@@ -54,6 +54,9 @@ interface DataContextType {
   setOverveiwTab: (value: string) => void;
   UserSigned: boolean;
   setUserSigned: (value: boolean) => void;
+  
+  togleshow: boolean;
+  SetTogleShow:  Dispatch<SetStateAction<boolean>>;
   targetDate: Date;
   totalEarnings: number;
   createdStats: Stat[];
@@ -79,13 +82,10 @@ interface DataProviderProps {
 export const DataProvider = ({ children }: DataProviderProps) => {
   const [overveiwTab, setOverveiwTab] = useState("created");
   const [UserSigned, setUserSigned] = useState(true);
- /*  const [isAuthenticated] = useState(
-    localStorage.getItem("autoLogin") || "false"
-  ); */
+  const [togleshow, SetTogleShow] = useState(false);
+
   const [cookies] = useCookies(["autoLogin"]);
-   const [isAuthenticated] = useState(
-   cookies.autoLogin || "false"
-  );
+  const [isAuthenticated] = useState(cookies.autoLogin || "false");
   console.log(isAuthenticated);
 
   const targetDate = new Date("2025-09-30T00:00:00Z");
@@ -687,6 +687,8 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         setOverveiwTab,
         UserSigned,
         setUserSigned,
+        togleshow,
+        SetTogleShow,
         targetDate,
         totalEarnings,
         createdStats,

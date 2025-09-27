@@ -75,7 +75,6 @@ const surveys = [
 
 export default function DashboardHome() {
   const { becomeValidator } = useAuth();
-  const [togleshow, SetTogleShow] = useState(false);
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const {
     participatedStats,
@@ -84,6 +83,8 @@ export default function DashboardHome() {
     overveiwTab,
     setOverveiwTab,
     totalEarnings,
+    togleshow,
+    SetTogleShow,
   } = useContext(DataContext)!;
 
   const handleBecomeValidator = async () => {
