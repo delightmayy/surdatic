@@ -17,6 +17,7 @@ import BuyWithCardModal from "../../modal/BuyWithCardModal";
 import { useAuth } from "../../../api/useAuth";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import DataContext from "../../../context/DataContext";
+import WalletHistory from "./WalletHistory";
 
 interface UserWallet {
   address: string;
@@ -50,6 +51,16 @@ interface EvmAsset {
   explorer_api_url: string | null;
   created_at: string; // formatted or ISO date string
   updated_at: string; // formatted or ISO date string
+}
+
+export interface History {
+  id: string;
+  user: string;
+  address: string;
+  amount: string;      
+  purpose: string;
+  status: "DEBIT" | "CREDIT" | string; 
+  created_at: string;  // ISO
 }
 
 export type CommonAsset = {
@@ -91,6 +102,8 @@ const DUMMY_NFTS: NFT[] = [
   },
 ];
 
+
+
 const containerFade = {
   hidden: { opacity: 0, y: 8 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.35 } },
@@ -102,7 +115,7 @@ const WalletComponent = () => {
   const [UserWallet, setUserWallet] = useState<UserWallet | null>();
   const [UserICPAsset, setUserICPAsset] = useState<UserICPAsset[] | null>();
   const [UserEvmAsset, setUserEvmAsset] = useState<EvmAsset[] | null>();
-  const [UserHistory, setUserHistory] = useState<EvmAsset[] | null>();
+  const [UserHistory, setUserHistory] = useState<History[] | null>();
   const userAddress = UserWallet?.address;
 
   const [nfts] = useState<NFT[]>(DUMMY_NFTS);
@@ -187,6 +200,9 @@ const WalletComponent = () => {
       click: () => setConvertModalState(true),
     },
   ];
+
+
+  
 
   useEffect(() => {
     const handleUserWallet = async () => {
@@ -290,7 +306,9 @@ const WalletComponent = () => {
                   <p className="text-3xl md:text-4xl  font-extrabold">*****</p>
                 )}
                 <p className="text-xs text-end text-white/60 mt-1 pe-2">
-                  {Number(UserWallet?.balance).toFixed(3)} SURDA
+                  {togleshow
+                    ? `${Number(UserWallet?.balance).toFixed(3)} SURDA`
+                    : "hidden"}
                 </p>
               </div>
             </div>
@@ -418,7 +436,10 @@ const WalletComponent = () => {
 
                 {/* History button */}
                 <button
-                  onClick={() => {setActiveTab("history"); console.log(UserHistory)}}
+                  onClick={() => {
+                    setActiveTab("history");
+                    console.log(UserHistory);
+                  }}
                   className={`px-4 py-1.5 rounded-md cursor-pointer text-xs ${
                     activeTab === "history"
                       ? "text-blue-600 border-t-2 border-t-blue-600"
@@ -434,7 +455,7 @@ const WalletComponent = () => {
             {activeTab === "tokens" ? (
               <>
                 <WalletTable tokens={visibleAssets} />
-                <div className="mt-3  ps-4 italic text-xs text-white/50">
+                <div className="mt-3  text-center ps-4 italic text-xs text-white/50">
                   Showing {visibleAssets.length} tokens
                 </div>
               </>
@@ -458,7 +479,8 @@ const WalletComponent = () => {
                 ))}
               </div>
             ) : (
-              <div className=" p-8 italic text-center">no data available </div>
+              <WalletHistory tokens={UserHistory ?? null} />
+              
             )}
           </div>
         </div>
@@ -467,7 +489,8 @@ const WalletComponent = () => {
           <SendTokenModal
             onClose={() => {
               setSendModalState(false);
-            }}
+            }} 
+            balance={ Number(UserWallet?.balance).toFixed(2)}
           />
         )}
         {receiveModalState && (

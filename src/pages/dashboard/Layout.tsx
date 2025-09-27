@@ -72,7 +72,7 @@ export default function Layout() {
                 <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-500" />
               </button>
               <div className="flex items-center gap-3">
-                <p
+                <div
                   /*  src="https://i.pravatar.cc/56?img=12"
                   alt="avatar" */
                   className="w-9 h-9 relative rounded-full flex justify-center text-xl text-center items-center bg-white/15 object-cover"
@@ -81,12 +81,12 @@ export default function Layout() {
                   {notification.length > 0 && (
                     <p
                       onClick={() => setNotifityModal(true)}
-                      className={`w-3 h-3 rounded-full  absolute -top-0.5 right-1 ${
+                      className={`w-2 h-2 rounded-full cursor-pointer absolute bottom-0.5 right-0 ${
                         loading ? "bg-yellow-500/70" : "bg-green-500/70"
                       }`}
                     ></p>
                   )}
-                </p>
+                </div>
                 <div className="hidden sm:block">
                   {user === null ? (
                     <div className="text-sm font-light italic text-white/90 capitalize">

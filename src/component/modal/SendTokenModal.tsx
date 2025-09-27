@@ -2,19 +2,97 @@
 import { motion } from "framer-motion";
 import React, { useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
-import success from "../../img/succesimg.png"
+import success from "../../img/succesimg.png";
+import { useAuth } from "../../api/useAuth";
 
-const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
+interface SendTokenModalProps {
+  onClose: () => void;
+  balance: string;
+}
+
+const SendTokenModal: React.FC<SendTokenModalProps> = ({
+  onClose,
+  balance,
+}) => {
+  const { requestOTP } = useAuth();
+
   const [step, setStep] = useState(1);
+  const [receiver, setReceiver] = useState("");
+  const [network, setNetwork] = useState("ICP (CRC-1)");
+  const [amount, setAmount] = useState<number | "">("");
+  const [error, setError] = useState("");
+  const [otp, setOtp] = useState(Array(6).fill(""));
 
-  // Dummy handler
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    setStep(2);
+  const handleChange = (value: string, index: number) => {
+    if (/^[0-9]?$/.test(value)) {
+      const newOtp = [...otp];
+      newOtp[index] = value;
+      setOtp(newOtp);
+    }
   };
 
   const handleVerify = () => {
+    const code = otp.join("");
+    if (code.length !== 6) {
+      alert("Please enter all 6 digits");
+      return;
+    }
+
+    console.log("Submitting OTP:", code);
     setStep(3);
+    // ✅ send code to API
+  };
+
+  const handleSend = async (e: React.FormEvent,) => {
+    e.preventDefault();
+
+    // validate
+    if (!receiver || !amount) {
+      setError("All fields are required");
+
+      setTimeout(() => {
+        setError("");
+      }, 1000);
+
+      return;
+    }
+
+    if (Number(amount) > Number(balance)) {
+      setError("Amount exceeds available balance");
+
+      setTimeout(() => {
+        setError("");
+      }, 1000);
+
+      return;
+    }
+
+    setStep(2);
+    try {
+      const res = await requestOTP();
+      if (res.data) {
+        setStep(2);
+      }
+    } catch (error: any) {
+      setError("server error");
+     console.log(error.data)
+    }
+    finally{
+       setTimeout(() => {
+        setError("");
+      }, 2000);
+    }
+
+    // collect form data
+    const formData = {
+      token: "Surda (SURDA)",
+      receiver,
+      network,
+      amount: Number(amount),
+    };
+
+    console.log("Submitting data:", formData);
+    // ✅ You can now call your API here to submit the transaction
   };
 
   return (
@@ -23,20 +101,23 @@ const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
       {step === 1 && (
         <motion.form
           onSubmit={handleSend}
-          className="w-full max-w-lg bg-[#111] max-h-[80vh]  overflow-y-auto border border-white/20 shadow-lg rounded-2xl px-6 py-8 flex flex-col gap-5"
+          className="w-full max-w-lg bg-[#111] max-h-[80vh] overflow-y-auto border border-white/20 shadow-lg rounded-2xl px-6 py-8 flex flex-col gap-5"
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
-          <div className=" flex justify-between border-b-2 border-dashed border-b-white/30">
-            <div className="mb-4">
+          <div className="flex justify-between border-b-2 border-dashed border-b-white/30">
+            <div className="mb-4 space-y-2">
               <h2 className="text-xl font-semibold text-white ">Send Token</h2>
               <p className="text-sm text-white/50">
                 Send tokens from your assets to an external wallet address.
               </p>
             </div>
-
-            <AiOutlineClose size={24} className="" onClick={onClose} />
+            <AiOutlineClose
+              size={24}
+              className="cursor-pointer"
+              onClick={onClose}
+            />
           </div>
 
           {/* Token */}
@@ -44,9 +125,9 @@ const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
             <label className="text-sm mb-1">Token to Withdraw</label>
             <input
               type="text"
-              placeholder="Surda (SURDA)"
-              className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
+              value="Surda (SURDA)"
               disabled
+              className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none"
             />
           </div>
 
@@ -56,6 +137,8 @@ const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
             <input
               type="text"
               placeholder="Enter wallet address"
+              value={receiver}
+              onChange={(e) => setReceiver(e.target.value)}
               className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
               required
             />
@@ -64,7 +147,11 @@ const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
           {/* Network */}
           <div className="flex flex-col">
             <label className="text-sm mb-1">Network</label>
-            <select className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30">
+            <select
+              value={network}
+              onChange={(e) => setNetwork(e.target.value)}
+              className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
+            >
               <option>ICP (CRC-1)</option>
             </select>
           </div>
@@ -75,17 +162,26 @@ const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
             <input
               type="number"
               placeholder="0.00"
+              value={amount}
+              onChange={(e) =>
+                setAmount(e.target.value === "" ? "" : Number(e.target.value))
+              }
               className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
               required
             />
-            <p className="text-xs text-gray-400 mt-1">
-              Available: <span className="font-semibold">500 546 SURDA</span>
+            <p className="text-xs text-green-400 mt-2">
+              Available: <span className="font-semibold">{balance} SURDA</span>
             </p>
           </div>
 
+          {error && (
+            <p className="text-xs italic text-center text-red-400">{error}</p>
+          )}
+
           <button
             type="submit"
-            className="bg-sky-500/70 hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
+            disabled={error != ""}
+            className="bg-sky-500/70 disabled:bg-sky-500/20 disabled:cursor-not-allowed hover:bg-sky-600 transition-all text-white text-sm font-medium py-3 rounded-md"
           >
             Send
           </button>
@@ -116,14 +212,18 @@ const SendTokenModal = ({ onClose }: { onClose: () => void }) => {
           <p className="text-sm text-gray-400 text-center">
             A 6-digit verification code has been sent to your email:
           </p>
-          <p className="text-sm text-sky-400 -mt-4 text-center ">j****@gmail.com </p>
+          <p className="text-sm text-sky-400 -mt-4 text-center ">
+            j****@gmail.com{" "}
+          </p>
 
           <div className="flex justify-center gap-3">
-            {[...Array(6)].map((_, idx) => (
+            {otp.map((digit, idx) => (
               <input
                 key={idx}
                 type="text"
+                value={digit}
                 maxLength={1}
+                onChange={(e) => handleChange(e.target.value, idx)}
                 className="w-10 h-12 text-center bg-[#1a1a1a] text-lg rounded-md focus:ring-1 focus:ring-sky-500/30 outline-none"
               />
             ))}

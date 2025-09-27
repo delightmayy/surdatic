@@ -76,6 +76,8 @@ interface AuthContextType {
 
   notifyUser: () => Promise<AxiosResponse<any>>;
 
+  requestOTP: () => Promise<AxiosResponse<any>>;
+
   addStake: (data: stakeData) => Promise<AxiosResponse<any>>;
 
   userStake: () => Promise<AxiosResponse<any>>;
@@ -380,6 +382,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     return api.post("/wallet/wallet_transfer", { to, amount });
   };
 
+  //////////////
+   const requestOTP = async (): Promise<AxiosResponse<any>> => {
+    return api.get("transactions/request_otp");
+  };
+
   const logout = () => {
     setToken(null);
     setUser(null);
@@ -424,6 +431,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         walletAssetConvertID,
         walletAssetTransferID,
         walletTransfer,
+        requestOTP,
         logout,
         isAuthenticated: !!token,
       }}
