@@ -1,6 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import success from "../../img/succesimg.png";
 import { useAuth } from "../../api/useAuth";
@@ -14,10 +14,11 @@ const SendTokenModal: React.FC<SendTokenModalProps> = ({
   onClose,
   balance,
 }) => {
-  const { requestOTP } = useAuth();
+  const { /* requestOTP */ walletTransfer, transferFee } = useAuth();
 
   const [step, setStep] = useState(1);
   const [receiver, setReceiver] = useState("");
+  const [fee, setFee] = useState("");
   const [network, setNetwork] = useState("ICP (CRC-1)");
   const [amount, setAmount] = useState<number | "">("");
   const [error, setError] = useState("");
@@ -31,19 +32,43 @@ const SendTokenModal: React.FC<SendTokenModalProps> = ({
     }
   };
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     const code = otp.join("");
     if (code.length !== 6) {
-      alert("Please enter all 6 digits");
+      setError("Please enter all 6 digits");
+      setTimeout(() => {
+        setError("");
+      }, 1000);
       return;
     }
 
-    console.log("Submitting OTP:", code);
-    setStep(3);
-    // ✅ send code to API
+    /* try {
+      const res = await coomfirmOTP();
+      if (res.data) {
+        setUserWallet(res.data);
+      }
+    } catch (err) {
+      setError("Please enter all 6 digits");
+      setTimeout(() => {
+        setError("");
+      }, 1000);
+    } */
+
+    try {
+      const res = await walletTransfer(Number(amount), receiver);
+      if (res.data) {
+        setStep(3);
+      }
+    } catch (err: any) {
+      setError(err.data);
+      setTimeout(() => {
+        setError("");
+        setStep(1);
+      }, 1000);
+    }
   };
 
-  const handleSend = async (e: React.FormEvent,) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // validate
@@ -68,32 +93,34 @@ const SendTokenModal: React.FC<SendTokenModalProps> = ({
     }
 
     setStep(2);
-    try {
+    /*  try {
       const res = await requestOTP();
       if (res.data) {
         setStep(2);
       }
     } catch (error: any) {
       setError("server error");
-     console.log(error.data)
-    }
-    finally{
-       setTimeout(() => {
+      console.log(error.data);
+    } finally {
+      setTimeout(() => {
         setError("");
       }, 2000);
-    }
-
-    // collect form data
-    const formData = {
-      token: "Surda (SURDA)",
-      receiver,
-      network,
-      amount: Number(amount),
-    };
-
-    console.log("Submitting data:", formData);
-    // ✅ You can now call your API here to submit the transaction
+    } */
   };
+
+  useEffect(() => {
+    const handletransferFee = async () => {
+      try {
+        const res = await transferFee();
+        if (res.data) {
+          setFee(res.data.fee);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    handletransferFee();
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
@@ -169,8 +196,16 @@ const SendTokenModal: React.FC<SendTokenModalProps> = ({
               className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
               required
             />
-            <p className="text-xs text-green-400 mt-2">
-              Available: <span className="font-semibold">{balance} SURDA</span>
+            <p className="text-xs capitalize font-semibold tracking-wider  mt-3">
+              Amount to send:
+              <span className="font-semibold"> {amount} SURDA</span>
+            </p>
+            <p className="text-xs tracking-wider text-green-400 mt-2">
+              Available:
+              <span className="font-semibold"> {balance} SURDA</span>
+            </p>
+            <p className="text-xs tracking-wider text-green-400 mt-2">
+              Fee: <span className="font-semibold">{fee} SURDA</span>
             </p>
           </div>
 
@@ -228,6 +263,10 @@ const SendTokenModal: React.FC<SendTokenModalProps> = ({
               />
             ))}
           </div>
+
+          {error && (
+            <p className="text-xs italic text-center text-red-400">{error}</p>
+          )}
 
           <button
             type="button"

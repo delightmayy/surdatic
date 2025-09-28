@@ -19,12 +19,12 @@ const WalletHistory: React.FC<WalletTableProps> = ({ tokens }) => {
             <th className="py-3 px-3">Amount</th>
           </tr>
         </thead>
-        {tokens === null ? (
+        {tokens === null || tokens.length === 0 ? (
           <tbody className="w-full mx-auto">
-            <div className=" w-full mx-auto  p-8 italic text-center ">
-              {" "}
+            <tr className=" w-full mx-auto  p-8 italic text-center ">
+              
               no data available{" "}
-            </div>
+            </tr>
           </tbody>
         ) : (
           <tbody className="divide-y divide-white/6 ">

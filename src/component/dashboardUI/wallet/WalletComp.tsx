@@ -25,7 +25,7 @@ interface UserWallet {
   balance: number;
 }
 
-interface UserICPAsset {
+export interface UserICPAsset {
   id: string;
   name: string;
   symbol: string;
@@ -57,10 +57,10 @@ export interface History {
   id: string;
   user: string;
   address: string;
-  amount: string;      
+  amount: string;
   purpose: string;
-  status: "DEBIT" | "CREDIT" | string; 
-  created_at: string;  // ISO
+  status: "DEBIT" | "CREDIT" | string;
+  created_at: string; // ISO
 }
 
 export type CommonAsset = {
@@ -101,8 +101,6 @@ const DUMMY_NFTS: NFT[] = [
     price: 1.2,
   },
 ];
-
-
 
 const containerFade = {
   hidden: { opacity: 0, y: 8 },
@@ -200,9 +198,6 @@ const WalletComponent = () => {
       click: () => setConvertModalState(true),
     },
   ];
-
-
-  
 
   useEffect(() => {
     const handleUserWallet = async () => {
@@ -319,7 +314,11 @@ const WalletComponent = () => {
                 Total Earnings
               </h3>
               <p className="text-3xl md:text-4xl font-extrabold bg-black/40 w-full py-3">
-                {totalEarnings.toLocaleString()}
+                {togleshow ? (
+                  `${totalEarnings.toLocaleString()}`
+                ) : (
+                  <span className="text-3xl md:text-4xl  font-extrabold">*****</span>
+                )}
               </p>
             </div>
 
@@ -348,9 +347,9 @@ const WalletComponent = () => {
           </div>
 
           {/* Assets Table Card */}
-          <div className="rounded-2xl min-h-[55vh] mt-3 border border-white/6 bg-white/3 p-4">
+          <div className="rounded-2xl min-h-[55vh] border border-white/6 bg-white/3  pb-4">
             {/* Header row */}
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 bg-black/80 border-t border-t-white/20">
+            <div className="flex rounded-t-2xl flex-col md:flex-row pt-4 md:items-center md:justify-between gap-3 bg-black/80 border-t border-t-white/20">
               {/* Left: Tabs */}
               <div className="flex items-center gap-2 rounded-lg p-1">
                 <button
@@ -438,7 +437,7 @@ const WalletComponent = () => {
                 <button
                   onClick={() => {
                     setActiveTab("history");
-                    console.log(UserHistory);
+                    
                   }}
                   className={`px-4 py-1.5 rounded-md cursor-pointer text-xs ${
                     activeTab === "history"
@@ -460,8 +459,8 @@ const WalletComponent = () => {
                 </div>
               </>
             ) : activeTab === "nfts" ? (
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {nfts.map((nft) => (
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-4">
+                {/*  {nfts.map((nft) => (
                   <div
                     key={nft.id}
                     className="rounded-lg bg-black/40 p-3 flex flex-col items-center text-center hover:bg-black/60 transition"
@@ -476,11 +475,14 @@ const WalletComponent = () => {
                       Price: {nft.price} ETH
                     </div>
                   </div>
-                ))}
+                ))} */}
+
+
+                <p className="mt-3 text-center ps-4 italic text-xs text-white/50 ">  no nft available</p>
+             
               </div>
             ) : (
               <WalletHistory tokens={UserHistory ?? null} />
-              
             )}
           </div>
         </div>
@@ -489,8 +491,8 @@ const WalletComponent = () => {
           <SendTokenModal
             onClose={() => {
               setSendModalState(false);
-            }} 
-            balance={ Number(UserWallet?.balance).toFixed(2)}
+            }}
+            balance={Number(UserWallet?.balance).toFixed(2)}
           />
         )}
         {receiveModalState && (
@@ -506,6 +508,7 @@ const WalletComponent = () => {
             onClose={() => {
               setConvertModalState(false);
             }}
+            balance={Number(UserWallet?.balance).toFixed(2)}
           />
         )}
         {buyModalState && (
