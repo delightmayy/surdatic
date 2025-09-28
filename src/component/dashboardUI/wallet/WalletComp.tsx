@@ -132,6 +132,7 @@ const WalletComponent = () => {
   const [activeTab, setActiveTab] = useState<"tokens" | "nfts" | "history">(
     "tokens"
   );
+ console.log(nfts);
 
   const Assets: CommonAsset[] = [
     ...(UserICPAsset?.map((a) => ({
