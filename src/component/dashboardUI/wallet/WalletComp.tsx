@@ -18,6 +18,7 @@ import { useAuth } from "../../../api/useAuth";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import DataContext from "../../../context/DataContext";
 import WalletHistory from "./WalletHistory";
+import BuyWithLlSKModal from "../../modal/BuyWithLlSKModal";
 
 interface UserWallet {
   address: string;
@@ -123,6 +124,7 @@ const WalletComponent = () => {
   const [convertModalState, setConvertModalState] = useState(false);
   const [buyModalState, setBuyModalState] = useState(false);
   const [buywithCardState, setBuyWithCardState] = useState(false);
+  const [buywithListState, setBuyWithListState] = useState(false);
 
   const [sort, setSort] = useState<
     "name-asc" | "recent" | "low-high" | "high-low"
@@ -132,7 +134,7 @@ const WalletComponent = () => {
   const [activeTab, setActiveTab] = useState<"tokens" | "nfts" | "history">(
     "tokens"
   );
- console.log(nfts);
+    console.log(nfts); 
 
   const Assets: CommonAsset[] = [
     ...(UserICPAsset?.map((a) => ({
@@ -318,7 +320,9 @@ const WalletComponent = () => {
                 {togleshow ? (
                   `${totalEarnings.toLocaleString()}`
                 ) : (
-                  <span className="text-3xl md:text-4xl  font-extrabold">*****</span>
+                  <span className="text-3xl md:text-4xl  font-extrabold">
+                    *****
+                  </span>
                 )}
               </p>
             </div>
@@ -350,7 +354,7 @@ const WalletComponent = () => {
           {/* Assets Table Card */}
           <div className="rounded-2xl min-h-[55vh] border border-white/6 bg-white/3  pb-4">
             {/* Header row */}
-            <div className="flex rounded-t-2xl flex-col md:flex-row pt-4 md:items-center md:justify-between gap-3 bg-black/80 border-t border-t-white/20">
+            <div className="flex rounded-t-2xl flex-col md:flex-row pt-4 md:items-center md:justify-between gap-3 bg-black/80 border-t border-t-white/20 px-2">
               {/* Left: Tabs */}
               <div className="flex items-center gap-2 rounded-lg p-1">
                 <button
@@ -438,7 +442,6 @@ const WalletComponent = () => {
                 <button
                   onClick={() => {
                     setActiveTab("history");
-                    
                   }}
                   className={`px-4 py-1.5 rounded-md cursor-pointer text-xs ${
                     activeTab === "history"
@@ -460,7 +463,7 @@ const WalletComponent = () => {
                 </div>
               </>
             ) : activeTab === "nfts" ? (
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-4">
+              <div className="mt-4 px-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3  gap-4">
                 {/*  {nfts.map((nft) => (
                   <div
                     key={nft.id}
@@ -478,9 +481,10 @@ const WalletComponent = () => {
                   </div>
                 ))} */}
 
-
-                <p className="mt-3 text-center ps-4 italic text-xs text-white/50 ">  no nft available</p>
-             
+                <p className="mt-3 text-center ps-4 italic text-xs text-white/50 ">
+                  {" "}
+                  no nft available
+                </p>
               </div>
             ) : (
               <WalletHistory tokens={UserHistory ?? null} />
@@ -520,12 +524,23 @@ const WalletComponent = () => {
             onBuywithCard={() => {
               setBuyWithCardState(true);
             }}
+            onBuywithList={() => {
+              setBuyWithListState(true);
+            }}
           />
         )}
         {buywithCardState && (
           <BuyWithCardModal
             onClose={() => {
               setBuyWithCardState(false);
+            }}
+          />
+        )}
+        {buywithListState && (
+          <BuyWithLlSKModal
+            balance={Number(UserWallet?.balance).toFixed(2)}
+            onClose={() => {
+              setBuyWithListState(false);
             }}
           />
         )}

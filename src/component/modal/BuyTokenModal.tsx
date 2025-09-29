@@ -1,16 +1,29 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { AiOutlineClose } from "react-icons/ai";
-import { FiChevronDown } from "react-icons/fi";
+import token from "../../img/tokenicon.png";
+/* import { useAuth } from "../../api/useAuth"; */
 import { FaWallet, FaCreditCard, FaExchangeAlt } from "react-icons/fa";
 import { HiUsers } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
 
 interface BuyTokenModalProps {
-    onBuywithCard:()=> void
+  onBuywithCard: () => void;
+  onBuywithList: () => void;
   onClose: () => void;
 }
 
-const BuyTokenModal: React.FC<BuyTokenModalProps> = ({ onClose , onBuywithCard}) => {
+const BuyTokenModal: React.FC<BuyTokenModalProps> = ({
+  onClose,
+  onBuywithCard,
+  onBuywithList,
+}) => {
+  const navigate = useNavigate();
+
+  const handeleNavigate =()=>{
+    navigate("/dashboard/p2pmarket")
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
@@ -40,13 +53,12 @@ const BuyTokenModal: React.FC<BuyTokenModalProps> = ({ onClose , onBuywithCard})
         {/* Token Selection */}
         <div className="mt-6 flex flex-col text-sm">
           <label className="text-white/70 mb-1">Token to Buy</label>
-          <div className="flex items-center justify-between px-4 py-3 rounded-md bg-black/50 border border-white/10 text-white cursor-pointer">
+          <div className="flex items-center  px-4 py-3 rounded-md bg-black/50 border border-white/10 text-white cursor-pointer">
             <div className="flex items-center gap-2">
-              <img src="/icons/surda.png" alt="Surda" className="w-6 h-6 rounded-full" />
-              <span className="font-medium">Surda</span>
-              <span className="text-xs text-white/50">Surda Token</span>
+              <img src={token} alt="Surda" className="w-6 h-6 rounded-full" />
+
+              <span className="text-xs text-white/50">Surda</span>
             </div>
-            <FiChevronDown className="text-gray-400" />
           </div>
         </div>
 
@@ -54,23 +66,30 @@ const BuyTokenModal: React.FC<BuyTokenModalProps> = ({ onClose , onBuywithCard})
         <div className="mt-6 flex flex-col gap-3">
           <label className="text-white/70 mb-2">Purchase Method</label>
 
-          <button className="flex items-center gap-3 px-4 py-3 bg-black/60 border border-sky-500/70 rounded-md text-white hover:bg-black/80">
+          <button 
+          onClick={onBuywithList}
+           className="flex items-center gap-3 px-4 py-3 bg-black/60 border border-white/10 hover:border-sky-500/70 rounded-md text-white hover:bg-black/80">
             <FaWallet className="text-sky-400" size={18} />
             <span>Lisk Mainnet</span>
           </button>
 
-          <button className="flex items-center gap-3 px-4 py-3 bg-black/50 border border-white/10 rounded-md text-white hover:bg-black/70">
+          <button
+            onClick={handeleNavigate}
+            className="flex items-center gap-3 px-4 py-3 bg-black/50 border border-white/10 hover:border-sky-500/70 rounded-md text-white hover:bg-black/70"
+          >
             <HiUsers className="text-green-400" size={18} />
             <span>P2P Marketplace</span>
           </button>
 
           <button
-          onClick={onBuywithCard} className="flex items-center gap-3 px-4 py-3 bg-black/50 border border-white/10 rounded-md text-white hover:bg-black/70">
+            onClick={onBuywithCard}
+            className="flex items-center gap-3 px-4 py-3 bg-black/50 border border-white/10 hover:border-sky-500/70 rounded-md text-white hover:bg-black/70"
+          >
             <FaCreditCard className="text-purple-400" size={18} />
             <span>Buy with Card</span>
           </button>
 
-          <button className="flex items-center gap-3 px-4 py-3 bg-black/50 border border-white/10 rounded-md text-white hover:bg-black/70">
+          <button className="flex items-center gap-3 px-4 py-3 bg-black/50 border border-white/10 hover:border-sky-500/70 rounded-md text-white hover:bg-black/70">
             <FaExchangeAlt className="text-yellow-400" size={18} />
             <span>Other Platforms</span>
           </button>
@@ -78,7 +97,7 @@ const BuyTokenModal: React.FC<BuyTokenModalProps> = ({ onClose , onBuywithCard})
 
         {/* Checkbox Option */}
         <div className="mt-6 flex items-center justify-center gap-2">
-         <FaWallet size={18}/>
+          <FaWallet size={18} />
           <label htmlFor="externalWallet" className="text-sm text-white/80">
             Receive from External Wallet
           </label>

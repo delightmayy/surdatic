@@ -10,7 +10,7 @@ interface WalletTableProps {
 
 const WalletTable: React.FC<WalletTableProps> = ({ tokens }) => {
   return (
-    <div className="mt-4 overflow-x-auto">
+    <div className="mt-4 overflow-x-auto px-2">
       {/* Desktop / Tablet Table */}
       <table className="hidden md:table w-full min-w-[640px]">
         <thead>

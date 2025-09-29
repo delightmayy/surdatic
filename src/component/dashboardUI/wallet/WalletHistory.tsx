@@ -8,7 +8,7 @@ interface WalletTableProps {
 
 const WalletHistory: React.FC<WalletTableProps> = ({ tokens }) => {
   return (
-    <div className="mt-4 overflow-x-auto overflow-y-scroll h-[50vh] border-white/10">
+    <div className="mt-4 px-2 overflow-x-auto overflow-y-scroll h-[50vh] border-white/10">
       {/* Desktop / Tablet Table */}
       <table className=" w-full min-w-[640px]  ">
         <thead>
