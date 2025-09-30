@@ -142,6 +142,47 @@ interface AuthContextType {
 
   verifyLskTransaction: (tx: string) => Promise<AxiosResponse<any>>;
 
+  answeredSurveylist: () => Promise<AxiosResponse<any>>;
+  approveAllSurveyRespondentID: (id: string) => Promise<AxiosResponse<any>>;
+  approveSurveyDisputeID: (id: string) => Promise<AxiosResponse<any>>;
+  approveSurveyRespondentID: (id: string) => Promise<AxiosResponse<any>>;
+  approvedSurveyList: () => Promise<AxiosResponse<any>>;
+  buyMarketItemID: (id: string) => Promise<AxiosResponse<any>>;
+  createMarketItemID: (survey_id: string) => Promise<AxiosResponse<any>>;
+  createSurveyApprovalID: (id: string) => Promise<AxiosResponse<any>>;
+  disputedResponse: () => Promise<AxiosResponse<any>>;
+  disputedResponseDetail: () => Promise<AxiosResponse<any>>;
+  downloadCollectionItemID: (id: string) => Promise<AxiosResponse<any>>;
+  expiredSurveylist: () => Promise<AxiosResponse<any>>;
+  genderList: () => Promise<AxiosResponse<any>>;
+  generateAiQuestion: () => Promise<AxiosResponse<any>>;
+  generateReportID: (id: string) => Promise<AxiosResponse<any>>;
+  getCollectionItemID: (id: string) => Promise<AxiosResponse<any>>;
+  getMarketItemID: (id: string) => Promise<AxiosResponse<any>>;
+  getUsersCollection: () => Promise<AxiosResponse<any>>;
+  locationList: () => Promise<AxiosResponse<any>>;
+  markSurveyCompletionID: (id: string) => Promise<AxiosResponse<any>>;
+  marketItems: () => Promise<AxiosResponse<any>>;
+  pendingSurveylist: () => Promise<AxiosResponse<any>>;
+  professionList: () => Promise<AxiosResponse<any>>;
+  publicMarketItems: () => Promise<AxiosResponse<any>>;
+  publicSurveyDetailID: (id: string) => Promise<AxiosResponse<any>>;
+  publicSurveylist: () => Promise<AxiosResponse<any>>;
+  rejectSurveyDisputeID: (id: string) => Promise<AxiosResponse<any>>;
+  rejectSurveyRespondentID: (id: string) => Promise<AxiosResponse<any>>;
+  responseCommentID: (id: string) => Promise<AxiosResponse<any>>;
+  surveyConfig: () => Promise<AxiosResponse<any>>;
+  surveyDetailID: (id: string) => Promise<AxiosResponse<any>>;
+  surveyDownloadID: (id: string) => Promise<AxiosResponse<any>>;
+
+  surveyMarketItemID: (survey_id: string) => Promise<AxiosResponse<any>>;
+  surveyRespondentID: (id: string) => Promise<AxiosResponse<any>>;
+  surveyRespondentDetailID: (id: string) => Promise<AxiosResponse<any>>;
+  surveyResponseID: (id: string) => Promise<AxiosResponse<any>>;
+  surveylist: () => Promise<AxiosResponse<any>>;
+  Psurveylist: () => Promise<AxiosResponse<any>>;
+  userSurveylist: () => Promise<AxiosResponse<any>>;
+
   resetPassword: (
     email: string,
     new_password: string,
@@ -386,7 +427,191 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     return api.post("/wallet/wallet_transfer", { to, amount });
   };
 
-  //////////////
+  const answeredSurveylist = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/answered_surveylist");
+  };
+
+  const approveAllSurveyRespondentID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/approve_all_survey_respondent/${id}`);
+  };
+
+  const approveSurveyDisputeID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/survey/approve_survey_dispute/${id}`);
+  };
+
+  const approveSurveyRespondentID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/approve_survey_respondent/${id}`);
+  };
+
+  const approvedSurveyList = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/approved_survey_list");
+  };
+
+  const buyMarketItemID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/buy_market_item/${id}`);
+  };
+
+  const createMarketItemID = async (
+    survey_id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/survey/create_market_item/${survey_id}`);
+  };
+
+  const createSurveyApprovalID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/survey/create_survey_approval/${id}`);
+  };
+
+  const disputedResponse = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/disputed_response");
+  };
+
+  const disputedResponseDetail = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/disputed_response_detail");
+  };
+
+  const downloadCollectionItemID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/download_collection_item/${id}`);
+  };
+
+  const expiredSurveylist = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/expired_surveylist");
+  };
+
+  const genderList = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/gender_list");
+  };
+
+  const generateAiQuestion = async (): Promise<AxiosResponse<any>> => {
+    return api.post("/survey/generate_ai_question");
+  };
+
+  const generateReportID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/generate_report/${id}`);
+  };
+
+  const getCollectionItemID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/get_collection_item/${id}`);
+  };
+
+  const getMarketItemID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/get_market_item/${id}`);
+  };
+
+  const getUsersCollection = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/get_users_collection");
+  };
+
+  const locationList = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/location_list");
+  };
+
+  const markSurveyCompletionID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/mark_survey_completion/${id}`);
+  };
+
+  const marketItems = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/market_items");
+  };
+
+  const pendingSurveylist = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/pending_surveylist");
+  };
+
+  const professionList = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/profession_list");
+  };
+
+  const publicMarketItems = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/public_market_items");
+  };
+
+  const publicSurveyDetailID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/public_survey_detail/${id}`);
+  };
+
+  const publicSurveylist = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/public_surveylist");
+  };
+
+  const rejectSurveyDisputeID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/survey/reject_survey_dispute/${id}`);
+  };
+
+  const rejectSurveyRespondentID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.post(`/survey/reject_survey_respondent/${id}`);
+  };
+
+  const responseCommentID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/response_comment/${id}`);
+  };
+
+  const surveyConfig = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/survey_config");
+  };
+
+  const surveyDetailID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/survey_detail/${id}`);
+  };
+
+  const surveyDownloadID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/survey_download/${id}`);
+  };
+
+  const surveyMarketItemID = async (
+    survey_id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/survey_market_item/${survey_id}`);
+  };
+
+  const surveyRespondentID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/survey_respondent/${id}`);
+  };
+
+  const surveyRespondentDetailID = async (
+    id: string
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/survey/survey_respondent_detail/${id}`);
+  };
+
+  const surveyResponseID = async (id: string): Promise<AxiosResponse<any>> => {
+    return api.post(`/survey/survey_response/${id}`);
+  };
+
+  const surveylist = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/surveylist");
+  };
+
+  const Psurveylist = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/surveylist");
+  };
+
+  const userSurveylist = async (): Promise<AxiosResponse<any>> => {
+    return api.get("/survey/user_surveylist");
+  };
+
+  ///////////////////
   const requestOTP = async (): Promise<AxiosResponse<any>> => {
     return api.get("transactions/request_otp");
   };
@@ -412,6 +637,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         updateProfile,
         notifyUser,
         UserReadNotificationID,
+        /////////
         addStake,
         userStake,
         userStakewithId,
@@ -436,6 +662,49 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         walletAssetConvertID,
         walletAssetTransferID,
         walletTransfer,
+        ////////
+        answeredSurveylist,
+        approveAllSurveyRespondentID,
+        approveSurveyDisputeID,
+        approveSurveyRespondentID,
+        approvedSurveyList,
+        buyMarketItemID,
+        createMarketItemID,
+        createSurveyApprovalID,
+        disputedResponse,
+        disputedResponseDetail,
+        downloadCollectionItemID,
+        expiredSurveylist,
+        genderList,
+        generateAiQuestion,
+        generateReportID,
+        getCollectionItemID,
+        getMarketItemID,
+        getUsersCollection,
+        locationList,
+        markSurveyCompletionID,
+
+        marketItems,
+        pendingSurveylist,
+        professionList,
+        publicMarketItems,
+        publicSurveyDetailID,
+        publicSurveylist,
+        rejectSurveyDisputeID,
+        rejectSurveyRespondentID,
+        responseCommentID,
+        surveyConfig,
+        surveyDetailID,
+        surveyDownloadID,
+
+        surveyMarketItemID,
+        surveyRespondentID,
+        surveyRespondentDetailID,
+        surveyResponseID,
+        surveylist,
+        Psurveylist,
+        userSurveylist,
+
         requestOTP,
         logout,
         isAuthenticated: !!token,
