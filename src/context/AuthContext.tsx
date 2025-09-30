@@ -76,6 +76,8 @@ interface AuthContextType {
 
   notifyUser: () => Promise<AxiosResponse<any>>;
 
+  UserReadNotificationID: (id: number) => Promise<AxiosResponse<any>>;
+
   requestOTP: () => Promise<AxiosResponse<any>>;
 
   addStake: (data: stakeData) => Promise<AxiosResponse<any>>;
@@ -112,10 +114,7 @@ interface AuthContextType {
     to: string
   ) => Promise<AxiosResponse<any>>;
 
-  walletTransfer: (
-    amount: number,
-    to: string
-  ) => Promise<AxiosResponse<any>>;
+  walletTransfer: (amount: number, to: string) => Promise<AxiosResponse<any>>;
 
   getEvmAssetID: (id: string) => Promise<AxiosResponse<any>>;
 
@@ -262,6 +261,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const notifyUser = async (): Promise<AxiosResponse<any>> => {
     return api.get("/auth/user_notification");
   };
+  const UserReadNotificationID = async (
+    id: number
+  ): Promise<AxiosResponse<any>> => {
+    return api.get(`/auth/user_read_notification/${id}`);
+  };
 
   const addStake = async (data: stakeData): Promise<AxiosResponse<any>> => {
     return api.post("/wallet/add_staken", data);
@@ -383,7 +387,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   };
 
   //////////////
-   const requestOTP = async (): Promise<AxiosResponse<any>> => {
+  const requestOTP = async (): Promise<AxiosResponse<any>> => {
     return api.get("transactions/request_otp");
   };
 
@@ -407,6 +411,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         faceVerify,
         updateProfile,
         notifyUser,
+        UserReadNotificationID,
         addStake,
         userStake,
         userStakewithId,

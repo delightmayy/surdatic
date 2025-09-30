@@ -118,7 +118,6 @@ const WalletComponent = () => {
   const [UserHistory, setUserHistory] = useState<History[] | null>();
   const userAddress = UserWallet?.address;
 
-  
   /* const [nfts] = useState<NFT[]>(DUMMY_NFTS); */
   const [query] = useState("");
   const [sendModalState, setSendModalState] = useState(false);
@@ -136,7 +135,6 @@ const WalletComponent = () => {
   const [activeTab, setActiveTab] = useState<"tokens" | "nfts" | "history">(
     "tokens"
   );
-   
 
   const Assets: CommonAsset[] = [
     ...(UserICPAsset?.map((a) => ({

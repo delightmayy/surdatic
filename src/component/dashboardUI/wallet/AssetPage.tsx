@@ -290,6 +290,7 @@ const AssetPage = () => {
           symbol={symbol ? symbol : ""}
           name={name}
           image={image}
+          id={id}
         />
       )}
 
@@ -310,6 +311,7 @@ const AssetPage = () => {
           symbol={symbol ? symbol : ""}
           name={name}
           image={image}
+          id={id}
         />
       )}
 

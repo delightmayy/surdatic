@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { FiBell, FiSearch, FiMenu } from "react-icons/fi";
 import AppSidebar from "../../component/dashboardUI/sidebar/AppSidebar";
-import ErrorModal from "../../component/modal/ErrorModal";
 import { useAuth } from "../../api/useAuth";
 import { type Notification } from "../../context/AuthContext";
+import NotificationModal from "../../component/modal/NotificationModal";
 
 export default function Layout() {
   const { user, notifyUser } = useAuth();
@@ -13,7 +13,14 @@ export default function Layout() {
   const [loading, setLoading] = useState(false);
   const [notifyModal, setNotifityModal] = useState(false);
   const [notification, setNotification] = useState<Notification[] | []>([]);
+ /*  const [selected, setSelected] = useState<Notification | null>(null); */
 
+ /*  const handleNotificationClick = (id: number) => {
+    const found = notification?.find((n) => n.id === id) || null;
+    setSelected(found);
+
+  };
+ */
   useEffect(() => {
     const handleNotifyMessage = async () => {
       setLoading(true);
@@ -21,10 +28,9 @@ export default function Layout() {
         const response = await notifyUser();
         if (response.data) {
           setNotification(response.data);
-          /* console.log("check", response.data); */
         }
       } catch (err: any) {
-        console.error(err);
+        /*  console.error(err); */
       } finally {
         setLoading(false);
       }
@@ -80,7 +86,9 @@ export default function Layout() {
                   {user?.last_name.charAt(0).toUpperCase()}
                   {notification.length > 0 && (
                     <p
-                      onClick={() => setNotifityModal(true)}
+                      onClick={() => {
+                        setNotifityModal(true);
+                      }}
                       className={`w-2 h-2 rounded-full cursor-pointer absolute bottom-0.5 right-0 ${
                         loading ? "bg-yellow-500/70" : "bg-green-500/70"
                       }`}
@@ -90,7 +98,7 @@ export default function Layout() {
                 <div className="hidden sm:block">
                   {user === null ? (
                     <div className="text-sm font-light italic text-white/90 capitalize">
-                      loading... {/* {profile?.first_name} */}
+                      loading...
                     </div>
                   ) : (
                     <div className="text-sm font-light text-white/90 capitalize">
@@ -119,9 +127,9 @@ export default function Layout() {
         </main>
       </div>
       {notifyModal && (
-        <ErrorModal
+        <NotificationModal
           onClose={() => setNotifityModal(false)}
-          message=" fake check"
+         notifications={notification}
         />
       )}
     </div>

@@ -167,7 +167,7 @@ const SendTokenModal: React.FC<SendTokenModalProps> = ({
               value={receiver}
               onChange={(e) => setReceiver(e.target.value)}
               className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
-              required
+              
             />
           </div>
 
@@ -194,7 +194,7 @@ const SendTokenModal: React.FC<SendTokenModalProps> = ({
                 setAmount(e.target.value === "" ? "" : Number(e.target.value))
               }
               className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
-              required
+              
             />
             <p className="text-xs capitalize font-semibold tracking-wider  mt-3">
               Amount to send:

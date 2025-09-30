@@ -1,12 +1,30 @@
-import React from "react";
-import type { History } from "./WalletComp";
+import React, { useState } from "react";
 import { FaArrowAltCircleDown, FaArrowAltCircleUp } from "react-icons/fa";
+import VeiwHistoryModal from "../../modal/VeiwHistoryModal";
+
+export interface History {
+  id: string;
+  address: string;
+  amount: string;
+  created_at: string;
+  updated_at?: string;
+  purpose: string;
+  status: string;
+  fee?: string | null;
+  user: string;
+}
 
 interface WalletTableProps {
   tokens: History[] | null;
 }
 
 const WalletHistory: React.FC<WalletTableProps> = ({ tokens }) => {
+  const [selected, setSelected] = useState<History | null>(null);
+  const handleRowClick = (id: string) => {
+    const found = tokens?.find((token) => token.id === id) || null;
+    setSelected(found);
+  };
+
   return (
     <div className="mt-4 px-2 overflow-x-auto overflow-y-scroll h-[50vh] border-white/10">
       {/* Desktop / Tablet Table */}
@@ -22,14 +40,17 @@ const WalletHistory: React.FC<WalletTableProps> = ({ tokens }) => {
         {tokens === null || tokens.length === 0 ? (
           <tbody className="w-full mx-auto">
             <tr className=" w-full mx-auto  p-8 italic text-center ">
-              
-             <td>no data available</td> 
+              <td>no data available</td>
             </tr>
           </tbody>
         ) : (
           <tbody className="divide-y divide-white/6 ">
             {tokens.map((t) => (
-              <tr key={t.id} className="hover:bg-white/2 text-center">
+              <tr
+                key={t.id}
+                onClick={() => handleRowClick(t.id)}
+                className="hover:bg-white/2 text-center"
+              >
                 <td className="py-4 px-3">
                   <div className="p-3 flex items-center justify-center ">
                     {t.status === "CREDIT" ? (
@@ -64,6 +85,13 @@ const WalletHistory: React.FC<WalletTableProps> = ({ tokens }) => {
           </tbody>
         )}
       </table>
+
+      {selected && (
+        <VeiwHistoryModal
+          transaction={selected}
+          onClose={() => setSelected(null)}
+        />
+      )}
     </div>
   );
 };

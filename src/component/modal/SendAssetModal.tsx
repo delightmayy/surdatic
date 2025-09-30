@@ -11,6 +11,7 @@ interface SendTokenModalProps {
   name: string;
   symbol: string;
   image: string;
+  id: string;
 }
 
 const SendAssetModal: React.FC<SendTokenModalProps> = ({
@@ -19,8 +20,9 @@ const SendAssetModal: React.FC<SendTokenModalProps> = ({
   name,
   symbol,
   image,
+  id,
 }) => {
-  const { walletTransfer, transferFee } = useAuth();
+  const { walletAssetTransferID, transferFee } = useAuth();
 
   const [step, setStep] = useState(1);
   const [receiver, setReceiver] = useState("");
@@ -43,7 +45,7 @@ const SendAssetModal: React.FC<SendTokenModalProps> = ({
       return;
     }
 
-    if (Number(amount) > Number(balance)) {
+    /*  if (Number(amount) > Number(balance)) {
       setError("Amount exceeds available balance");
 
       setTimeout(() => {
@@ -51,22 +53,21 @@ const SendAssetModal: React.FC<SendTokenModalProps> = ({
       }, 2000);
 
       return;
-    }
+    } */
 
     try {
-      const res = await walletTransfer(Number(amount), receiver); /// coming back to fix the endpoint
+      const res = await walletAssetTransferID(Number(amount), id, receiver); /// coming back to fix the endpoint
       if (res.data) {
         setStep(2);
       }
     } catch (err: any) {
-      setError(err.data);
+      setError(err.response.statusText || err.message || " request failed");
+
       setTimeout(() => {
         setError("");
         setStep(1);
-      }, 1000);
+      }, 2000);
     }
-
-    setStep(2);
   };
 
   useEffect(() => {
@@ -132,7 +133,7 @@ const SendAssetModal: React.FC<SendTokenModalProps> = ({
               value={receiver}
               onChange={(e) => setReceiver(e.target.value)}
               className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
-              required
+              
             />
           </div>
 
@@ -159,7 +160,7 @@ const SendAssetModal: React.FC<SendTokenModalProps> = ({
                 setAmount(e.target.value === "" ? "" : Number(e.target.value))
               }
               className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
-              required
+              
             />
             <p className="text-xs capitalize font-semibold tracking-wider  mt-3">
               Amount to send:

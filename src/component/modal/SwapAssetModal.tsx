@@ -12,6 +12,7 @@ interface SendTokenModalProps {
   name: string;
   symbol: string;
   image: string;
+  id: string;
 }
 
 const SwapAssetModal: React.FC<SendTokenModalProps> = ({
@@ -20,8 +21,9 @@ const SwapAssetModal: React.FC<SendTokenModalProps> = ({
   name,
   symbol,
   image,
+  id,
 }) => {
-  const { walletTransfer, transferFee } = useAuth();
+  const { evmAssetSurdaSwapID, walletAssetConvertID, transferFee } = useAuth();
 
   const [step, setStep] = useState(1);
   const [fee, setFee] = useState("");
@@ -33,7 +35,7 @@ const SwapAssetModal: React.FC<SendTokenModalProps> = ({
     e.preventDefault();
 
     // validate
-    if ( !amount) {
+    if (!amount) {
       setError("All fields are required");
 
       setTimeout(() => {
@@ -42,6 +44,8 @@ const SwapAssetModal: React.FC<SendTokenModalProps> = ({
 
       return;
     }
+
+    /// uncomment after testing is over
 
     if (Number(amount) > Number(balance)) {
       setError("Amount exceeds available balance");
@@ -54,19 +58,23 @@ const SwapAssetModal: React.FC<SendTokenModalProps> = ({
     }
 
     try {
-      const res = await walletTransfer(Number(amount),""); /// coming back to fix the endpoint
-      if (res.data) {
+      const res =
+        symbol === "LSK"
+          ? await evmAssetSurdaSwapID(Number(amount), id)
+          : await walletAssetConvertID(Number(amount), id); /// coming back to fix the endpoint
+      if (res.data.status) {
+        console.log(res.data.status);
+
         setStep(2);
       }
     } catch (err: any) {
-      setError(err.data);
+      symbol === "LSK"? setError(err.response.data.message):setError(err.response.data);
+      console.log(err.response.data);
       setTimeout(() => {
         setError("");
         setStep(1);
-      }, 1000);
+      }, 2000);
     }
-
-    setStep(2);
   };
 
   useEffect(() => {
@@ -128,13 +136,13 @@ const SwapAssetModal: React.FC<SendTokenModalProps> = ({
           {/* Receiver */}
           <div className="flex flex-col">
             <label className="text-sm mb-1">Convert To</label>
-             <div className="flex items-center  px-4 py-3 rounded-md bg-black/50 border border-white/10 text-white cursor-pointer">
-            <div className="flex items-center gap-2">
-              <img src={token} alt="Surda" className="w-7 h-7 rounded-full" />
+            <div className="flex items-center  px-4 py-3 rounded-md bg-black/50 border border-white/10 text-white cursor-pointer">
+              <div className="flex items-center gap-2">
+                <img src={token} alt="Surda" className="w-7 h-7 rounded-full" />
 
-              <span className="text-sm text-white/50">Surda</span>
+                <span className="text-sm text-white/50">Surda</span>
+              </div>
             </div>
-          </div>
           </div>
 
           {/* Network */}
@@ -160,7 +168,7 @@ const SwapAssetModal: React.FC<SendTokenModalProps> = ({
                 setAmount(e.target.value === "" ? "" : Number(e.target.value))
               }
               className="bg-[#1a1a1a] text-sm px-4 py-3 rounded-md outline-none focus:ring-1 focus:ring-sky-500/30"
-              required
+              
             />
             <p className="text-xs capitalize font-semibold tracking-wider  mt-3">
               Amount to send:
