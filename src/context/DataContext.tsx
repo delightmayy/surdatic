@@ -4,7 +4,6 @@ import cardimg1 from "../img/card1img.png";
 import cardimg2 from "../img/card2img.png";
 import { FiLogOut, FiRepeat } from "react-icons/fi";
 import { FaCheck, FaRepeat, FaXmark } from "react-icons/fa6";
-import { useCookies } from "react-cookie";
 
 export interface Stat {
   title: string;
@@ -50,13 +49,12 @@ export interface MarketPlaceData {
 
 interface DataContextType {
   overveiwTab: string;
-  isAuthenticated: string;
   setOverveiwTab: (value: string) => void;
   UserSigned: boolean;
   setUserSigned: (value: boolean) => void;
-  
+
   togleshow: boolean;
-  SetTogleShow:  Dispatch<SetStateAction<boolean>>;
+  SetTogleShow: Dispatch<SetStateAction<boolean>>;
   targetDate: Date;
   totalEarnings: number;
   createdStats: Stat[];
@@ -84,9 +82,6 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   const [UserSigned, setUserSigned] = useState(true);
   const [togleshow, SetTogleShow] = useState(false);
 
-  const [cookies] = useCookies(["autoLogin"]);
-  const [isAuthenticated] = useState(cookies.autoLogin || "false");
-  console.log(isAuthenticated);
 
   const targetDate = new Date("2025-09-30T00:00:00Z");
   const totalEarnings = 20546;
@@ -701,7 +696,6 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         surveyVideoParticipated,
         surveyVideoValidated,
         marketPlaceData,
-        isAuthenticated,
       }}
     >
       {children}

@@ -31,6 +31,7 @@ import SurveyHistoryPage from "../component/dashboardUI/survey/SurveyHistoryPage
 import SurveyAnalysisPage from "../component/dashboardUI/survey/SurveyAnalysisPage";
 import VideoSurveyCallPage from "../component/dashboardUI/survey/VideoSurveyCallPage";
 import ProtectedRoute from "./ProtectedRoute";
+import AssetPage from "../component/dashboardUI/wallet/AssetPage";
 /* import { useState } from "react"; */
 
 export const AppRoutes = () => {
@@ -59,6 +60,7 @@ export const AppRoutes = () => {
           <Route path="wallet" element={<Wallet />} />
           <Route path="p2pmarket" element={<PTPMarket />} />
           <Route path="p2p-order" element={<P2POrderPage />} />
+          <Route path="asset/:symbol" element={<AssetPage />} />
 
           <Route path="surveys" element={<DashSurvey />} />
           <Route path="surveys/:id" element={<FormSurveyDetail />} />

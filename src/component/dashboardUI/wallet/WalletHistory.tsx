@@ -23,7 +23,7 @@ const WalletHistory: React.FC<WalletTableProps> = ({ tokens }) => {
           <tbody className="w-full mx-auto">
             <tr className=" w-full mx-auto  p-8 italic text-center ">
               
-              no data available{" "}
+             <td>no data available</td> 
             </tr>
           </tbody>
         ) : (

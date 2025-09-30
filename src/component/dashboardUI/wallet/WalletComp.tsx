@@ -75,14 +75,14 @@ export type CommonAsset = {
   updated_at: string;
 };
 
-type NFT = {
+/* type NFT = {
   id: string;
   name: string;
   image: string;
   price: number;
-};
+}; */
 
-const DUMMY_NFTS: NFT[] = [
+/* const DUMMY_NFTS: NFT[] = [
   {
     id: "nft1",
     name: "Crypto Punk #123",
@@ -102,6 +102,7 @@ const DUMMY_NFTS: NFT[] = [
     price: 1.2,
   },
 ];
+ */
 
 const containerFade = {
   hidden: { opacity: 0, y: 8 },
@@ -117,7 +118,8 @@ const WalletComponent = () => {
   const [UserHistory, setUserHistory] = useState<History[] | null>();
   const userAddress = UserWallet?.address;
 
-  const [nfts] = useState<NFT[]>(DUMMY_NFTS);
+  
+  /* const [nfts] = useState<NFT[]>(DUMMY_NFTS); */
   const [query] = useState("");
   const [sendModalState, setSendModalState] = useState(false);
   const [receiveModalState, setReceiveModalState] = useState(false);
@@ -134,7 +136,7 @@ const WalletComponent = () => {
   const [activeTab, setActiveTab] = useState<"tokens" | "nfts" | "history">(
     "tokens"
   );
-    console.log(nfts); 
+   
 
   const Assets: CommonAsset[] = [
     ...(UserICPAsset?.map((a) => ({

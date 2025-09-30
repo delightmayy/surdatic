@@ -1,14 +1,15 @@
 import React from "react";
 import { FiArrowRight } from "react-icons/fi";
 import type { CommonAsset } from "./WalletComp";
-
-
+import { useNavigate } from "react-router-dom";
 
 interface WalletTableProps {
   tokens: CommonAsset[];
 }
 
 const WalletTable: React.FC<WalletTableProps> = ({ tokens }) => {
+  const navigate = useNavigate();
+
   return (
     <div className="mt-4 overflow-x-auto px-2">
       {/* Desktop / Tablet Table */}
@@ -23,7 +24,13 @@ const WalletTable: React.FC<WalletTableProps> = ({ tokens }) => {
         </thead>
         <tbody className="divide-y divide-white/6">
           {tokens.map((t) => (
-            <tr key={t.id} className="hover:bg-white/2">
+            <tr
+              key={t.id}
+              onClick={() =>
+                navigate(`/dashboard/asset/${t.symbol}`, { state: { t } })
+              }
+              className="hover:bg-white/2"
+            >
               <td className="py-4 px-3">
                 <div className="flex items-center gap-3">
                   <img
@@ -46,7 +53,7 @@ const WalletTable: React.FC<WalletTableProps> = ({ tokens }) => {
               <td className="py-4 px-3">
                 <div className="text-sm ">{t.balance.toLocaleString()}</div>
                 <div className="text-xs text-white/60">
-                  {(t.balance ).toFixed(3)} {t.symbol}
+                  {t.balance.toFixed(3)} {t.symbol}
                 </div>
               </td>
             </tr>
@@ -59,6 +66,9 @@ const WalletTable: React.FC<WalletTableProps> = ({ tokens }) => {
         {tokens.map((t) => (
           <div
             key={t.id}
+             onClick={() =>
+                navigate(`/dashboard/asset/${t.symbol}`, { state: { t } })
+              }
             className="p-3 rounded-xl border border-white/10 bg-black/30 flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
