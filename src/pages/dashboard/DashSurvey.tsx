@@ -7,7 +7,7 @@ import { useContext, useState } from "react";
 import KYCModal from "../../component/modal/KYCModal";
 import OverviewCards from "../../component/dashboardUI/survey/OverviewCards";
 import { Link } from "react-router-dom";
-import DataContext from "../../context/DataContext";
+import DataContext, { type Survey } from "../../context/DataContext";
 import CreateSurveyModal from "../../component/modal/CreateSurveyModal";
 
 const DashSurvey = () => {
@@ -15,12 +15,12 @@ const DashSurvey = () => {
   const [showKyc, setShowKyc] = useState(false);
   const [openCreateModal, setopenCreateModal] = useState(false);
   const {
-    surveyCreated,
+    userSurveyList,
     participatedStats,
     validatedStats,
     createdStats,
-    surveyValidated,
-    surveyParticipated,
+    approvedSurveyListState,
+    answeredSurveyList,
     overveiwTab,
     setOverveiwTab,
     surveyVideoCreated,
@@ -47,9 +47,10 @@ const DashSurvey = () => {
             >
               Become a Validator
             </button>
-            <button 
+            <button
               onClick={() => setopenCreateModal(true)}
-            className="flex gap-1 items-center sm:mt-0 px-4 py-2  bg-sky-700 hover:bg-sky-600 text-sm text-white">
+              className="flex gap-1 items-center sm:mt-0 px-4 py-2  bg-sky-700 hover:bg-sky-600 text-sm text-white"
+            >
               <FiPlusSquare size={18} />
               Create Survey
             </button>
@@ -62,26 +63,30 @@ const DashSurvey = () => {
         <div className="flex space-x-6 text-xs border-t border-white/10 mb-6">
           <button
             onClick={() => setOverveiwTab("created")}
-            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
-              overveiwTab === "created" ? "border-sky-500" : "border-black/70"
+            className={`pb-2 border-t-2   font-semibold py-1 ${
+              overveiwTab === "created"
+                ? "border-sky-500 text-sky-500"
+                : "text-white border-black/70"
             }`}
           >
             Created survey
           </button>
           <button
             onClick={() => setOverveiwTab("participated")}
-            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
+            className={`pb-2 border-t-2   font-semibold py-1 ${
               overveiwTab === "participated"
-                ? "border-sky-500"
-                : "border-black/70"
+                ? "border-sky-500 text-sky-500"
+                : "text-white border-black/70"
             }`}
           >
             Survey Participated
           </button>
           <button
             onClick={() => setOverveiwTab("validated")}
-            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
-              overveiwTab === "validated" ? "border-sky-500" : "border-black/70"
+            className={`pb-2 border-t-2   font-semibold py-1 ${
+              overveiwTab === "validated"
+                ? "border-sky-500 text-sky-500"
+                : "text-white border-black/70"
             }`}
           >
             Validated Survey
@@ -114,122 +119,154 @@ const DashSurvey = () => {
         <div className="flex space-x-6 text-xs border-t border-white/10 mb-6">
           <button
             onClick={() => setAvailableTab("form")}
-            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
-              availableTab === "form" ? "border-sky-500" : "border-black/70"
+            className={`pb-2 border-t-2   font-semibold py-1 ${
+              availableTab === "form"
+                ? "border-sky-500 text-sky-500"
+                : "text-white border-black/70"
             }`}
           >
             Form Survey
           </button>
           <button
             onClick={() => setAvailableTab("video")}
-            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
-              availableTab === "video" ? "border-sky-500" : "border-black/70"
+            className={`pb-2 border-t-2   font-semibold py-1 ${
+              availableTab === "video"
+                ? "border-sky-500 text-sky-500"
+                : "text-white border-black/70"
             }`}
           >
             Video Survey
           </button>
         </div>
+
         {/* Survey Form Cards Grid */}
         {availableTab === "form" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {/*  overviewcard for created */}
-
             {overveiwTab === "created" &&
-              surveyCreated.map((survey, idx) => (
-                <Link
-                  to={`/dashboard/surveys/${survey.id}`}
-                  key={idx}
-                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
-                >
-                  <img
-                    src={survey.frontImg}
-                    alt="card"
-                    className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
-                  />
-                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
-                    <h3 className="text-xs mb-1 flex gap-2 items-center">
-                      <FaClock size={14} /> {survey.date}
-                    </h3>
-                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
-                    <div className="flex justify-between items-center mt-auto">
-                      <div className="flex items-center gap-1 font-semibold">
-                        <p className="font-light">Rewards:</p>
-                        <img src={surdacoin} alt="reward" className="w-5" />
-                        <span className="text-white/90">{survey.reward}</span>
+              (userSurveyList.length === 0 ? (
+                <div className="bg-white/5 p-6 w-full capitalize italic shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col text-center col-span-full ">
+                  no survey available
+                </div>
+              ) : (
+                userSurveyList.map((survey) => (
+                  <Link
+                    to={`/dashboard/surveys/${survey.title}`}
+                    state={{ survey }}
+                    key={survey.id}
+                    className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                  >
+                    <img
+                      src={survey.image}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                      <h3 className="text-xs mb-1 flex gap-2 items-center">
+                        <FaClock size={14} /> {survey.fromDate}
+                      </h3>
+                      <p className="font-semibold text-sm mb-4">
+                        {survey.title}
+                      </p>
+                      <div className="flex flex-wrap justify-between items-center mt-auto">
+                        <div className="flex items-center gap-1 font-semibold">
+                          <p className="font-light">Rewards:</p>
+                          <img src={surdacoin} alt="reward" className="w-5" />
+                          <span className="text-white/90">{survey.cost}</span>
+                        </div>
+                        <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
+                          Buy Survey
+                        </button>
                       </div>
-                      <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
-                        Buy Survey
-                      </button>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                ))
               ))}
 
             {/*  overviewcard for Validated */}
             {overveiwTab === "validated" &&
-              surveyValidated.map((survey, idx) => (
-                <Link
-                  to={`/dashboard/surveys/${survey.id}`}
-                  key={idx}
-                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
-                >
-                  <img
-                    src={survey.frontImg}
-                    alt="card"
-                    className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
-                  />
-                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
-                    <h3 className="text-xs mb-1 flex gap-2 items-center">
-                      <FaClock size={14} /> {survey.date}
-                    </h3>
-                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
-                    <div className="flex justify-between items-center mt-auto">
-                      <div className="flex items-center gap-1 font-semibold">
-                        <p className="font-light">Rewards:</p>
-                        <img src={surdacoin} alt="reward" className="w-5" />
-                        <span className="text-white/90">{survey.reward}</span>
+              (approvedSurveyListState.length === 0 ? (
+                <div className="bg-white/5 p-6 w-full capitalize italic shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col text-center col-span-full">
+                  no survey available
+                </div>
+              ) : (
+                approvedSurveyListState.map((survey) => (
+                  <Link
+                    to={`/dashboard/surveys/${survey.title}`}
+                    state={{ survey }}
+                    key={survey.id}
+                    className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                  >
+                    <img
+                      src={survey.image}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                      <h3 className="text-xs mb-1 flex gap-2 items-center">
+                        <FaClock size={14} /> {survey.fromDate}
+                      </h3>
+                      <p className="font-semibold text-sm mb-4">
+                        {survey.title}
+                      </p>
+                      <div className="flex flex-wrap justify-between items-center mt-auto">
+                        <div className="flex items-center gap-1 font-semibold">
+                          <p className="font-light">Rewards:</p>
+                          <img src={surdacoin} alt="reward" className="w-5" />
+                          <span className="text-white/90">{survey.cost}</span>
+                        </div>
+                        <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
+                          Buy Survey
+                        </button>
                       </div>
-                      <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
-                        Buy Survey
-                      </button>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                ))
               ))}
 
             {/*  overviewcard for Validated */}
             {overveiwTab === "participated" &&
-              surveyParticipated.map((survey, idx) => (
-                <Link
-                  to={`/dashboard/surveys/${survey.id}`}
-                  key={idx}
-                  className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
-                >
-                  <img
-                    src={survey.frontImg}
-                    alt="card"
-                    className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
-                  />
-                  <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
-                    <h3 className="text-xs mb-1 flex gap-2 items-center">
-                      <FaClock size={14} /> {survey.date}
-                    </h3>
-                    <p className="font-semibold text-sm mb-4">{survey.title}</p>
-                    <div className="flex justify-between items-center mt-auto">
-                      <div className="flex items-center gap-1 font-semibold">
-                        <p className="font-light">Rewards:</p>
-                        <img src={surdacoin} alt="reward" className="w-5" />
-                        <span className="text-white/90">{survey.reward}</span>
+              (answeredSurveyList.length === 0 ? (
+                <div className="bg-white/5 p-6 w-full capitalize italic shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col text-center col-span-full">
+                  no survey available
+                </div>
+              ) : (
+                answeredSurveyList.map((survey) => (
+                  <Link
+                    to={`/dashboard/surveys/${survey.title}`}
+                    state={{ survey }}
+                    key={survey.id}
+                    className="bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col"
+                  >
+                    <img
+                      src={survey.image}
+                      alt="card"
+                      className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
+                    />
+                    <div className="p-4 flex flex-col justify-between text-white/50 flex-grow">
+                      <h3 className="text-xs mb-1 flex gap-2 items-center">
+                        <FaClock size={14} /> {survey.fromDate}
+                      </h3>
+                      <p className="font-semibold text-sm mb-4">
+                        {survey.title}
+                      </p>
+                      <div className="flex flex-wrap justify-between items-center mt-auto">
+                        <div className="flex items-center gap-1 font-semibold">
+                          <p className="font-light">Rewards:</p>
+                          <img src={surdacoin} alt="reward" className="w-5" />
+                          <span className="text-white/90">{survey.cost}</span>
+                        </div>
+                        <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
+                          Buy Survey
+                        </button>
                       </div>
-                      <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
-                        Buy Survey
-                      </button>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                ))
               ))}
           </div>
         )}
+
         {/* Survey Video Cards Grid */}
         {availableTab === "video" && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -338,14 +375,14 @@ const DashSurvey = () => {
                   </div>
                 </Link>
               ))}
-
-            
           </div>
         )}
       </div>
 
       {showKyc && <KYCModal onClose={() => setShowKyc(false)} />}
-      {openCreateModal && <CreateSurveyModal onClose={() => setopenCreateModal(false)} />}
+      {openCreateModal && (
+        <CreateSurveyModal onClose={() => setopenCreateModal(false)} />
+      )}
     </motion.main>
   );
 };

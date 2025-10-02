@@ -32,13 +32,13 @@ import SurveyAnalysisPage from "../component/dashboardUI/survey/SurveyAnalysisPa
 import VideoSurveyCallPage from "../component/dashboardUI/survey/VideoSurveyCallPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AssetPage from "../component/dashboardUI/wallet/AssetPage";
+import SurveyOverviewHistory from "../component/dashboardUI/survey/surveyOverviewHistory";
 /* import { useState } from "react"; */
 
 export const AppRoutes = () => {
-   /* const isAuthenticated = false */
-   
-   /* destructure save login check from login page save in localStorage or cookies for is isAuthenticated */
-  
+  /* const isAuthenticated = false */
+
+  /* destructure save login check from login page save in localStorage or cookies for is isAuthenticated */
 
   return (
     <Routes>
@@ -54,7 +54,7 @@ export const AppRoutes = () => {
       <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/reset-success" element={<ResetSuccess />} />
 
-      <Route element={<ProtectedRoute   />}> 
+      <Route element={<ProtectedRoute />}>
         <Route path="/dashboard" element={<Layout />}>
           <Route index element={<DashboardHome />} />
           <Route path="wallet" element={<Wallet />} />
@@ -67,6 +67,7 @@ export const AppRoutes = () => {
           <Route path="videos/:id" element={<VideoSurveyDetail />} />
           <Route path="questionaire" element={<SurveyQuestionPage />} />
           <Route path="history" element={<SurveyHistoryPage />} />
+          <Route path="Overview" element={<SurveyOverviewHistory />} />
           <Route path="analysis/:id" element={<SurveyAnalysisPage />} />
           <Route path="videocall" element={<VideoSurveyCallPage />} />
 
@@ -81,7 +82,7 @@ export const AppRoutes = () => {
 
           <Route path="*" element={<ErrorPage />} />
         </Route>
-       </Route> 
+      </Route>
 
       <Route path="*" element={<ErrorPage />} />
     </Routes>

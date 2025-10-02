@@ -96,7 +96,7 @@ const AssetPage = () => {
         const res = await userAssetTransactionID(id);
         if (res.data) {
           setUserHistory(res.data);
-          console.log(res.data);
+          /* console.log(res.data); */
         }
       } catch (err) {
         console.log(err);

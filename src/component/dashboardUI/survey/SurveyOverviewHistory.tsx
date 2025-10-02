@@ -1,14 +1,15 @@
 import { FaArrowLeft } from "react-icons/fa";
 import { FaArrowDownShortWide, FaArrowRightLong } from "react-icons/fa6";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SurveyHistoryCard from "./SurveyHistoryCard";
-import { useContext, useState, useMemo } from "react";
-import DataContext from "../../../context/DataContext";
+import { useState, useMemo } from "react";
+import { type Survey } from "../../../context/DataContext";
 
-const SurveyHistoryPage = () => {
-  const { marketPlaceData } = useContext(DataContext)!;
-
+const SurveyOverviewHistory = () => {
+  /* const { marketPlaceData } = useContext(DataContext)!; */
+  const { state } = useLocation();
   const navigate = useNavigate();
+  console.log("this is it", state);
 
   const [activeFilter, setActivefilter] = useState<"All" | "7Days" | "30Days">(
     "All"
@@ -17,13 +18,13 @@ const SurveyHistoryPage = () => {
 
   // Filtered surveys based on date
   const filteredSurveys = useMemo(() => {
-    if (!marketPlaceData) return [];
+    if (!state) return [];
 
     const today = new Date();
 
     if (activeFilter === "7Days") {
-      return marketPlaceData.filter((survey) => {
-        const surveyDate = new Date(survey.date);
+      return state.filter((survey: Survey) => {
+        const surveyDate = new Date(survey.fromDate);
         const diffDays =
           (today.getTime() - surveyDate.getTime()) / (1000 * 60 * 60 * 24);
         return diffDays <= 7;
@@ -31,8 +32,8 @@ const SurveyHistoryPage = () => {
     }
 
     if (activeFilter === "30Days") {
-      return marketPlaceData.filter((survey) => {
-        const surveyDate = new Date(survey.date);
+      return state.filter((survey: Survey) => {
+        const surveyDate = new Date(survey.fromDate);
         const diffDays =
           (today.getTime() - surveyDate.getTime()) / (1000 * 60 * 60 * 24);
         return diffDays <= 30;
@@ -40,8 +41,8 @@ const SurveyHistoryPage = () => {
     }
 
     // Default: show all
-    return marketPlaceData;
-  }, [marketPlaceData, activeFilter]);
+    return state;
+  }, [state, activeFilter]);
 
   return (
     <div className="text-white px-4 pt-4 pb-20 max-w-7xl mx-auto">
@@ -66,7 +67,7 @@ const SurveyHistoryPage = () => {
           </p>
           <p className="text-xs font-semibold text-white/90 flex gap-1 items-center">
             <FaArrowRightLong size={20} className="h-4 text-white/60" />
-            Completed Survey
+            History
           </p>
         </div>
 
@@ -116,12 +117,18 @@ const SurveyHistoryPage = () => {
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredSurveys.map((s) => (
-          <SurveyHistoryCard survey={s} key={s.id} />
-        ))}
+        {filteredSurveys.length === 0 ? (
+          <div className="bg-white/5 p-6 w-full capitalize italic shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col text-center col-span-full">
+            no survey available
+          </div>
+        ) : (
+          filteredSurveys.map((s: Survey) => (
+            <SurveyHistoryCard survey={s} key={s.id} />
+          ))
+        )}
       </div>
     </div>
   );
 };
 
-export default SurveyHistoryPage;
+export default SurveyOverviewHistory;

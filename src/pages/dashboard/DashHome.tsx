@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import cardimg1 from "../../img/card1img.png";
 import { FaClock, FaEye, FaEyeSlash, FaUsers } from "react-icons/fa";
 import surdacoin from "../../img/tokenicon.png";
 import earnbg from "../../img/daskearnbg.png";
@@ -22,61 +21,12 @@ const containerFade = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
 };
 
-const surveys = [
-  {
-    frontImg: cardimg1,
-    /* backImg: cardimg2, */
-    title:
-      "ExaminingSafety Compliance rate among senior managers in corporate organisations in Nigeria ",
-    date: "58D 17H 03M",
-    reward: 50,
-  },
-  {
-    frontImg: cardimg1,
-    /* backImg: cardimg2, */
-    title:
-      "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
-    date: "58D 17H 03M",
-    reward: 75,
-  },
-  {
-    frontImg: cardimg1,
-    /* backImg: cardimg2, */
-    title:
-      "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
-    date: "58D 17H 03M",
-    reward: 75,
-  },
-  {
-    frontImg: cardimg1,
-    /* backImg: cardimg2, */
-    title:
-      "ExaminingSafety Compliance rate among senior managers in corporate organisations in Nigeria ",
-    date: "58D 17H 03M",
-    reward: 50,
-  },
-  {
-    frontImg: cardimg1,
-    /* backImg: cardimg2, */
-    title:
-      "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
-    date: "58D 17H 03M",
-    reward: 75,
-  },
-  {
-    frontImg: cardimg1,
-    /* backImg: cardimg2, */
-    title:
-      "Examining Safety Compliance rate among senior managers in corporate organisations in Nigeria",
-    date: "58D 17H 03M",
-    reward: 75,
-  },
-];
-
 export default function DashboardHome() {
   const { becomeValidator } = useAuth();
   const [openCreateModal, setOpenCreateModal] = useState(false);
   const {
+    surveyList,
+    /* answeredSurveyList, */
     participatedStats,
     validatedStats,
     createdStats,
@@ -157,11 +107,11 @@ export default function DashboardHome() {
                 </button>
               </div>
             </div>
-            <div className="bg-black/50 text-center sm:text-start  px-6">
+            <div className="bg-black/50 text-center lg:text-start  px-6">
               <p className="mt-1 pt-1 text-3xl md:text-4xl font-extrabold tracking-tight">
                 {togleshow ? totalEarnings.toLocaleString() : "*****"}
               </p>
-              <p className=" pb-6 text-white/60 text-xs mt-2 max-w-lg">
+              <p className=" pb-6 text-white/60 text-xs  mt-2 max-w-lg mx-auto lg:mx-0">
                 Keep up the great work! Your earnings represent your survey
                 participation and task completions.
               </p>
@@ -175,26 +125,30 @@ export default function DashboardHome() {
         <div className="flex space-x-6 text-xs border-t border-white/10 mb-6">
           <button
             onClick={() => setOverveiwTab("created")}
-            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
-              overveiwTab === "created" ? "border-sky-500" : "border-black/70"
+            className={`pb-2 border-t-2   font-semibold py-1 ${
+              overveiwTab === "created"
+                ? "border-sky-500 text-sky-500"
+                : "border-black/70 text-white"
             }`}
           >
             Created survey
           </button>
           <button
             onClick={() => setOverveiwTab("participated")}
-            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
+            className={`pb-2 border-t-2   font-semibold py-1 ${
               overveiwTab === "participated"
-                ? "border-sky-500"
-                : "border-black/70"
+                ? "border-sky-500 text-sky-500"
+                : "border-black/70 text-white"
             }`}
           >
             Survey Participated
           </button>
           <button
             onClick={() => setOverveiwTab("validated")}
-            className={`pb-2 border-t-2  text-white font-semibold py-1 ${
-              overveiwTab === "validated" ? "border-sky-500" : "border-black/70"
+            className={`pb-2 border-t-2   font-semibold py-1 ${
+              overveiwTab === "validated"
+                ? "border-sky-500 text-sky-500"
+                : "border-black/70 text-white"
             }`}
           >
             Validated Survey
@@ -241,29 +195,30 @@ export default function DashboardHome() {
                 { breakpoint: 768, settings: { slidesToShow: 1 } },
               ]}
             >
-              {surveys.map((s, idx) => (
+              {surveyList.map((survey, idx) => (
                 <div key={idx} className="px-2">
-                  <div
-                    key={idx}
-                    /* onClick={() => setFlipped(!flipped)} */
+                  <Link
+                    to={`/dashboard/surveys/${survey.title}`}
+                    state={{ survey }}
+                    key={survey.id}
                     className="cursor-pointer bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none
                          flex flex-col flex-shrink-0 mx-auto  sm:w-auto min-h-96 max-w-sm"
                   >
                     <img
-                      src={s.frontImg}
+                      src={survey.image}
                       alt="card"
                       className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
                     />
 
                     <div className="p-4 flex flex-col justify-between  text-white/50 flex-grow">
                       <h3 className="  text-xs mb-1 flex gap-2 items-center">
-                        <FaClock size={14} /> {s.date}{" "}
+                        <FaClock size={14} /> {survey.fromDate}{" "}
                       </h3>
                       <p className=" font-semibold text-sm md:text-sm mb-4">
-                        {s.title}
+                        {survey.title}
                       </p>
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-1  font-semibold">
+                        <div className="flex flex-wrap items-center gap-1  font-semibold">
                           <p className="font-light">Rewards:</p>
                           <img
                             src={surdacoin}
@@ -271,14 +226,14 @@ export default function DashboardHome() {
                             className="w-5"
                           />{" "}
                           <span className="text-white/90"></span>
-                          {s.reward}
+                          {survey.cost}
                         </div>
                         <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
                           Buy Survey
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
               ))}
             </Slider>
@@ -314,29 +269,30 @@ export default function DashboardHome() {
                 { breakpoint: 768, settings: { slidesToShow: 1 } },
               ]}
             >
-              {surveys.map((s, idx) => (
+              {surveyList.map((survey, idx) => (
                 <div key={idx} className="px-2">
-                  <div
-                    key={idx}
-                    /* onClick={() => setFlipped(!flipped)} */
+                  <Link
+                    to={`/dashboard/surveys/${survey.title}`}
+                    state={{ survey }}
+                    key={survey.id}
                     className="cursor-pointer bg-white/5 shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none
                          flex flex-col flex-shrink-0 mx-auto  sm:w-auto min-h-96 lg max-w-sm"
                   >
                     <img
-                      src={s.frontImg}
+                      src={survey.image}
                       alt="card"
                       className="object-cover w-full rounded-3xl transition-transform duration-500 p-2 h-52"
                     />
 
                     <div className="p-4 flex flex-col justify-between  text-white/50 flex-grow">
                       <h3 className="  text-xs mb-1 flex gap-2 items-center">
-                        <FaClock size={14} /> {s.date}{" "}
+                        <FaClock size={14} /> {survey.fromDate}
                       </h3>
                       <p className=" font-semibold text-sm md:text-sm mb-4">
-                        {s.title}
+                        {survey.title}
                       </p>
                       <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-1  font-semibold">
+                        <div className="flex flex-wrap items-center gap-1  font-semibold">
                           <p className="font-light">Rewards:</p>
                           <img
                             src={surdacoin}
@@ -344,14 +300,14 @@ export default function DashboardHome() {
                             className="w-5"
                           />{" "}
                           <span className="text-white/90"></span>
-                          {s.reward}
+                          {survey.cost}
                         </div>
                         <button className="bg-blue-600 text-white text-sm px-3 py-1 rounded-md hover:bg-blue-700 transition hover:scale-95 cursor-pointer">
                           Buy Survey
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </Link>
                 </div>
               ))}
             </Slider>

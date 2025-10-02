@@ -1,26 +1,44 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
-import cardimg1 from "../img/card1img.png";
-import cardimg2 from "../img/card2img.png";
+/* import cardimg1 from "../img/card1img.png";
+import cardimg2 from "../img/card2img.png"; */
 import { FiLogOut, FiRepeat } from "react-icons/fi";
 import { FaCheck, FaRepeat, FaXmark } from "react-icons/fa6";
+import { useAuth } from "../api/useAuth";
+
+export interface Survey {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  fromDate: string; // could refine to Date if you parse it
+  toDate: string;
+  visibility: "public" | "private"; // refine if only 2 values
+  respondents: number;
+  validation: boolean;
+  validators: number;
+  totalQuestions: number;
+  cost: string;
+  min_age: number;
+  max_age: number;
+  status: "PENDING" | "APPROVED" | "REJECTED" | "COMPLETED" | "VALIDATED";
+  created_at: string;
+  updated_at: string;
+  owner: string;
+  genders: number[];
+  locations: number[];
+  professions: number[];
+  type?:"Video"| "Form"
+}
 
 export interface Stat {
   title: string;
   value: number;
-  icon: ReactNode; // Since you're rendering JSX
+  icon: ReactNode;
   iconBg: string;
+  sendData?: Survey[];
 }
-export interface Survey {
-  id: string;
-  title: string;
-  frontImg: string;
-  date: string;
-  reward: number;
-  questions: number;
-  description: string;
-  keyPoints: string[];
-}
+
 export interface Video {
   id: string;
   title: string;
@@ -45,14 +63,16 @@ export interface MarketPlaceData {
   questions: number;
   description: string;
   keyPoints: string[];
+
 }
 
 interface DataContextType {
   overveiwTab: string;
   setOverveiwTab: (value: string) => void;
-  UserSigned: boolean;
-  setUserSigned: (value: boolean) => void;
-
+  surveyList: Survey[];
+  userSurveyList: Survey[];
+  answeredSurveyList: Survey[];
+  approvedSurveyListState: Survey[];
   togleshow: boolean;
   SetTogleShow: Dispatch<SetStateAction<boolean>>;
   targetDate: Date;
@@ -60,10 +80,6 @@ interface DataContextType {
   createdStats: Stat[];
   validatedStats: Stat[];
   participatedStats: Stat[];
-
-  surveyCreated: Survey[];
-  surveyValidated: Survey[];
-  surveyParticipated: Survey[];
 
   surveyVideoValidated: Video[];
   surveyVideoParticipated: Video[];
@@ -79,365 +95,200 @@ interface DataProviderProps {
 
 export const DataProvider = ({ children }: DataProviderProps) => {
   const [overveiwTab, setOverveiwTab] = useState("created");
-  const [UserSigned, setUserSigned] = useState(true);
   const [togleshow, SetTogleShow] = useState(false);
-
 
   const targetDate = new Date("2025-09-30T00:00:00Z");
   const totalEarnings = 20546;
 
-  const surveyCreated = [
-    {
-      id: "safety-001",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "safety-002",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "safety-003",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "safety-004",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "safety-005",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "safety-006",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "safety-007",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-  ];
+  const {
+    surveylist,
+    answeredSurveylist,
+    userSurveylist,
+    validatorStatus,
+    getVerifyStatus,
+    pendingSurveylist,
+    disputedResponse,
 
-  const surveyParticipated = [
-    {
-      id: "participate-001",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg2,
-      date: "2025-09-08",
-      reward: 75,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "participate-002",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg2,
-      date: "2025-09-08",
-      reward: 75,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "participate-003",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg2,
-      date: "2025-09-08",
-      reward: 75,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "participate-004",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg2,
-      date: "2025-09-08",
-      reward: 75,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "participate-005",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg2,
-      date: "2025-09-08",
-      reward: 75,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "participate-006",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg2,
-      date: "2025-09-08",
-      reward: 75,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-  ];
+    approvedSurveyList /* userStakeSum */,
+  } = useAuth();
 
-  const surveyValidated = [
-    {
-      id: "validated-001",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "validated-002",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "validated-003",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "validated-004",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "validated-005",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-    {
-      id: "validated-006",
-      title: "Examining Safety Compliance...",
-      frontImg: cardimg1,
-      date: "2025-09-08",
-      reward: 50,
-      questions: 10,
-      description:
-        "This study observes how effectively senior managers in Nigerian organizations follow safety compliance directives...",
-      keyPoints: [
-        "Data & Documents",
-        "Organizational Culture",
-        "HR Frameworks",
-      ],
-    },
-  ];
+  //general availlable list
+  const [surveyList, setSurveyList] = useState<Survey[]>([]);
+
+  //participated survey / responses survey
+  const [answeredSurveyList, setAnsweredSurveyList] = useState<Survey[]>([]);
+
+  //surveyCreated /my survery
+  const [userSurveyList, setUserSurveyList] = useState<Survey[]>([]);
+
+  // status
+  const [validatorState, setValidatorState] = useState<any | null>(null);
+  const [verifyStatus, setVerifyStatus] = useState<any | null>(null);
+
+  //validated / validation
+  const [pendingSurveyList, setPendingSurveyList] = useState<Survey[]>([]);
+  const [disputedResponseList, setDisputedResponseList] = useState<Survey[]>(
+    []
+  );
+
+  //validated / validation
+  const [approvedSurveyListState, setApprovedSurveyListState] = useState<
+    Survey[]
+  >([]);
+
+  const [loading, setLoading] = useState(true);
+
+  const refreshContent = async () => {
+    setLoading(true);
+
+    try {
+      const res = await surveylist();
+      setSurveyList(res.data || []);
+    } catch (err) {
+      console.error(" Error fetching surveyList:", err);
+      setSurveyList([]);
+    }
+
+    try {
+      const res = await answeredSurveylist();
+      setAnsweredSurveyList(res.data || []);
+      console.log("answered", res.data);
+    } catch (err) {
+      console.error("❌ Error fetching answeredSurveyList:", err);
+      setAnsweredSurveyList([]);
+    }
+
+    try {
+      const res = await userSurveylist();
+      setUserSurveyList(res.data || []);
+      console.log("userlist", res.data);
+    } catch (err) {
+      console.error("❌ Error fetching userSurveyList:", err);
+      setUserSurveyList([]);
+    }
+
+    try {
+      const res = await validatorStatus();
+      setValidatorState(res.data || null);
+      console.log("validated status", res.data);
+    } catch (err) {
+      console.error("❌ Error fetching validatorStatus:", err);
+      setValidatorState(null);
+    }
+
+    try {
+      const res = await getVerifyStatus();
+      setVerifyStatus(res.data || null);
+      console.log("verified status", res.data);
+    } catch (err) {
+      console.error("❌ Error fetching verifyStatus:", err);
+      setVerifyStatus(null);
+    }
+
+    try {
+      const res = await pendingSurveylist();
+      setPendingSurveyList(res.data || []);
+      console.log("pending survey", res.data);
+    } catch (err) {
+      console.error("❌ Error fetching pendingSurveyList:", err);
+      setPendingSurveyList([]);
+    }
+
+    try {
+      const res = await disputedResponse();
+      setDisputedResponseList(res.data || []);
+      console.log("disputed response", res.data);
+    } catch (err) {
+      console.error("❌ Error fetching disputedResponse:", err);
+      setDisputedResponseList([]);
+    }
+
+    try {
+      const res = await approvedSurveyList();
+      setApprovedSurveyListState(res.data || []);
+      console.log("approved surveylist", res.data);
+    } catch (err) {
+      console.error("❌ Error fetching approvedSurveyList:", err);
+      setApprovedSurveyListState([]);
+    }
+
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    refreshContent();
+  }, []);
 
   const createdStats = [
     {
       title: "Ongoing Survey",
-      value: 0,
+      value: userSurveyList.filter((x) => x.status === "VALIDATED").length || 0,
       icon: <FiLogOut size={16} />,
-      iconBg: "bg-amber-400",
+      iconBg: "bg-emerald-500",
+      sendData: userSurveyList.filter((x) => x.status === "VALIDATED"),
     },
     {
       title: "Pending Approval and Validation",
-      value: 18,
+      value: userSurveyList.filter((x) => x.status === "PENDING").length || 0,
       icon: <FaRepeat size={16} />,
-      iconBg: "bg-emerald-500",
+      iconBg: " bg-amber-400",
+      sendData: userSurveyList.filter((x) => x.status === "PENDING"),
     },
     {
       title: "Completed Survey",
-      value: 18,
+      value: userSurveyList.filter((x) => x.status === "COMPLETED").length || 0,
       icon: <FaCheck size={16} />,
-      iconBg: "bg-rose-600",
+      iconBg: "bg-emerald-600",
+      sendData: userSurveyList.filter((x) => x.status === "COMPLETED"),
     },
   ];
   const validatedStats = [
     {
       title: "Under Review",
-      value: 6,
+      value: pendingSurveyList.length,
       icon: <FiRepeat size={16} />,
       iconBg: "bg-amber-400",
+      sendData: pendingSurveyList,
     },
     {
       title: "Approved Survey",
-      value: 18,
+      value: approvedSurveyListState.length || 0,
       icon: <FaCheck size={16} />,
       iconBg: "bg-emerald-500",
+      sendData: approvedSurveyListState,
     },
     {
-      title: "Rejected Survey",
-      value: 2,
+      title: "Disputed Survey",
+      value: disputedResponseList.length || 0,
       icon: <FaXmark size={16} />,
       iconBg: "bg-rose-600",
+       sendData: disputedResponseList,
     },
   ];
   const participatedStats = [
     {
       title: "Pending Survey",
-      value: 6,
+      value:
+        answeredSurveyList.filter((x) => x.status === "VALIDATED").length || 0,
       icon: <FiRepeat size={16} />,
       iconBg: "bg-amber-400",
+      sendData: answeredSurveyList.filter((x) => x.status === "VALIDATED"),
     },
     {
       title: "Completed Survey",
-      value: 18,
+      value:
+        answeredSurveyList.filter((x) => x.status === "COMPLETED").length || 0,
       icon: <FaCheck size={16} />,
       iconBg: "bg-emerald-500",
+      sendData: answeredSurveyList.filter((x) => x.status === "COMPLETED"),
     },
     {
       title: "Rejected Survey",
-      value: 2,
+      value:
+        answeredSurveyList.filter((x) => x.status === "REJECTED").length || 0,
       icon: <FaXmark size={16} />,
       iconBg: "bg-rose-600",
+      sendData: answeredSurveyList.filter((x) => x.status === "REJECTED"),
     },
   ];
 
@@ -680,16 +531,18 @@ export const DataProvider = ({ children }: DataProviderProps) => {
       value={{
         overveiwTab,
         setOverveiwTab,
-        UserSigned,
-        setUserSigned,
+        surveyList,
+        userSurveyList,
+        answeredSurveyList,
+        approvedSurveyListState,
         togleshow,
         SetTogleShow,
         targetDate,
         totalEarnings,
         createdStats,
-        surveyCreated,
-        surveyParticipated,
-        surveyValidated,
+        /*  surveyCreated, */
+        /*  surveyParticipated,
+        surveyValidated, */
         validatedStats,
         participatedStats,
         surveyVideoCreated,

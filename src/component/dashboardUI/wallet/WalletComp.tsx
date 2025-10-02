@@ -117,6 +117,7 @@ const WalletComponent = () => {
   const [UserEvmAsset, setUserEvmAsset] = useState<EvmAsset[] | null>();
   const [UserHistory, setUserHistory] = useState<History[] | null>();
   const userAddress = UserWallet?.address;
+  
 
   /* const [nfts] = useState<NFT[]>(DUMMY_NFTS); */
   const [query] = useState("");

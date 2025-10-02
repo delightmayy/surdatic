@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
+import type { Survey } from "../../../context/DataContext";
 
 type OverviewCardData = {
   title: string;
   value: number | string;
   icon: React.ReactNode;
-  iconBg: string; // Tailwind background class e.g. "bg-amber-400"
+  iconBg: string;
+  sendData?: Survey[];
 };
 
 interface OverviewCardsProps {
@@ -19,9 +21,7 @@ const OverviewCards: React.FC<OverviewCardsProps> = ({ data }) => {
         <div
           key={idx}
           onClick={() => {
-            item.title.toLowerCase().includes("completed")
-              ? navigate("/dashboard/history")
-              : navigate("#");
+            navigate("/dashboard/Overview", { state: item.sendData });
           }}
           className="rounded-xl border border-white/10 hover:border-sky-500/30 bg-white/5 p-4 hover:scale-98"
         >

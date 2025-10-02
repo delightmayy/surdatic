@@ -80,6 +80,10 @@ interface AuthContextType {
 
   requestOTP: () => Promise<AxiosResponse<any>>;
 
+  validatorStatus: () => Promise<AxiosResponse<any>>;
+
+  getVerifyStatus: () => Promise<AxiosResponse<any>>;
+
   addStake: (data: stakeData) => Promise<AxiosResponse<any>>;
 
   userStake: () => Promise<AxiosResponse<any>>;
@@ -255,6 +259,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   const becomeValidator = async () => {
     await api.get("/auth/become_validator");
+  };
+
+  const validatorStatus = async () => {
+    return await api.get("/auth/validator_status");
+  };
+
+  const getVerifyStatus = async () => {
+    return await api.get("/auth/get_verify_status");
   };
 
   const refferalCode = async () => {
@@ -631,6 +643,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         token,
         login,
         becomeValidator,
+        validatorStatus,
+        getVerifyStatus,
         forgetPassword,
         resetPassword,
         faceVerify,

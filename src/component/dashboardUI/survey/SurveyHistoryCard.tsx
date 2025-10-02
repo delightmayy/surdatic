@@ -3,16 +3,7 @@ import { Link } from "react-router-dom";
 import { FaVideo, FaCheck, FaUsers, FaStar } from "react-icons/fa";
 import gift from "../../../img/surveyrewardicon.png";
 import surdatoken from "../../../img/SurdaToken.png";
-
-
-interface Survey {
-  id: string;
-  frontImg: string;
-  type: string;
-  title: string;
-  status: string;
-  reward: number;
-}
+import {type Survey } from "../../../context/DataContext";
 
 
 const SurveyHistoryCard: React.FC<{ survey: Survey }> = ({ survey }) => {
@@ -21,18 +12,18 @@ const SurveyHistoryCard: React.FC<{ survey: Survey }> = ({ survey }) => {
       {/* Image Container */}
       <div className="relative rounded-2xl overflow-hidden mb-4">
         <img
-          src={survey.frontImg}
+          src={survey.image}
           alt="Survey"
           className="object-cover w-full h-52 rounded-2xl"
         />
 
         {/* Top-left Video Badge */}
-        {survey.type === "Video" && (
+         {survey.type === "Video" && (
           <div className="absolute top-2 left-2 bg-black/70 text-white text-[10px] px-4 py-1 rounded-full shadow-md flex items-center gap-2">
             <FaVideo size={30} className="p-2 rounded-full bg-white/20" /> 15
             mins
           </div>
-        )}
+        )} 
 
         {/* Bottom Completed Badge */}
         <div className="absolute bottom-2 left-5 bg-black/70 text-white text-xs px-4 py-2 rounded-md shadow-md flex items-center gap-2">
@@ -41,7 +32,7 @@ const SurveyHistoryCard: React.FC<{ survey: Survey }> = ({ survey }) => {
             size={30}
             className="p-2 rounded-md text-blue-500 border border-blue-500 bg-white/10"
           />
-          <span className="text-blue-500 font-semibold">Completed</span>
+          <span className="text-blue-500 font-semibold">{survey.status.toLocaleLowerCase()}</span>
         </div>
       </div>
 
@@ -83,7 +74,7 @@ const SurveyHistoryCard: React.FC<{ survey: Survey }> = ({ survey }) => {
             </p>
             <p className="font-semibold text-blue-500 flex items-center gap-1">
               <img src={surdatoken} alt="token" className="w-6" />{" "}
-              {survey.reward} Tokens
+              {survey.cost} Tokens
             </p>
           </div>
         </div>
