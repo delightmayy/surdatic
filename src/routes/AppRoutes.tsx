@@ -32,7 +32,7 @@ import SurveyAnalysisPage from "../component/dashboardUI/survey/SurveyAnalysisPa
 import VideoSurveyCallPage from "../component/dashboardUI/survey/VideoSurveyCallPage";
 import ProtectedRoute from "./ProtectedRoute";
 import AssetPage from "../component/dashboardUI/wallet/AssetPage";
-import SurveyOverviewHistory from "../component/dashboardUI/survey/surveyOverviewHistory";
+import SurveyOverviewHistory from "../component/dashboardUI/survey/SurveyOverviewHistory";
 /* import { useState } from "react"; */
 
 export const AppRoutes = () => {
@@ -65,7 +65,7 @@ export const AppRoutes = () => {
           <Route path="surveys" element={<DashSurvey />} />
           <Route path="surveys/:id" element={<FormSurveyDetail />} />
           <Route path="videos/:id" element={<VideoSurveyDetail />} />
-          <Route path="questionaire" element={<SurveyQuestionPage />} />
+          <Route path="questionaire/:id" element={<SurveyQuestionPage />} />
           <Route path="history" element={<SurveyHistoryPage />} />
           <Route path="Overview" element={<SurveyOverviewHistory />} />
           <Route path="analysis/:id" element={<SurveyAnalysisPage />} />

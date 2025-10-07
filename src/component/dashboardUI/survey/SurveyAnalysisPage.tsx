@@ -1,18 +1,25 @@
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import DataContext from "../../../context/DataContext";
-import type { MarketPlaceData } from "../../../context/DataContext";
+import type { Survey } from "../../../context/DataContext";
 import surveyhelp from "../../../img/surveyhelpicon.png";
 import surveychat from "../../../img/Chat.png";
 import surveyrew from "../../../img/surveyrewardicon.png";
 import surdatoken from "../../../img/SurdaToken.png";
-import { FaArrowLeft, FaStar, FaUser, FaUsers } from "react-icons/fa";
+import {
+  FaArrowLeft,
+  FaSpinner,
+  FaStar,
+  FaUser,
+  FaUsers,
+} from "react-icons/fa";
 import { FaArrowRightLong } from "react-icons/fa6";
 import { FiPlusSquare } from "react-icons/fi";
 import surveyexp from "../../../img/surveyexpire.png";
-import ApproveRespondentModal from "../../modal/ApproveRespondentModal";
+import { useAuth } from "../../../api/useAuth";
+import ViewRespondentQuestion from "../../modal/ViewRespondentQuestion";
 
-interface SurveyQuestionData {
+/* interface SurveyQuestionData {
   title: string;
   sections: {
     title: string;
@@ -24,108 +31,62 @@ interface SurveyQuestionData {
       totalResponses: number;
     }[];
   }[];
+} */
+
+interface SurveyOption {
+  text: string;
+  responses: number;
+}
+
+export interface SurveyQuestionData {
+  id: number;
+  title: string;
+  type: "radio" | "select" | "checkbox" | "text" | string;
+  option: SurveyOption[];
+  required: boolean;
+  survey: string; // uuid from your API
+  created_at: string;
+  updated_at: string;
+}
+
+interface Answer {
+  id: number;
+  question: number; // links to Question.id
+  question_title: string;
+  question_type: string;
+  text: string;
+  options: any[]; // can be empty
+  created_at: string;
+  updated_at: string;
+  user: string;
+}
+interface user {
+  address: string;
 }
 
 type Respondent = {
+  answers: [];
+  created_at: string;
   id: number;
-  date: string;
-  email: string;
+  user: user;
   avatarUrl: string;
   responseNumber: number;
-  validation: "Validated" | "Pending";
-  approvalStatus: "Pending" | "Approved" | "Rejected";
-};
-
-const mockRespondentData: Respondent[] = [
-  {
-    id: 1,
-    date: "12/03/25",
-    email: "jitu@example.com",
-    avatarUrl: "https://i.pravatar.cc/150?img=1",
-    responseNumber: 1000,
-    validation: "Validated",
-    approvalStatus: "Pending",
-  },
-  {
-    id: 2,
-    date: "12/03/25",
-    email: "jitu@example.com",
-    avatarUrl: "https://i.pravatar.cc/150?img=2",
-    responseNumber: 1000,
-    validation: "Validated",
-    approvalStatus: "Pending",
-  },
-  {
-    id: 3,
-    date: "12/03/25",
-    email: "jitu@example.com",
-    avatarUrl: "https://i.pravatar.cc/150?img=3",
-    responseNumber: 1000,
-    validation: "Validated",
-    approvalStatus: "Rejected",
-  },
-  {
-    id: 4,
-    date: "12/03/25",
-    email: "jitu@example.com",
-    avatarUrl: "https://i.pravatar.cc/150?img=4",
-    responseNumber: 1000,
-    validation: "Validated",
-    approvalStatus: "Approved",
-  },
-  {
-    id: 5,
-    date: "12/03/25",
-    email: "jitu@example.com",
-    avatarUrl: "https://i.pravatar.cc/150?img=5",
-    responseNumber: 1000,
-    validation: "Pending",
-    approvalStatus: "Pending",
-  },
-];
-
-const mockQuestionDAta = {
-  surveyId: "abc123",
-  title: "Demographics Survey",
-  sections: [
-    {
-      title: "Section 1 - Demographics",
-      questions: [
-        {
-          id: "q1",
-          text: "What is your age group?",
-          type: "single-choice",
-          options: [
-            { value: "25-34", responses: 40 },
-            { value: "35-44", responses: 30 },
-            { value: "45-54", responses: 20 },
-            { value: "55+", responses: 10 },
-          ],
-          totalResponses: 100,
-        },
-        {
-          id: "q2",
-          text: "What is your gender?",
-          type: "single-choice",
-          options: [
-            { value: "Male", responses: 60 },
-            { value: "Female", responses: 40 },
-          ],
-          totalResponses: 100,
-        },
-      ],
-    },
-  ],
+  validation?: "Validated" | "Pending";
+  status: "PENDING" | "APPROVED" | "REJECTED" | "COMPLETED";
 };
 
 const getStatusColor = (status: string) => {
   switch (status) {
     case "Validated":
-    case "Approved":
+    case "APPROVED":
       return "text-green-400";
-    case "Pending":
+    case "COMPLETED":
+      return "text-green-400";
+    case "PENDING":
       return "text-yellow-400";
-    case "Rejected":
+    case "REJECTED":
+      return "text-red-500";
+    case "DISPUTED":
       return "text-red-500";
     default:
       return "text-white";
@@ -134,21 +95,58 @@ const getStatusColor = (status: string) => {
 
 const SurveyAnalysisPage = () => {
   const { id } = useParams();
-  const { marketPlaceData } = useContext(DataContext)!;
   const navigate = useNavigate();
+  const location = useLocation();
+  const state = location.state as { survey?: Survey } | null;
+  const [survey] = useState<Survey | null>(state?.survey ?? null);
 
-  const [survey, setSurveyData] = useState<MarketPlaceData | null>(null);
-  const [isModalOpen, setModalOpen] = useState(false);
+  /*  console.log(state);
+  console.log(id); */
+
+  const { loading } = useContext(DataContext)!;
+  const { surveyDetailID, surveyRespondentID } = useAuth();
+
+  /* const [isModalOpen, setModalOpen] = useState(false); */
+  const [viewResponse, setViewResponse] = useState(false);
   const [overveiwTab, setOverveiwTab] = useState<
     "details" | "questions" | "respondents"
   >("details");
 
-  const [QuestionData, setQuestionData] = useState<SurveyQuestionData | null>(
-    null
-  );
+  const [QuestionData, setQuestionData] = useState<SurveyQuestionData[]>([]);
+  const [Iresponse, setIresponse] = useState<Respondent | undefined>(undefined);
   const [respondentData, setRespondentData] = useState<Respondent[] | null>(
     null
   );
+  const [answerData, setAnswerData] = useState<Answer[]>([]);
+
+  function mapAnswersToQuestions(
+    questions: SurveyQuestionData[],
+    answers: Answer[]
+  ) {
+    return questions.map((q) => {
+      // Count responses for each option by matching text safely
+      const optionCounts = q.option.map((opt) => {
+        const count = answers.filter(
+          (ans) =>
+            ans.question === q.id &&
+            ans.text?.trim().toLowerCase() === opt.text?.trim().toLowerCase()
+        ).length;
+
+        return { ...opt, responses: count };
+      });
+
+      // Total number of responses for this question
+      const totalResponses = answers.filter(
+        (ans) => ans.question === q.id
+      ).length;
+
+      return { ...q, option: optionCounts, totalResponses };
+    });
+  }
+
+  const enrichedQuestions = mapAnswersToQuestions(QuestionData, answerData);
+
+  console.log("enrichedQuestions", enrichedQuestions);
 
   const handleApproveAllRespondent = () => {
     // Implement API call to approve all
@@ -157,27 +155,61 @@ const SurveyAnalysisPage = () => {
 
   const handleViewRespondent = (id: number) => {
     // Navigate or show modal
-    console.log("Viewing response for:", id);
-    setModalOpen(true)
+    //console.log("Viewing response for:", id);
+    const findResponded = respondentData?.find((x) => x.id === id);
+    setIresponse(findResponded);
+    setViewResponse(true);
+    //setModalOpen(true);
   };
-
-  useEffect(() => {
-    const found = marketPlaceData.find((s) => s.id === id);
-    setSurveyData(found ?? null);
-  }, [id, marketPlaceData]);
 
   // setting question data
   useEffect(() => {
-    setQuestionData(mockQuestionDAta);
-    setRespondentData(mockRespondentData);
-    /*   fetch("/api/surveys/abc123/results")
-      .then((res) => res.json())
-      .then((data) => setSurvey(data))
-      .catch((err) => console.error(err)); */
-  }, []);
+    const handleSurveyQuestion = async () => {
+      if (survey) {
+        try {
+          const res = await surveyDetailID(survey.id);
+          if (res.data) {
+            setQuestionData(res.data.questions);
+            console.log("questions here", res.data);
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
 
-  if (!survey) return <div className="text-white p-4">Loading...</div>;
-  if (!QuestionData) return <div className="text-white">Loading...</div>;
+    const handleSurveyRespondent = async () => {
+      if (survey) {
+        try {
+          const res = await surveyRespondentID(survey.id);
+          if (res.data) {
+            setAnswerData(res.data);
+            setRespondentData(res.data);
+            //console.log("respondents here", res.data);
+          }
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    };
+
+    handleSurveyQuestion();
+    handleSurveyRespondent();
+  }, [id]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center  h-full">
+        <FaSpinner size={50} className="animate-spin text-white/30 " />
+      </div>
+    );
+  }
+
+  if (survey === null) {
+    setTimeout(() => {
+      navigate("/dashboard/surveys");
+    }, 500);
+  }
 
   return (
     <div className="text-white   pt-2 pb-20 max-w-7xl mx-auto">
@@ -216,13 +248,9 @@ const SurveyAnalysisPage = () => {
             />
             Created Survey
           </p>
-          <p className="text-xs font-semibold text-white/90 flex gap-1 items-center">
+          <p className="text-xs font-semibold text-sky-500/80 flex gap-1 items-center">
             <FaArrowRightLong size={20} className="h-4 text-white/60" />
-            Completed Survey
-          </p>
-          <p className="text-xs font-semibold text-white/90 flex gap-1 items-center">
-            <FaArrowRightLong size={20} className="h-4 text-white/60" />
-            Completed Survey
+            {survey?.status.toLocaleLowerCase()} Survey
           </p>
         </div>
 
@@ -270,8 +298,8 @@ const SurveyAnalysisPage = () => {
             <div className=" p-4 rounded-xl space-y-6 shadow-md">
               {/* Survey Image */}
               <img
-                src={survey.frontImg}
-                alt={survey.title}
+                src={survey?.image}
+                alt={survey?.title}
                 className="w-full max-w-2xl h-60 sm:h-72 md:h-80 object-cover rounded-2xl mb-4  shadow-md shadow-white/24"
               />
 
@@ -279,14 +307,14 @@ const SurveyAnalysisPage = () => {
               <div className="text-xs max-w-fit text-white/90 mb-1 p-2 mt-4  md:mt-8 bg-white/10 rounded">
                 Date Created
               </div>
-              <p className="text-sm mb-4">{survey.date}</p>
+              <p className="text-sm mb-4">{survey?.created_at}</p>
 
               {/* Title */}
               <div className="text-xs max-w-fit text-white/90 mb-1  p-2 mt-2 bg-white/10 rounded">
                 Topic
               </div>
               <h2 className="text-lg sm:text-xl font-bold mb-2">
-                {survey.title}
+                {survey?.title}
               </h2>
 
               {/* Description */}
@@ -294,10 +322,12 @@ const SurveyAnalysisPage = () => {
               <div className="text-xs max-w-fit text-white/90 mb-1  p-2 mt-4 sm:mt-8 bg-white/10 rounded">
                 Body
               </div>
-              <p className="text-white/70 text-sm mb-4">{survey.description}</p>
+              <p className="text-white/70 text-sm mb-4">
+                {survey?.description}
+              </p>
 
               {/* Key Points */}
-              <div className="mb-4">
+              {/*   <div className="mb-4">
                 <h3 className="text-xs max-w-fit text-white/90 mb-1  p-2 mt-4 sm:mt-8 bg-white/10 rounded">
                   Key Data Points to Collect
                 </h3>
@@ -306,7 +336,7 @@ const SurveyAnalysisPage = () => {
                     <li key={i}>{point}</li>
                   ))}
                 </ul>
-              </div>
+              </div> */}
 
               {/* Stats (Questions & Reward) */}
               <div className="text-xs max-w-fit text-white/90  p-2 mt-2 bg-white/10 rounded">
@@ -322,7 +352,7 @@ const SurveyAnalysisPage = () => {
                     Survey Questions
                   </p>
                   <p className="text-lg  font-normal  text-white/30">
-                    {survey.questions}
+                    {survey?.totalQuestions}
                   </p>
                 </div>
                 <div className="bg-black/50 p-2  flex items-center justify-center gap-3 rounded-2xl shadow-inner shadow-white/30 hover:scale-95">
@@ -337,7 +367,7 @@ const SurveyAnalysisPage = () => {
                       alt=""
                       className=" hidden sm:block w-6"
                     />
-                    {survey.reward}
+                    {survey?.cost}
                   </p>
                 </div>
               </div>
@@ -353,7 +383,7 @@ const SurveyAnalysisPage = () => {
                     Required Responses
                   </p>
                   <p className="text-xs font-normal text-wrap text-white/30  ">
-                    100/100
+                    {survey?.respondents}
                   </p>
                 </div>
                 <div className="bg-black/50 p-2  flex items-center justify-center gap-3 rounded-2xl shadow-inner shadow-white/30 hover:scale-95">
@@ -362,7 +392,7 @@ const SurveyAnalysisPage = () => {
                   </p>
                   <p className="text-xs text-white/90 font-semibold">Expiry</p>
                   <p className="text-xs font-normal text-white/30 ">
-                    2025-10-01
+                    {survey?.toDate}
                   </p>
                 </div>
               </div>
@@ -382,7 +412,7 @@ const SurveyAnalysisPage = () => {
                     className="p-1 rounded-full text-blue-400 bg-white/10"
                   />
                   <p className="font-semibold text-blue-400">
-                    {survey.type === "Video" ? "Video Survey" : "Form Survey"}
+                    {survey?.type === "Video" ? "Video Survey" : "Form Survey"}
                   </p>
                 </div>
 
@@ -392,7 +422,9 @@ const SurveyAnalysisPage = () => {
                     size={26}
                     className="p-1 rounded-full text-blue-400 bg-white/10"
                   />
-                  <p className="font-semibold text-blue-400">{survey.status}</p>
+                  <p className="font-semibold text-blue-400">
+                    {survey?.status.toLocaleLowerCase()}
+                  </p>
                 </div>
 
                 <div className="bg-black/50 p-2 ps-6 flex items-center justify-center gap-3 rounded-2xl shadow-inner shadow-white/30 hover:scale-95 transition">
@@ -401,8 +433,8 @@ const SurveyAnalysisPage = () => {
                     <img src={surveyrew} alt="gift" className="w-5" />
                   </p>
                   <p className="font-semibold text-blue-500 flex items-center gap-1">
-                    <img src={surdatoken} alt="token" className="w-6" />{" "}
-                    {survey.reward} Tokens
+                    <img src={surdatoken} alt="token" className="w-6" />
+                    {survey?.cost} Tokens
                   </p>
                 </div>
               </div>
@@ -422,59 +454,59 @@ const SurveyAnalysisPage = () => {
             </div>
           </div>
         )}
+
         {/*  Survey Question */}
         {overveiwTab === "questions" && (
           <div className="p-6 px-3 text-white overflow-y-auto max-h-[70vh]">
-            {QuestionData.sections.map((section, si) => (
-              <div key={si} className="mb-10">
-                <p className="text-sm text-blue-400 mb-4">{section.title}</p>
+            <div className="mb-10">
+              <p className="text-sm text-blue-400 mb-4">{survey?.title}</p>
 
-                {section.questions.map((q, qi) => (
-                  <div
-                    key={qi}
-                    className="mb-8 bg-black/25 rounded-xl p-4 shadow"
-                  >
-                    <h3 className="text-base font-semibold mb-4  bg-black/20 px-4 pt-4 pb-12 rounded-md shadow shadow-white/15 flex items-start gap-2">
-                      <span className="text-blue-400">{qi + 1}.</span> {q.text}
-                    </h3>
+              {QuestionData?.map((q, qi) => (
+                <div
+                  key={qi}
+                  className="mb-8 bg-black/25 rounded-xl p-4 shadow"
+                >
+                  <h3 className="text-base font-semibold mb-4  bg-black/20 px-4 pt-4 pb-12 rounded-md shadow shadow-white/15 flex items-start gap-2">
+                    <span className="text-blue-400">{qi + 1}.</span> {q.title}
+                  </h3>
 
-                    <div className="space-y-3">
-                      {q.options.map((opt, oi) => (
-                        <div
-                          key={oi}
-                          className="flex items-center justify-between p-3  bg-black/20   border border-white/10 rounded-lg"
-                        >
-                          <div className="flex items-center gap-3">
-                            <input type="radio" disabled />
-                            <span>{opt.value}</span>
-                          </div>
-                          <span className="text-gray-400">
-                            {opt.responses} responses
-                          </span>
+                  <div className="space-y-3">
+                    {q.option.map((opt, oi) => (
+                      <div
+                        key={oi}
+                        className="flex items-center justify-between p-3  bg-black/20   border border-white/10 rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <input type="radio" disabled />
+                          <span>{opt.text}</span>
                         </div>
-                      ))}
-                    </div>
-
-                    <div className="mt-4">
-                      <p className=" font-semibold  mb-2 text-xs max-w-fit text-white/90  p-2 mt-2 bg-white/5 rounded">
-                        Response Details
-                      </p>
-                      <div className="flex items-center gap-2 text-white/55 shadow-inner shadow-blue-400/30  px-4 py-3 mt-4 rounded-2xl font-normal text-xs border border-blue-400/10 ">
-                        Response Number:
-                        <p className="flex items-center gap-1 text-blue-400">
-                          <FaUser />
-                          <span className="font-semibold ">
-                            {q.totalResponses}
-                          </span>
-                        </p>
+                        <span className="text-gray-400">
+                          {opt.responses} responses
+                        </span>
                       </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-4">
+                    <p className=" font-semibold  mb-2 text-xs max-w-fit text-white/90  p-2 mt-2 bg-white/5 rounded">
+                      Response Details
+                    </p>
+                    <div className="flex items-center gap-2 text-white/55 shadow-inner shadow-blue-400/30  px-4 py-3 mt-4 rounded-2xl font-normal text-xs border border-blue-400/10 ">
+                      Response Number:
+                      <p className="flex items-center gap-1 text-blue-400">
+                        <FaUser />
+                        <span className="font-semibold ">
+                          {q.id /* totalResponses */}
+                        </span>
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            ))}
+                </div>
+              ))}
+            </div>
           </div>
         )}
+
         {/*  Survey Question */}
         {overveiwTab === "respondents" && (
           <div>
@@ -514,7 +546,7 @@ const SurveyAnalysisPage = () => {
                 <tbody>
                   {!respondentData || respondentData === null ? (
                     <tr className="border-b italic capitalize border-white/5 hover:bg-white/5">
-                      no data available
+                      <td colSpan={6}>no data available</td>
                     </tr>
                   ) : (
                     respondentData.map((r, idx) => (
@@ -523,29 +555,25 @@ const SurveyAnalysisPage = () => {
                         className="border-b border-white/5 hover:bg-white/5"
                       >
                         <td className="py-2 px-3">{idx + 1}</td>
-                        <td className="py-2 px-3">{r.date}</td>
-                        <td className="py-2 text-white/80 px-3 flex items-center gap-2">
+                        <td className="py-2 px-3">{r.created_at}</td>
+                        <td className="py-2  px-3 flex items-center text-yellow-400/80 gap-2">
                           <img
-                            src={r.avatarUrl}
+                            src={`https://i.pravatar.cc/150?img=${
+                              (idx % 70) + 1
+                            }`}
                             alt="avatar"
                             className="w-6 h-6 rounded-full"
                           />
-                          {r.email}
+                          {r.user.address}
                         </td>
-                        <td className="py-2 px-3">{r.responseNumber}</td>
-                        <td
-                          className={`py-2 px-3 ${getStatusColor(
-                            r.validation
-                          )}`}
-                        >
-                          {r.validation}
+                        <td className="py-2 px-3 text-center">
+                          {r.answers.length.toLocaleString()}
                         </td>
-                        <td
-                          className={`py-2 px-3 ${getStatusColor(
-                            r.approvalStatus
-                          )}`}
-                        >
-                          {r.approvalStatus}
+                        <td className={`py-2 px-3 ${getStatusColor(r.status)}`}>
+                          no data
+                        </td>
+                        <td className={`py-2 px-3 ${getStatusColor(r.status)}`}>
+                          {r.status}
                         </td>
                         <td className="py-2 px-3">
                           <button
@@ -566,11 +594,13 @@ const SurveyAnalysisPage = () => {
       </div>
 
       {/* Modal */}
-      <ApproveRespondentModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        onApprove={() => console.log("checking approve")}
-      />
+
+      {viewResponse && (
+        <ViewRespondentQuestion
+          onClose={() => setViewResponse(false)}
+          respondent={Iresponse}
+        />
+      )}
     </div>
   );
 };

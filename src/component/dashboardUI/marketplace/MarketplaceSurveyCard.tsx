@@ -2,24 +2,18 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { FaVideo, FaCheck, FaUsers, FaStar } from "react-icons/fa";
 import gift from "../../../img/surveyrewardicon.png";
-import surdatoken from "../../../img/SurdaToken.png"
+import surdatoken from "../../../img/SurdaToken.png";
+import type { Marketplace } from "../../../context/DataContext";
 
-interface Survey {
-  id: string;
-  frontImg: string;
-  type: string;
-  title: string;
-  status: string;
-  reward: number;
-}
-
-const MarketplaceSurveyCard: React.FC<{ survey: Survey }> = ({ survey }) => {
+const MarketplaceSurveyCard: React.FC<{ survey: Marketplace }> = ({
+  survey,
+}) => {
   return (
     <div className="bg-black/10 rounded-2xl shadow-inner shadow-white/10 p-2 flex flex-col">
       {/* Image Container */}
       <div className="relative rounded-2xl overflow-hidden mb-4">
         <img
-          src={survey.frontImg}
+          src={survey.image}
           alt="Survey"
           className="object-cover w-full h-52 rounded-2xl"
         />
@@ -39,7 +33,7 @@ const MarketplaceSurveyCard: React.FC<{ survey: Survey }> = ({ survey }) => {
             size={30}
             className="p-2 rounded-md text-blue-500 border border-blue-500 bg-white/10"
           />
-          <span className="text-blue-500 font-semibold">Completed</span>
+          <span className="text-blue-500 font-semibold">{survey.status}</span>
         </div>
       </div>
 
@@ -81,7 +75,7 @@ const MarketplaceSurveyCard: React.FC<{ survey: Survey }> = ({ survey }) => {
             </p>
             <p className="font-semibold text-blue-500 flex items-center gap-1">
               <img src={surdatoken} alt="token" className="w-6" />{" "}
-              {survey.reward} Tokens
+              {survey.price} Tokens
             </p>
           </div>
         </div>

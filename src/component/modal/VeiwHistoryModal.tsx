@@ -109,10 +109,7 @@ const VeiwHistoryModal: React.FC<TransactionViewModalProps> = ({
             <span className="text-white/90">Updated At</span>
             <span className="text-white/65">{transaction.updated_at}</span>
           </div>
-          {/* <div className="flex justify-between border-b border-white/10 pb-2">
-            <span className="text-white/90">Updated At</span>
-            <span className="text-white/65">{transaction.created_at}</span>
-          </div> */}
+         
         </div>
       </div>
     </motion.div>

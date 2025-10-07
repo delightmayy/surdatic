@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import surdatoken from "../../img/SurdaToken.png";
 import { AiOutlineClose } from "react-icons/ai";
+import { useAuth } from "../../api/useAuth";
 
 interface MarketplaceBuyModalProps {
   isOpen: boolean;
@@ -17,6 +18,21 @@ const MarketplaceBuyModal: React.FC<MarketplaceBuyModalProps> = ({
   title,
   price,
 }) => {
+  const { userWallet } = useAuth();
+  const [balance, setBalance] = useState(0);
+  useEffect(() => {
+    const handleUserWallet = async () => {
+      try {
+        const res = await userWallet();
+        if (res.data) {
+          setBalance(res.data?.balance || 0);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    handleUserWallet();
+  }, []);
   if (!isOpen) return null;
 
   return (
@@ -79,10 +95,12 @@ const MarketplaceBuyModal: React.FC<MarketplaceBuyModalProps> = ({
         </div>
 
         {/* Balance */}
-        <p className="text-xs text-white/50 mb-4">Available: 500,546 SURDA</p>
+        <p className="text-xs tracking-wider text-green-400 my-4">
+          Available:{Number(balance).toFixed(2)} SURDA
+        </p>
 
         {/* System charge */}
-        <p className="text-xs text-white/50 mb-4">System Charge = 2%</p>
+        {/* <p className="text-xs text-white/50 mb-4">System Charge = 2%</p> */}
 
         {/* CTA */}
         <button className="w-full bg-blue-500 hover:bg-blue-400 text-white rounded-md py-2 text-sm font-semibold">

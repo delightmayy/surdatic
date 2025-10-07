@@ -82,6 +82,7 @@ const SurveyHistoryCard: React.FC<{ survey: Survey }> = ({ survey }) => {
         {/* Button */}
         <Link
           to={`/dashboard/analysis/${survey.id}`}
+          state={{survey}}
           className="bg-blue-500 hover:bg-blue-400 mt-4 text-xs text-center w-full py-2 rounded-md transition"
         >
           Analyze

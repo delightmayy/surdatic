@@ -8,27 +8,27 @@ import surveyrew from "../../../img/surveyrewardicon.png";
 import surveyexp from "../../../img/surveyexpire.png";
 import surdatoken from "../../../img/SurdaToken.png";
 import { FaClock, FaSpinner } from "react-icons/fa";
-import { useAuth } from "../../../api/useAuth";
+/* import { useAuth } from "../../../api/useAuth"; */
 
 const FormSurveyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as { survey?: Survey } | null;
-  const [survey] = useState<Survey | null>((state?.survey ) ?? null);
+  const [survey] = useState<Survey | null>(state?.survey ?? null);
 
   const [loading, setLoading] = useState(true);
-  const [surveyQuestionDetail, setSurveyQuestionDetails] = useState();
-  console.log(state);
-  console.log(id);
+ /*  const [surveyQuestionDetail, setSurveyQuestionDetails] = useState(); */
+  /*   console.log(state);
+  console.log(id); */
 
   const { surveyList } = useContext(DataContext)!;
-  const { surveyDetailID } = useAuth();
+ /*  const { surveyDetailID } = useAuth(); */
 
   useEffect(() => {
     const handleSurveyQuestion = async () => {
       if (survey) {
-        try {
+        /*   try {
           const res = await surveyDetailID(survey.id);
           if (res.data) {
             setSurveyQuestionDetails(res.data);
@@ -38,8 +38,8 @@ const FormSurveyDetail = () => {
           console.log(err);
         } finally {
           setLoading(false);
-        }
-      } else {
+        } */
+        /* } else { */
         setLoading(false);
       }
     };
@@ -190,7 +190,7 @@ const FormSurveyDetail = () => {
                 Share
               </button>
               <Link
-                to={"/dashboard/questionaire"}
+                to={`/dashboard/questionaire/${survey?.id}`}
                 className="bg-blue-600 hover:bg-blue-500 w-full  text-center px-4 py-2 rounded text-sm transition cursor-pointer"
               >
                 Proceed

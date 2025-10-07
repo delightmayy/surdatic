@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import DataContext from "../../../context/DataContext";
-import type { MarketPlaceData } from "../../../context/DataContext";
+import type { Marketplace } from "../../../context/DataContext";
 import surveyhelp from "../../../img/surveyhelpicon.png";
 import surveychat from "../../../img/Chat.png";
 import surveyrew from "../../../img/surveyrewardicon.png";
@@ -15,7 +15,7 @@ const MarketPlaceDetails = () => {
   const { marketPlaceData } = useContext(DataContext)!;
   const navigate = useNavigate();
 
-  const [survey, setSurveyData] = useState<MarketPlaceData | null>(null);
+  const [survey, setSurveyData] = useState<Marketplace | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
@@ -53,7 +53,7 @@ const MarketPlaceDetails = () => {
           <div className=" p-4 rounded-xl space-y-6 shadow-md">
             {/* Survey Image */}
             <img
-              src={survey.frontImg}
+              src={survey.image}
               alt={survey.title}
               className="w-full max-w-2xl h-60 sm:h-72 md:h-80 object-cover rounded-2xl mb-4  shadow-md shadow-white/24"
             />
@@ -62,7 +62,7 @@ const MarketPlaceDetails = () => {
             <div className="text-xs max-w-fit text-white/90 mb-1 p-2 mt-4  md:mt-8 bg-white/10 rounded">
               Date Created
             </div>
-            <p className="text-sm mb-4">{survey.date}</p>
+            <p className="text-sm mb-4">{survey.created_at}</p>
 
             {/* Title */}
             <div className="text-xs max-w-fit text-white/90 mb-1  p-2 mt-2 bg-white/10 rounded">
@@ -85,9 +85,11 @@ const MarketPlaceDetails = () => {
                 Key Data Points to Collect
               </h3>
               <ul className="list-disc ml-6 text-white/70 text-sm space-y-1">
-                {survey.keyPoints.map((point: string, i: number) => (
+               {/*  {survey.keyPoints.map((point: string, i: number) => (
                   <li key={i}>{point}</li>
-                ))}
+                ))} */}
+
+                <span className="text-red-400 italic"> no data</span>
               </ul>
             </div>
 
@@ -105,7 +107,7 @@ const MarketPlaceDetails = () => {
                   Survey Questions
                 </p>
                 <p className="text-lg  font-normal  text-white/30">
-                  {survey.questions}
+                 {/*  {survey.questions} */} <span className="text-red-400">X</span>
                 </p>
               </div>
 
@@ -116,7 +118,7 @@ const MarketPlaceDetails = () => {
 
                 <p className="text-xs text-white/90 font-semibold">Responses</p>
                 <p className="text-xs font-normal text-wrap text-white/30  ">
-                  (10000)
+                  {/* (10000) */} <span className="text-red-400">X</span>
                 </p>
               </div>
               <div className="bg-black/50 sm:p-2 w-full py-3 flex items-center justify-center gap-3 rounded-2xl shadow-inner shadow-white/30 hover:scale-95">
@@ -128,7 +130,7 @@ const MarketPlaceDetails = () => {
                   Completion Status
                 </p>
                 <p className="text-xs font-normal text-wrap text-white/30  ">
-                  Completed
+                  {survey.status}
                 </p>
               </div>
             </div>
@@ -165,7 +167,7 @@ const MarketPlaceDetails = () => {
                 </p>
                 <p className="font-semibold text-blue-500 flex items-center gap-1">
                   <img src={surdatoken} alt="token" className="w-6" />{" "}
-                  {survey.reward} Tokens
+                  {survey.price} Surda
                 </p>
               </div>
             </div>
@@ -186,9 +188,9 @@ const MarketPlaceDetails = () => {
       <MarketplaceBuyModal
         isOpen={isModalOpen}
         onClose={() => setModalOpen(false)}
-        img={survey.frontImg}
+        img={survey.image}
         title={survey.title}
-        price={survey.reward}
+        price={Number(survey.price)}
       />
     </div>
   );

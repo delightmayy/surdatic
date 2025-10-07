@@ -1,94 +1,60 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaCheckCircle } from "react-icons/fa";
 import SurveySuccessModal from "../../modal/SuccessModal";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../../api/useAuth";
+
+
+interface Option {
+  id: number;
+  text: string;
+  image?: string | null;
+  file?: string | null;
+}
 
 interface Question {
   id: number;
-  question: string;
-  options: string[];
-  answer?: string;
+  title: string;
+  type: "radio" | "checkbox" | "select" | "text";
+  required: boolean;
+  option: Option[];
 }
 
-const mockQuestions: Question[] = [
-  {
-    id: 1,
-    question: "What is your age group?",
-    options: ["25-34", "35-44", "45-54", "55+"],
-  },
-  {
-    id: 2,
-    question: "What is your employment status?",
-    options: ["Employed", "Unemployed", "Student", "Retired"],
-  },
-  {
-    id: 3,
-    question: "What is your highest level of education?",
-    options: [
-      "High School",
-      "Bachelor's Degree",
-      "Master's Degree",
-      "PhD or higher",
-    ],
-  },
-  {
-    id: 4,
-    question: "How often do you work remotely?",
-    options: ["Never", "Occasionally", "Frequently", "Always"],
-  },
-  {
-    id: 5,
-    question: "How satisfied are you with your current job?",
-    options: ["Very Satisfied", "Satisfied", "Neutral", "Dissatisfied"],
-  },
-  {
-    id: 6,
-    question: "Which industry do you currently work in?",
-    options: ["Technology", "Finance", "Healthcare", "Education"],
-  },
-  {
-    id: 7,
-    question: "How many hours do you work per week on average?",
-    options: ["< 30", "30-40", "41-50", "50+"],
-  },
-  {
-    id: 8,
-    question:
-      "Do you feel your workplace is safe and compliant with regulations?",
-    options: ["Strongly Agree", "Agree", "Disagree", "Strongly Disagree"],
-  },
-  {
-    id: 9,
-    question: "How often do you receive training on workplace safety?",
-    options: ["Never", "Annually", "Biannually", "Quarterly"],
-  },
-  {
-    id: 10,
-    question: "Do you believe management takes safety concerns seriously?",
-    options: ["Strongly Agree", "Agree", "Disagree", "Strongly Disagree"],
-  },
-  {
-    id: 11,
-    question: "Have you ever reported a safety concern at work?",
-    options: ["Yes", "No"],
-  },
-  {
-    id: 12,
-    question: "Would you recommend your workplace to others?",
-    options: ["Definitely", "Maybe", "Not Sure", "No"],
-  },
-  // Add more questions as needed
-];
-
 const SurveyQuestionPage = () => {
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const { id } = useParams(); 
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [responses, setResponses] = useState<{ [key: number]: string | string[] }>({});
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [responses, setResponses] = useState<{ [key: number]: string }>({});
+  const [loading, setLoading] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const navigate = useNavigate();
+  const { surveyDetailID } = useAuth();
 
-  const currentQuestion = mockQuestions[currentIndex];
-  const allAnswered = mockQuestions.every((q) => responses[q.id]);
+  // Fetch questions from API
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      setLoading(true);
+      if (id) {
+        try {
+          const res = await surveyDetailID(id);
+          setQuestions(res.data.questions || []);
+        } catch (error) {
+          console.error("❌ Error fetching survey questions:", error);
+        } finally {
+          setLoading(false);
+        }
+      } else {
+        setLoading(false);
+      }
+    };
+    fetchQuestions();
+  }, [id]);
 
+  const currentQuestion = questions[currentIndex];
+  const allAnswered =
+    questions.length > 0 && questions.every((q) => responses[q.id] && responses[q.id].length !== 0);
+
+  // --- Handlers ---
   const handleOptionSelect = (option: string) => {
     setResponses((prev) => ({
       ...prev,
@@ -96,122 +62,228 @@ const SurveyQuestionPage = () => {
     }));
   };
 
-  const handleNext = () => {
-    if (currentIndex < mockQuestions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
+  const handleCheckboxSelect = (option: string) => {
+    setResponses((prev) => {
+      const current = Array.isArray(prev[currentQuestion.id]) ? (prev[currentQuestion.id] as string[]) : [];
+      const exists = current.includes(option);
+      const updated = exists ? current.filter((o) => o !== option) : [...current, option];
+      return { ...prev, [currentQuestion.id]: updated };
+    });
+  };
+
+  const handleTextInput = (value: string) => {
+    setResponses((prev) => ({
+      ...prev,
+      [currentQuestion.id]: value,
+    }));
+  };
+
+  const handleSelectChange = (value: string) => {
+    setResponses((prev) => ({
+      ...prev,
+      [currentQuestion.id]: value,
+    }));
+  };
+
+  const handleSubmitSurvey = async () => {
+    try {
+      const payload = Object.entries(responses).map(([question_id, answer]) => ({
+        question_id: Number(question_id),
+        answer: Array.isArray(answer) ? answer.join(", ") : answer,
+      }));
+/* 
+      await axios.post(
+        `https://api.surdatics.com/survey/${id}/submit`,
+        { responses: payload },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      ); */
+
+      console.log(payload);
+      
+
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("❌ Failed to submit survey:", error);
     }
   };
 
-  const handlePrevious = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0c0c0c] text-white flex items-center justify-center">
+        <p>Loading survey...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0c0c0c] text-white flex flex-col lg:flex-row">
-      {/* Main Content */}
       <main className="flex-1 p-4 flex flex-col lg:flex-row gap-6">
-        {/* Survey Question Body */}
+        {/* Main Survey Section */}
         <section className="w-full lg:w-2/3 bg-black/30 p-4 rounded-xl shadow-md">
-          <div>
-            <div className="py-4">
-              <p className="text-xs text-white/90 font-semibold">Survey Body</p>
-              <p className="text-xs font-normal text-white/50 ">
-                Your response, your reward
-              </p>
-            </div>
+          {currentQuestion ? (
+            <div>
+              {/* Header */}
+              <div className="py-4">
+                <p className="text-xs text-white/90 font-semibold">Survey Body</p>
+                <p className="text-xs font-normal text-white/50">Your response, your reward</p>
+              </div>
 
-            <div className="text-xs max-w-fit mb-4  text-white/90  p-2 mt-2 bg-white/10 rounded">
-              Progress Bar
-            </div>
-            <div className="bg-white/20 h-2 rounded mb-6">
-              <div
-                className="bg-blue-500 h-full rounded transition-all"
-                style={{
-                  width: `${
-                    (Object.keys(responses).length / mockQuestions.length) * 100
-                  }%`,
-                }}
-              />
-            </div>
-
-            {/* Question */}
-            <div className="text-xs max-w-fit mb-4 flex items-center gap-2 text-white/90  p-2 mt-2 bg-white/10 rounded">
-              Survey Question
-              <span className="">
-                ({currentIndex + 1}/{mockQuestions.length})
-              </span>
-            </div>
-            <div className="bg-black/60 p-4 rounded-lg mb-6">
-              <h3 className="text-white text-sm mb-2 font-bold">
-                {currentQuestion.question}
-              </h3>
-              <ul className="space-y-2">
-                {currentQuestion.options.map((opt, index) => (
-                  <li
-                    key={index}
-                    className={`flex items-center p-3 rounded-lg cursor-pointer border  hover:bg-white/10 transition ${
-                      responses[currentQuestion.id] === opt
-                        ? "border-blue-500/50 text-white font-semibold"
-                        : "border-white/10"
-                    }`}
-                    onClick={() => handleOptionSelect(opt)}
-                  >
-                    <span className="mr-2">
-                      {responses[currentQuestion.id] === opt ? (
-                        <FaCheckCircle className="text-white" />
-                      ) : (
-                        <div className="w-4 h-4 border border-white rounded-full" />
-                      )}
-                    </span>
-                    {opt}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Timer */}
-            <div className="text-xs text-white/50 mb-4">
-              Elapse Time: 5:43 (HH:MM)
-            </div>
-
-            {/* Navigation */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button
-                onClick={handlePrevious}
-                disabled={currentIndex === 0}
-                className="w-full bg-white/10 text-white py-2 px-4 rounded disabled:opacity-40"
-              >
-                Previous
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={currentIndex === mockQuestions.length - 1}
-                className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-              >
-                Next
-              </button>
-              {allAnswered && currentIndex === mockQuestions.length - 1 && (
-                <button
-                  onClick={() => {
-                    console.log("Submitted Responses:", responses);
-                    setShowSuccessModal(true);
+              {/* Progress Bar */}
+              <div className="text-xs max-w-fit mb-4 text-white/90 p-2 mt-2 bg-white/10 rounded">
+                Progress
+              </div>
+              <div className="bg-white/20 h-2 rounded mb-6">
+                <div
+                  className="bg-blue-500 h-full rounded transition-all"
+                  style={{
+                    width: `${(Object.keys(responses).length / questions.length) * 100}%`,
                   }}
-                  className=" w-full bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded transition cursor-pointer"
+                />
+              </div>
+
+              {/* Question Section */}
+              <div className="text-xs max-w-fit mb-4 flex items-center gap-2 text-white/90 p-2 mt-2 bg-white/10 rounded">
+                Question ({currentIndex + 1}/{questions.length})
+              </div>
+
+              <div className="bg-black/60 p-4 rounded-lg mb-6">
+                <h3 className="text-white text-sm mb-2 font-bold">
+                  {currentQuestion.title}
+                </h3>
+
+                {/* RADIO TYPE */}
+                {currentQuestion.type === "radio" && (
+                  <ul className="space-y-2">
+                    {currentQuestion.option.map((opt) => (
+                      <li
+                        key={opt.id}
+                        className={`flex items-center p-3 rounded-lg cursor-pointer border hover:bg-white/10 transition ${
+                          responses[currentQuestion.id] === opt.text
+                            ? "border-blue-500/50 text-white font-semibold"
+                            : "border-white/10"
+                        }`}
+                        onClick={() => handleOptionSelect(opt.text)}
+                      >
+                        <span className="mr-2">
+                          {responses[currentQuestion.id] === opt.text ? (
+                            <FaCheckCircle className="text-white" />
+                          ) : (
+                            <div className="w-4 h-4 border border-white rounded-full" />
+                          )}
+                        </span>
+                        {opt.text}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+
+                {/* CHECKBOX TYPE */}
+                {currentQuestion.type === "checkbox" && (
+                  <ul className="space-y-2">
+                    {currentQuestion.option.map((opt) => {
+                      const selected =
+                        Array.isArray(responses[currentQuestion.id]) &&
+                        (responses[currentQuestion.id] as string[]).includes(opt.text);
+                      return (
+                        <li
+                          key={opt.id}
+                          className={`flex items-center p-3 rounded-lg cursor-pointer border hover:bg-white/10 transition ${
+                            selected
+                              ? "border-blue-500/50 text-white font-semibold"
+                              : "border-white/10"
+                          }`}
+                          onClick={() => handleCheckboxSelect(opt.text)}
+                        >
+                          <span className="mr-2">
+                            {selected ? (
+                              <FaCheckCircle className="text-white" />
+                            ) : (
+                              <div className="w-4 h-4 border border-white rounded-md" />
+                            )}
+                          </span>
+                          {opt.text}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                )}
+
+                {/* SELECT TYPE */}
+                {currentQuestion.type === "select" && (
+                  <select
+                    value={(responses[currentQuestion.id] as string) || ""}
+                    onChange={(e) => handleSelectChange(e.target.value)}
+                    className="w-full bg-black/30 border border-white/10 text-white p-3 rounded-lg focus:outline-none focus:border-blue-500 mt-2"
+                  >
+                    <option value="" disabled>
+                      Select an option
+                    </option>
+                    {currentQuestion.option.map((opt) => (
+                      <option key={opt.id} value={opt.text}>
+                        {opt.text}
+                      </option>
+                    ))}
+                  </select>
+                )}
+
+                {/* TEXT TYPE */}
+                {currentQuestion.type === "text" && (
+                  <textarea
+                    rows={3}
+                    value={(responses[currentQuestion.id] as string) || ""}
+                    onChange={(e) => handleTextInput(e.target.value)}
+                    className="w-full bg-black/30 text-white border border-white/10 rounded-lg p-3 mt-2 focus:outline-none focus:border-blue-500"
+                    placeholder="Type your answer..."
+                  />
+                )}
+              </div>
+
+              {/* Navigation */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+                  disabled={currentIndex === 0}
+                  className="w-full bg-white/10 text-white py-2 px-4 rounded disabled:opacity-40"
                 >
-                  Submit Survey
+                  Previous
                 </button>
-              )}
+                {currentIndex < questions.length - 1 ? (
+                  <button
+                    onClick={() =>
+                      setCurrentIndex((prev) =>
+                        Math.min(prev + 1, questions.length - 1)
+                      )
+                    }
+                    className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
+                  >
+                    Next
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleSubmitSurvey}
+                    disabled={!allAnswered}
+                    className="w-full bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded transition cursor-pointer disabled:opacity-40"
+                  >
+                    Submit Survey
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <p>No questions found for this survey.</p>
+          )}
         </section>
 
         {/* Question Monitor */}
         <aside className="w-full lg:w-1/3 bg-black/30 p-4 rounded-xl max-h-[80vh] overflow-y-auto">
           <h3 className="text-sm text-white/60 mt-3 mb-3">Question Monitor</h3>
           <ul className="space-y-2">
-            {mockQuestions.map((q, i) => (
+            {questions.map((q, i) => (
               <li
                 key={q.id}
                 className={`flex items-center justify-between p-2 rounded cursor-pointer transition ${
@@ -224,27 +296,25 @@ const SurveyQuestionPage = () => {
                 onClick={() => setCurrentIndex(i)}
               >
                 <span>Question {String(i + 1).padStart(2, "0")}</span>
-                {responses[q.id] && (
-                  <FaCheckCircle className="text-blue-500 text-xs" />
-                )}
+                {responses[q.id] && <FaCheckCircle className="text-blue-500 text-xs" />}
               </li>
             ))}
           </ul>
         </aside>
+
+        {/* Success Modal */}
         {showSuccessModal && (
           <SurveySuccessModal
             onClose={() => {
               setShowSuccessModal(false);
               navigate("/dashboard/surveys");
             }}
-            title={"Survey Completed "}
-            subtitle={"Your rewards automatically added to your wallet"}
+            title="Survey Completed"
+            subtitle="Your rewards have been automatically added to your wallet"
             rewardAmount={50}
-            titleB={"Survey Completed"}
-            subtitleB={
-              "Your reward will be automatically added to your wallet balance once your response is approved."
-            }
-            buttonA={"More Surveys"}
+            titleB="Survey Completed"
+            subtitleB="Your reward will be automatically added to your wallet balance once approved."
+            buttonA="More Surveys"
           />
         )}
       </main>

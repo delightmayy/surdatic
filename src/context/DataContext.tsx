@@ -28,7 +28,7 @@ export interface Survey {
   genders: number[];
   locations: number[];
   professions: number[];
-  type?:"Video"| "Form"
+  type?: "Video" | "Form";
 }
 
 export interface Stat {
@@ -37,6 +37,21 @@ export interface Stat {
   icon: ReactNode;
   iconBg: string;
   sendData?: Survey[];
+}
+
+export interface Marketplace {
+  id: string;
+  survey: string;
+  user: string;
+  title: string;
+  description: string;
+  image: string;
+  mode: string;
+  price: string;
+  status: "PENDING" | "ACTIVE" | "COMPLETED" | string;
+  created_at: string;
+  updated_at: string;
+  type?: string;
 }
 
 export interface Video {
@@ -52,19 +67,7 @@ export interface Video {
   keyPoints: string[];
 }
 
-export interface MarketPlaceData {
-  id: string;
-  frontImg: string;
-  type: string;
-  title: string;
-  status: string;
-  reward: number;
-  date: string;
-  questions: number;
-  description: string;
-  keyPoints: string[];
 
-}
 
 interface DataContextType {
   overveiwTab: string;
@@ -73,6 +76,7 @@ interface DataContextType {
   userSurveyList: Survey[];
   answeredSurveyList: Survey[];
   approvedSurveyListState: Survey[];
+  loading: boolean;
   togleshow: boolean;
   SetTogleShow: Dispatch<SetStateAction<boolean>>;
   targetDate: Date;
@@ -84,7 +88,7 @@ interface DataContextType {
   surveyVideoValidated: Video[];
   surveyVideoParticipated: Video[];
   surveyVideoCreated: Video[];
-  marketPlaceData: MarketPlaceData[];
+  marketPlaceData: Marketplace[];
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -96,6 +100,7 @@ interface DataProviderProps {
 export const DataProvider = ({ children }: DataProviderProps) => {
   const [overveiwTab, setOverveiwTab] = useState("created");
   const [togleshow, SetTogleShow] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const targetDate = new Date("2025-09-30T00:00:00Z");
   const totalEarnings = 20546;
@@ -109,7 +114,10 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     pendingSurveylist,
     disputedResponse,
 
-    approvedSurveyList /* userStakeSum */,
+    approvedSurveyList ,
+    marketItems,
+
+    /* userStakeSum */
   } = useAuth();
 
   //general availlable list
@@ -122,8 +130,8 @@ export const DataProvider = ({ children }: DataProviderProps) => {
   const [userSurveyList, setUserSurveyList] = useState<Survey[]>([]);
 
   // status
-  const [validatorState, setValidatorState] = useState<any | null>(null);
-  const [verifyStatus, setVerifyStatus] = useState<any | null>(null);
+  const [/* validatorState */, setValidatorState] = useState<any | null>(null);
+  const [/* verifyStatus */, setVerifyStatus] = useState<any | null>(null);
 
   //validated / validation
   const [pendingSurveyList, setPendingSurveyList] = useState<Survey[]>([]);
@@ -136,7 +144,8 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     Survey[]
   >([]);
 
-  const [loading, setLoading] = useState(true);
+  //marketplace Data
+  const [marketPlaceData, setMarketPlaceData] = useState<Marketplace[]>([]);
 
   const refreshContent = async () => {
     setLoading(true);
@@ -212,6 +221,15 @@ export const DataProvider = ({ children }: DataProviderProps) => {
       setApprovedSurveyListState([]);
     }
 
+    try {
+      const res = await marketItems();
+      setMarketPlaceData(res.data || []);
+      console.log("marketplace data", res.data);
+    } catch (err) {
+      console.error("❌ Error fetching approvedSurveyList:", err);
+      setApprovedSurveyListState([]);
+    }
+
     setLoading(false);
   };
 
@@ -262,7 +280,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
       value: disputedResponseList.length || 0,
       icon: <FaXmark size={16} />,
       iconBg: "bg-rose-600",
-       sendData: disputedResponseList,
+      sendData: disputedResponseList,
     },
   ];
   const participatedStats = [
@@ -445,7 +463,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
     },
   ];
 
-  const marketPlaceData = [
+ /*  const marketPlaceData = [
     {
       id: "s1",
       title:
@@ -524,7 +542,7 @@ export const DataProvider = ({ children }: DataProviderProps) => {
       description: "Video-based survey focused on safety compliance.",
       keyPoints: ["Video Evidence", "Policy Insights", "Training Gaps"],
     },
-  ];
+  ]; */
 
   return (
     <DataContext.Provider
@@ -540,15 +558,16 @@ export const DataProvider = ({ children }: DataProviderProps) => {
         targetDate,
         totalEarnings,
         createdStats,
-        /*  surveyCreated, */
-        /*  surveyParticipated,
-        surveyValidated, */
+        loading,
         validatedStats,
         participatedStats,
+        marketPlaceData,
+
+      
         surveyVideoCreated,
         surveyVideoParticipated,
         surveyVideoValidated,
-        marketPlaceData,
+        
       }}
     >
       {children}

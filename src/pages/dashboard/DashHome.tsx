@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { FaClock, FaEye, FaEyeSlash, FaUsers } from "react-icons/fa";
+import { FaClock, FaEye, FaEyeSlash, FaSpinner, FaUsers } from "react-icons/fa";
 import surdacoin from "../../img/tokenicon.png";
 import earnbg from "../../img/daskearnbg.png";
 import { FiPlusSquare } from "react-icons/fi";
@@ -35,6 +35,7 @@ export default function DashboardHome() {
     totalEarnings,
     togleshow,
     SetTogleShow,
+    loading,
   } = useContext(DataContext)!;
 
   const handleBecomeValidator = async () => {
@@ -313,6 +314,12 @@ export default function DashboardHome() {
             </Slider>
           </div>
         </motion.section>
+
+        {loading && (
+          <div className="flex items-center justify-center pt-8  h-full">
+            <FaSpinner size={30} className="animate-spin text-white/30 " />
+          </div>
+        )}
       </div>
       {openCreateModal && (
         <CreateSurveyModal onClose={() => setOpenCreateModal(false)} />

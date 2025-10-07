@@ -1,12 +1,16 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import MarketplaceSurveyCard from "../../component/dashboardUI/marketplace/MarketplaceSurveyCard";
+import { useAuth } from "../../api/useAuth";
+import { FaSpinner } from "react-icons/fa";
 import DataContext from "../../context/DataContext";
 
-
-
 const DashMarket = () => {
+  const { /* getUsersCollection */ } = useAuth();
 
-  const {marketPlaceData}= useContext(DataContext)!
+  const { marketPlaceData, loading } = useContext(DataContext)!;
+
+  /*  const [userCollection, setUserCollection] = useState<Marketplace[]>([]); */
+
   const [activeTab, setActiveTab] = useState("Most Popular");
 
   const tabs = ["Most Popular", "Latest Survey", "Promoted Survey"];
@@ -14,15 +18,41 @@ const DashMarket = () => {
   // Sort by date (newest first)
 
   const LatestSurvey = marketPlaceData.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) =>
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
 
   // Sort by date (newest first)
-  const MostPopular = marketPlaceData.sort((a, b) => b.reward - a.reward);
+  const MostPopular = marketPlaceData.sort(
+    (a, b) => Number(b.price) - Number(a.price)
+  );
 
- /*  console.log(MostPopular);
-  console.log(LatestSurvey);
- */
+  useEffect(() => {
+    /*  const handlegetUserCollection = async () => {
+      setLoading(true);
+      try {
+        const res = await getUsersCollection ();
+        if (res.data) {
+          setUserCollection(res.data);
+          console.log("user collection here", res.data);
+        }
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
+    }; */
+    //handlegetUserCollection()
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center  h-full">
+        <FaSpinner size={50} className="animate-spin text-white/30 " />
+      </div>
+    );
+  }
+
   return (
     <div className="text-white px-4 pt-4 pb-20 max-w-7xl mx-auto">
       {/* Header */}
@@ -51,7 +81,7 @@ const DashMarket = () => {
       {/* Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {activeTab === "Most Popular" &&
-          MostPopular.map((s) => (
+          MostPopular.slice(0, 6).map((s) => (
             <MarketplaceSurveyCard survey={s} key={s.id} />
           ))}
 
@@ -60,7 +90,9 @@ const DashMarket = () => {
             <MarketplaceSurveyCard survey={s} key={s.id} />
           ))}
         {activeTab === "Promoted Survey" &&
-          marketPlaceData.map((s) => <MarketplaceSurveyCard survey={s} key={s.id} />)}
+          marketPlaceData.map((s) => (
+            <MarketplaceSurveyCard survey={s} key={s.id} />
+          ))}
       </div>
     </div>
   );

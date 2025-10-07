@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FaClock } from "react-icons/fa";
+import { FaClock, FaSpinner } from "react-icons/fa";
 import { FiPlusSquare } from "react-icons/fi";
 
 import surdacoin from "../../img/tokenicon.png";
@@ -23,6 +23,7 @@ const DashSurvey = () => {
     answeredSurveyList,
     overveiwTab,
     setOverveiwTab,
+    loading,
     surveyVideoCreated,
     surveyVideoParticipated,
     surveyVideoValidated,
@@ -146,7 +147,7 @@ const DashSurvey = () => {
             {overveiwTab === "created" &&
               (userSurveyList.length === 0 ? (
                 <div className="bg-white/5 p-6 w-full capitalize italic shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col text-center col-span-full ">
-                  no survey available
+                  {loading? <FaSpinner size={30} className="animate-spin mx-auto text-white/30 " />:"no survey available" }
                 </div>
               ) : (
                 userSurveyList.map((survey) => (
@@ -187,7 +188,7 @@ const DashSurvey = () => {
             {overveiwTab === "validated" &&
               (approvedSurveyListState.length === 0 ? (
                 <div className="bg-white/5 p-6 w-full capitalize italic shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col text-center col-span-full">
-                  no survey available
+                  {loading? <FaSpinner size={30} className="animate-spin mx-auto text-white/30 " />:"no survey available" }
                 </div>
               ) : (
                 approvedSurveyListState.map((survey) => (
@@ -228,7 +229,7 @@ const DashSurvey = () => {
             {overveiwTab === "participated" &&
               (answeredSurveyList.length === 0 ? (
                 <div className="bg-white/5 p-6 w-full capitalize italic shadow-inner shadow-white/30 rounded-xl overflow-hidden select-none flex flex-col text-center col-span-full">
-                  no survey available
+                  {loading? <FaSpinner size={30} className="animate-spin mx-auto text-white/30 " />:"no survey available" }
                 </div>
               ) : (
                 answeredSurveyList.map((survey) => (
@@ -377,6 +378,7 @@ const DashSurvey = () => {
               ))}
           </div>
         )}
+      
       </div>
 
       {showKyc && <KYCModal onClose={() => setShowKyc(false)} />}

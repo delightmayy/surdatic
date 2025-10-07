@@ -6,10 +6,10 @@ import { useState, useMemo } from "react";
 import { type Survey } from "../../../context/DataContext";
 
 const SurveyOverviewHistory = () => {
-  /* const { marketPlaceData } = useContext(DataContext)!; */
+  
   const { state } = useLocation();
   const navigate = useNavigate();
-  console.log("this is it", state);
+ /*  console.log("this is it", state); */
 
   const [activeFilter, setActivefilter] = useState<"All" | "7Days" | "30Days">(
     "All"
