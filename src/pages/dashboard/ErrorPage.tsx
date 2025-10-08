@@ -1,13 +1,12 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DataContext from "../../context/DataContext";
+
+import { useAuth } from "../../api/useAuth";
 
 const ErrorPage = () => {
   const navigate = useNavigate();
-  const { UserSigned } = useContext(DataContext)!;
-  const page = UserSigned === true ? "/dashboard" : "/";
-  console.log(page);
-  
+  const { isAuthenticated } = useAuth();
+  const page = isAuthenticated ? "/dashboard" : "/";
 
   useEffect(() => {
     const navHome = setTimeout(() => {

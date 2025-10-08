@@ -7,7 +7,7 @@ import { useContext, useState } from "react";
 import KYCModal from "../../component/modal/KYCModal";
 import OverviewCards from "../../component/dashboardUI/survey/OverviewCards";
 import { Link } from "react-router-dom";
-import DataContext, { type Survey } from "../../context/DataContext";
+import DataContext from "../../context/DataContext";
 import CreateSurveyModal from "../../component/modal/CreateSurveyModal";
 
 const DashSurvey = () => {

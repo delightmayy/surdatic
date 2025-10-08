@@ -27,7 +27,7 @@ import VideoSurveyDetail from "../component/dashboardUI/survey/VideoSurvey";
 import ErrorPage from "../pages/dashboard/ErrorPage";
 import MarketPlaceDetails from "../component/dashboardUI/marketplace/MarketPlaceDetails";
 import P2POrderPage from "../component/dashboardUI/p2p/P2POrderPage";
-import SurveyHistoryPage from "../component/dashboardUI/survey/SurveyHistoryPage";
+//import SurveyHistoryPage from "../component/dashboardUI/survey/SurveyHistoryPage";
 import SurveyAnalysisPage from "../component/dashboardUI/survey/SurveyAnalysisPage";
 import VideoSurveyCallPage from "../component/dashboardUI/survey/VideoSurveyCallPage";
 import ProtectedRoute from "./ProtectedRoute";
@@ -66,7 +66,7 @@ export const AppRoutes = () => {
           <Route path="surveys/:id" element={<FormSurveyDetail />} />
           <Route path="videos/:id" element={<VideoSurveyDetail />} />
           <Route path="questionaire/:id" element={<SurveyQuestionPage />} />
-          <Route path="history" element={<SurveyHistoryPage />} />
+        {/*   <Route path="history" element={<SurveyHistoryPage />} /> */}
           <Route path="Overview" element={<SurveyOverviewHistory />} />
           <Route path="analysis/:id" element={<SurveyAnalysisPage />} />
           <Route path="videocall" element={<VideoSurveyCallPage />} />
